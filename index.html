@@ -1,0 +1,1787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Pentatonic Triads</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <style>
+    html, body, #root { margin: 0; padding: 0; min-height: 100vh; background: #0b1018; }
+    * { box-sizing: border-box; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState, useRef, useEffect, useCallback } = React;
+
+const NOTES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+const OPEN_IDX = [4,9,2,7,11,4];
+const NOTE_FREQ = {C:261.63,"C#":277.18,D:293.66,"D#":311.13,E:329.63,F:349.23,"F#":369.99,G:392,"G#":415.3,A:440,"A#":466.16,B:493.88};
+
+function dn(deg,root,sc){ return NOTES[(NOTES.indexOf(root)+sc[deg-1])%12]; }
+function fretE(root){ return (NOTES.indexOf(root)-4+12)%12; }
+function majP(root){ return [0,2,4,7,9].map(s=>NOTES[(NOTES.indexOf(root)+s)%12]); }
+function minP(root){ return [0,3,5,7,10].map(s=>NOTES[(NOTES.indexOf(root)+s)%12]); }
+function relMin(r){ return NOTES[(NOTES.indexOf(r)-3+12)%12]; }
+function relMaj(r){ return NOTES[(NOTES.indexOf(r)+3)%12]; }
+function cname(t,root,sc){ return dn(t.d[0],root,sc)+(t.q==="minor"?"m":t.q==="dim"?"°":""); }
+function fretsFor(note,str,lo,hi){
+  const base=(NOTES.indexOf(note)-OPEN_IDX[str]+12)%12,res=[];
+  for(let o=0;o<=2;o++){const f=base+o*12;if(f>=lo&&f<=hi)res.push(f);}
+  return res;
+}
+
+const MS=[0,2,4,5,7,9,11], NS=[0,2,3,5,7,8,10];
+// Dorian:     1 2 b3 4 5 6 b7  = [0,2,3,5,7,9,10]
+// Mixolydian: 1 2 3  4 5 6 b7  = [0,2,4,5,7,9,10]
+const DS=[0,2,3,5,7,9,10], XS=[0,2,4,5,7,9,10];
+const MPD=new Set([1,2,3,5,6]), NPD=new Set([1,3,4,5,7]);
+// Dorian pent: 1 2 b3 5 6 = degrees 1,2,3,5,6 (same shape as minor pent but with natural 6)
+const DPD=new Set([1,2,3,5,6]);
+// Mixolydian pent: 1 2 3 5 b7 = degrees 1,2,3,5,7 in Mixolydian scale
+const XPD=new Set([1,2,3,5,7]);
+const INLAYS=[3,5,7,9,12,15,17,19,21,24], DINLAY=new Set([12,24]);
+
+function dorP(root){ return [0,2,3,7,9].map(s=>NOTES[(NOTES.indexOf(root)+s)%12]); }  // 1 2 b3 5 6
+function mixP(root){ return [0,2,4,7,10].map(s=>NOTES[(NOTES.indexOf(root)+s)%12]); }  // 1 2 3 5 b7
+
+// Extension semitones above root for each chord quality
+// 7th interval: major7=11, minor7=10, dom7=10, dim7=9
+// 9th interval: always 14 (major 2nd up an octave = 2 semitones mod12 = 2)
+const EXT7 = { major:11, minor:10, dom:10, dim:9 };  // semitones above root
+const EXT9 = 2; // semitone above root (= 9th = 2nd)
+
+// Get extension note names for a triad given extension mode ("7" or "9")
+function getExtNotes(t, root, sc, ext) {
+  if (!ext) return [];
+  const rootNote = dn(t.d[0], root, sc);
+  const rootIdx = NOTES.indexOf(rootNote);
+  // Determine 7th quality
+  const seventh = t.q === "major"
+    ? NOTES[(rootIdx + 11) % 12]  // maj7
+    : t.q === "dim"
+    ? NOTES[(rootIdx + 9) % 12]   // dim7
+    : NOTES[(rootIdx + 10) % 12]; // min7 / dom7
+  if (ext === "7") return [seventh];
+  // 9th = seventh + 9th
+  const ninth = NOTES[(rootIdx + 2) % 12];
+  return [seventh, ninth];
+}
+
+function extLabel(t, ext) {
+  if (!ext) return "";
+  if (ext === "7") {
+    if (t.q === "major") return "maj7";
+    if (t.q === "dim") return "dim7";
+    return "7";
+  }
+  if (ext === "9") {
+    if (t.q === "major") return "maj9";
+    if (t.q === "dim") return "dim9";
+    return "9";
+  }
+  return "";
+}
+
+function cnameExt(t, root, sc, ext) {
+  const base = dn(t.d[0],root,sc) + (t.q==="minor"?"m":t.q==="dim"?"°":"");
+  return base + extLabel(t, ext);
+}
+
+// Dorian triads: i ii III IV v vi° VII
+// i=minor, ii=minor, III=major, IV=major, v=minor, vi°=dim, VII=major
+const DT=[
+  {n:"i",   q:"minor",d:[1,3,5],c:"#60b8f0"}, // 1 b3 5
+  {n:"ii",  q:"minor",d:[2,4,6],c:"#c080f0"}, // 2 4 6
+  {n:"III", q:"major",d:[3,5,7],c:"#a0d080"}, // b3 5 b7
+  {n:"IV",  q:"major",d:[4,6,1],c:"#f0c040"}, // 4 6 1
+  {n:"v",   q:"minor",d:[5,7,2],c:"#f06060"}, // 5 b7 2
+  {n:"vi°", q:"dim",  d:[6,1,3],c:"#c0a0c0"}, // 6 1 b3
+  {n:"VII", q:"major",d:[7,2,4],c:"#f08040"}, // b7 2 4
+];
+
+// Mixolydian triads: I ii iii° IV v vi VII
+// I=major, ii=minor, iii°=dim, IV=major, v=minor, vi=minor, VII=major
+const XT=[
+  {n:"I",   q:"major",d:[1,3,5],c:"#f0c040"}, // 1 3 5
+  {n:"ii",  q:"minor",d:[2,4,6],c:"#c080f0"}, // 2 4 6
+  {n:"iii°",q:"dim",  d:[3,5,7],c:"#c0a0c0"}, // 3 5 b7
+  {n:"IV",  q:"major",d:[4,6,1],c:"#f08040"}, // 4 6 1
+  {n:"v",   q:"minor",d:[5,7,2],c:"#f06060"}, // 5 b7 2
+  {n:"vi",  q:"minor",d:[6,1,3],c:"#60b8f0"}, // 6 1 3
+  {n:"VII", q:"major",d:[7,2,4],c:"#a0d080"}, // b7 2 4
+];
+
+// Dorian pentatonic positions — 1 2 b3 5 6 (A B C E F# for A Dorian)
+// Position offsets from root fret on low-E: 0,2,3,7,4
+const DP=[
+  {num:1,sd:"Root",off:0, dots:[{s:0,f:0,d:1},{s:0,f:2,d:2},{s:1,f:2,d:5},{s:1,f:4,d:6},{s:2,f:-1,d:6},{s:2,f:2,d:1},{s:3,f:-1,d:2},{s:3,f:0,d:3},{s:4,f:0,d:5},{s:4,f:2,d:6},{s:5,f:0,d:1},{s:5,f:2,d:2}]},
+  {num:2,sd:"2nd", off:2, dots:[{s:0,f:0,d:2},{s:0,f:1,d:3},{s:1,f:0,d:5},{s:1,f:2,d:6},{s:2,f:0,d:1},{s:2,f:2,d:2},{s:3,f:2,d:5},{s:3,f:4,d:6},{s:4,f:0,d:6},{s:4,f:3,d:1},{s:5,f:0,d:2},{s:5,f:1,d:3}]},
+  {num:3,sd:"b3rd",off:3, dots:[{s:0,f:-1,d:2},{s:0,f:0,d:3},{s:1,f:-1,d:5},{s:1,f:1,d:6},{s:2,f:-1,d:1},{s:2,f:1,d:2},{s:3,f:1,d:5},{s:3,f:3,d:6},{s:4,f:-1,d:6},{s:4,f:2,d:1},{s:5,f:-1,d:2},{s:5,f:0,d:3}]},
+  {num:4,sd:"5th", off:7, dots:[{s:0,f:0,d:5},{s:0,f:2,d:6},{s:1,f:0,d:1},{s:1,f:2,d:2},{s:2,f:2,d:5},{s:2,f:4,d:6},{s:3,f:-1,d:6},{s:3,f:2,d:1},{s:4,f:0,d:2},{s:4,f:1,d:3},{s:5,f:0,d:5},{s:5,f:2,d:6}]},
+  {num:5,sd:"6th", off:4, dots:[{s:0,f:-1,d:3},{s:0,f:3,d:5},{s:1,f:0,d:6},{s:1,f:3,d:1},{s:2,f:0,d:2},{s:2,f:1,d:3},{s:3,f:0,d:5},{s:3,f:2,d:6},{s:4,f:1,d:1},{s:4,f:3,d:2},{s:5,f:-1,d:3},{s:5,f:3,d:5}]},
+];
+
+// Mixolydian pentatonic positions — 1 2 3 5 b7 (A B C# E G for A Mixolydian)
+// Position offsets from root fret on low-E: 0,2,4,7,5
+const XP=[
+  {num:1,sd:"Root",off:0, dots:[{s:0,f:0,d:1},{s:0,f:2,d:2},{s:1,f:-1,d:3},{s:1,f:2,d:5},{s:2,f:0,d:7},{s:2,f:2,d:1},{s:3,f:-1,d:2},{s:3,f:1,d:3},{s:4,f:0,d:5},{s:4,f:3,d:7},{s:5,f:0,d:1},{s:5,f:2,d:2}]},
+  {num:2,sd:"2nd", off:2, dots:[{s:0,f:0,d:2},{s:0,f:2,d:3},{s:1,f:0,d:5},{s:1,f:3,d:7},{s:2,f:0,d:1},{s:2,f:2,d:2},{s:3,f:-1,d:3},{s:3,f:2,d:5},{s:4,f:1,d:7},{s:4,f:3,d:1},{s:5,f:0,d:2},{s:5,f:2,d:3}]},
+  {num:3,sd:"3rd", off:4, dots:[{s:0,f:0,d:3},{s:0,f:3,d:5},{s:1,f:1,d:7},{s:1,f:3,d:1},{s:2,f:0,d:2},{s:2,f:2,d:3},{s:3,f:0,d:5},{s:3,f:3,d:7},{s:4,f:-1,d:7},{s:4,f:1,d:1},{s:5,f:0,d:3},{s:5,f:3,d:5}]},
+  {num:4,sd:"5th", off:7, dots:[{s:0,f:0,d:5},{s:0,f:3,d:7},{s:1,f:0,d:1},{s:1,f:2,d:2},{s:2,f:-1,d:3},{s:2,f:2,d:5},{s:3,f:0,d:7},{s:3,f:2,d:1},{s:4,f:0,d:2},{s:4,f:2,d:3},{s:5,f:0,d:5},{s:5,f:3,d:7}]},
+  {num:5,sd:"b7th",off:5, dots:[{s:0,f:-1,d:3},{s:0,f:2,d:5},{s:1,f:0,d:7},{s:1,f:2,d:1},{s:2,f:-1,d:2},{s:2,f:1,d:3},{s:3,f:-1,d:5},{s:3,f:2,d:7},{s:4,f:0,d:1},{s:4,f:2,d:2},{s:5,f:-1,d:3},{s:5,f:2,d:5}]},
+];
+const MT=[
+  {n:"I",  q:"major",d:[1,3,5],c:"#f0c040"},{n:"ii", q:"minor",d:[2,4,6],c:"#c080f0"},
+  {n:"iii",q:"minor",d:[3,5,7],c:"#a0d080"},{n:"IV", q:"major",d:[4,6,1],c:"#f08040"},
+  {n:"V",  q:"major",d:[5,7,2],c:"#f06060"},{n:"vi", q:"minor",d:[6,1,3],c:"#60b8f0"},
+  {n:"vii°",q:"dim", d:[7,2,4],c:"#c0a0c0"},
+];
+const NT=[
+  {n:"i",  q:"minor",d:[1,3,5],c:"#60b8f0"},{n:"ii°",q:"dim",  d:[2,4,6],c:"#c0a0c0"},
+  {n:"III",q:"major",d:[3,5,7],c:"#a0d080"},{n:"iv", q:"minor",d:[4,6,1],c:"#c080f0"},
+  {n:"v",  q:"minor",d:[5,7,2],c:"#f06060"},{n:"VI", q:"major",d:[6,1,3],c:"#f08040"},
+  {n:"VII",q:"major",d:[7,2,4],c:"#f0c040"},
+];
+const MP=[
+  {num:1,sd:"Root",off:0, dots:[{s:0,f:-3,d:6},{s:0,f:0,d:1},{s:1,f:-3,d:2},{s:1,f:-1,d:3},{s:2,f:-3,d:5},{s:2,f:-1,d:6},{s:3,f:-3,d:1},{s:3,f:-1,d:2},{s:4,f:-3,d:3},{s:4,f:0,d:5},{s:5,f:-3,d:6},{s:5,f:0,d:1}]},
+  {num:2,sd:"2nd", off:2, dots:[{s:0,f:-2,d:1},{s:0,f:0,d:2},{s:1,f:-3,d:3},{s:1,f:0,d:5},{s:2,f:-3,d:6},{s:2,f:0,d:1},{s:3,f:-3,d:2},{s:3,f:-1,d:3},{s:4,f:-2,d:5},{s:4,f:0,d:6},{s:5,f:-2,d:1},{s:5,f:0,d:2}]},
+  {num:3,sd:"3rd", off:4, dots:[{s:0,f:-4,d:1},{s:0,f:-2,d:2},{s:1,f:-2,d:5},{s:1,f:0,d:6},{s:2,f:-2,d:1},{s:2,f:0,d:2},{s:3,f:-3,d:3},{s:3,f:0,d:5},{s:4,f:-4,d:5},{s:4,f:-2,d:6},{s:5,f:-4,d:1},{s:5,f:-2,d:2}]},
+  {num:4,sd:"5th", off:7, dots:[{s:0,f:-3,d:3},{s:0,f:0,d:5},{s:1,f:-3,d:6},{s:1,f:0,d:1},{s:2,f:-3,d:2},{s:2,f:-1,d:3},{s:3,f:-3,d:5},{s:3,f:-1,d:6},{s:4,f:-2,d:1},{s:4,f:0,d:2},{s:5,f:-3,d:3},{s:5,f:0,d:5}]},
+  {num:5,sd:"6th", off:9, dots:[{s:0,f:-2,d:5},{s:0,f:0,d:6},{s:1,f:-2,d:1},{s:1,f:0,d:2},{s:2,f:-3,d:3},{s:2,f:0,d:5},{s:3,f:-3,d:6},{s:3,f:0,d:1},{s:4,f:-4,d:1},{s:4,f:-2,d:2},{s:5,f:-2,d:5},{s:5,f:0,d:6}]},
+];
+const NP=[
+  {num:1,sd:"Root",off:0, dots:[{s:0,f:-2,d:7},{s:0,f:0,d:1},{s:1,f:-2,d:3},{s:1,f:0,d:4},{s:2,f:-3,d:5},{s:2,f:0,d:7},{s:3,f:-3,d:1},{s:3,f:0,d:3},{s:4,f:-4,d:3},{s:4,f:-2,d:4},{s:5,f:-2,d:7},{s:5,f:0,d:1}]},
+  {num:2,sd:"b3rd",off:3, dots:[{s:0,f:-3,d:1},{s:0,f:0,d:3},{s:1,f:-3,d:4},{s:1,f:-1,d:5},{s:2,f:-3,d:7},{s:2,f:-1,d:1},{s:3,f:-3,d:3},{s:3,f:-1,d:4},{s:4,f:-3,d:5},{s:4,f:0,d:7},{s:5,f:-3,d:1},{s:5,f:0,d:3}]},
+  {num:3,sd:"4th", off:5, dots:[{s:0,f:-2,d:3},{s:0,f:0,d:4},{s:1,f:-3,d:5},{s:1,f:0,d:7},{s:2,f:-3,d:1},{s:2,f:0,d:3},{s:3,f:-3,d:4},{s:3,f:-1,d:5},{s:4,f:-2,d:7},{s:4,f:0,d:1},{s:5,f:-2,d:3},{s:5,f:0,d:4}]},
+  {num:4,sd:"5th", off:7, dots:[{s:0,f:-4,d:3},{s:0,f:-2,d:4},{s:1,f:-2,d:7},{s:1,f:0,d:1},{s:2,f:-2,d:3},{s:2,f:0,d:4},{s:3,f:-3,d:5},{s:3,f:0,d:7},{s:4,f:-4,d:7},{s:4,f:-2,d:1},{s:5,f:-4,d:3},{s:5,f:-2,d:4}]},
+  {num:5,sd:"b7th",off:10,dots:[{s:0,f:-3,d:5},{s:0,f:0,d:7},{s:1,f:-3,d:1},{s:1,f:0,d:3},{s:2,f:-3,d:4},{s:2,f:-1,d:5},{s:3,f:-3,d:7},{s:3,f:-1,d:1},{s:4,f:-2,d:3},{s:4,f:0,d:4},{s:5,f:-3,d:5},{s:5,f:0,d:7}]},
+];
+
+// Build dot data for a fretboard
+function buildDots(pos, base, checked, triads, pd, root, sc, blues, exts, fullScale) {
+  const dm = new Map();
+  // If fullScale mode, add all 7 scale notes as background dots first
+  if (fullScale) {
+    for (let str = 0; str < 6; str++) {
+      const sf = pos.dots.map(d => base+d.f).filter(f=>f>=0);
+      const lo = Math.min(...sf), hi = Math.max(...sf);
+      for (let f = lo-1; f <= hi+1; f++) {
+        if (f < 0) continue;
+        const note = NOTES[(OPEN_IDX[str]+f)%12];
+        const ri = NOTES.indexOf(root);
+        const semitone = (NOTES.indexOf(note)-ri+12)%12;
+        const degIdx = sc.indexOf(semitone);
+        if (degIdx >= 0) {
+          const deg = degIdx+1;
+          const key = `${str}-${f}`;
+          if (!dm.has(key)) dm.set(key, {s:str, af:f, note, degs:new Set(), isRoot:deg===1, isFullOnly:!pd.has(deg)});
+          dm.get(key).degs.add(deg);
+          if (deg===1) dm.get(key).isRoot=true;
+        }
+      }
+    }
+  }
+  pos.dots.forEach(dot => {
+    const af = base + dot.f;
+    if (af < 0) return;
+    const key = `${dot.s}-${af}`;
+    const note = NOTES[(OPEN_IDX[dot.s]+af)%12];
+    const isRoot = note === root;
+    if (!dm.has(key)) dm.set(key, {s:dot.s, af, note, degs:new Set(), isRoot});
+    const e = dm.get(key);
+    e.degs.add(dot.d);
+    if (isRoot) e.isRoot = true;
+  });
+  if (checked.size > 0) {
+    const sf = pos.dots.map(d => base+d.f).filter(f => f >= 0);
+    const lo = Math.min(...sf), hi = Math.max(...sf);
+    checked.forEach(ti => {
+      // Standard triad extra tones
+      triads[ti].d.forEach(deg => {
+        if (pd.has(deg)) return;
+        const note = dn(deg, root, sc);
+        for (let s = 0; s < 6; s++) {
+          fretsFor(note, s, lo-1, hi+1).forEach(f => {
+            if (f < 0) return;
+            const key = `${s}-${f}`;
+            if (!dm.has(key)) dm.set(key, {s, af:f, note, degs:new Set(), isRoot:false, extOf:ti});
+            dm.get(key).degs.add(deg);
+          });
+        }
+      });
+      // Extension notes (7th / 9th) — always add color marker, even if note is already a scale dot
+      const ext = exts && (exts[ti] || exts[String(ti)]);
+      if (ext) {
+        const extNotes = getExtNotes(triads[ti], root, sc, ext);
+        extNotes.forEach(note => {
+          for (let s = 0; s < 6; s++) {
+            fretsFor(note, s, lo-3, hi+5).forEach(f => {
+              if (f < 0) return;
+              const key = `${s}-${f}`;
+              // Create dot if it doesn't exist (for notes outside the scale)
+              if (!dm.has(key)) dm.set(key, {s, af:f, note, degs:new Set(), isRoot:false, isExt:true});
+              // Always add the 100+ti marker so getColors picks it up
+              dm.get(key).degs.add(100 + ti);
+              dm.get(key).isExt = true;
+            });
+          }
+        });
+      }
+    });
+  }
+  const blNote = NOTES[(NOTES.indexOf(root)+6)%12];
+  const bl = [];
+  if (blues) {
+    const afs = [...dm.values()].map(d=>d.af);
+    const lo = Math.min(...afs), hi = Math.max(...afs);
+    for (let s=0; s<6; s++) {
+      fretsFor(blNote, s, lo, hi).forEach(f => {
+        if (!dm.has(`${s}-${f}`)) bl.push({s, af:f, note:blNote});
+      });
+    }
+  }
+  return { dots:[...dm.values()], blDots:bl };
+}
+
+// Single dot SVG group — no conditional returns, everything rendered via opacity/visibility
+function SvgDot({cx, cy, r, colors, note, isRoot, dim, accent}) {
+  const fs = Math.max(7, r * 0.72);
+  const id = `c${Math.round(cx)}y${Math.round(cy)}`;
+  const single = colors.length <= 1;
+  const fill = colors.length > 0 ? colors[0] : (isRoot ? accent : "#3d6080");
+  const step = colors.length > 1 ? (2*Math.PI)/colors.length : 1;
+  return (
+    <g opacity={dim ? 0.45 : 1}>
+      {/* Root ring */}
+      {isRoot && !dim && <circle cx={cx} cy={cy} r={r+5} fill="none" stroke={fill} strokeWidth={2} opacity={0.35}/>}
+      {/* Single color circle */}
+      {single && <circle cx={cx} cy={cy} r={r} fill={fill} stroke={isRoot?"#ffffffaa":`${fill}80`} strokeWidth={isRoot?2.5:1}/>}
+      {/* Multi-color pie slices */}
+      {!single && (
+        <g>
+          <clipPath id={id}><circle cx={cx} cy={cy} r={r}/></clipPath>
+          <g clipPath={`url(#${id})`}>
+            {colors.map((c,i) => {
+              const a0=i*step-Math.PI/2, a1=a0+step, la=colors.length===2?1:0;
+              return <path key={i} d={`M${cx},${cy} L${cx+r*Math.cos(a0)},${cy+r*Math.sin(a0)} A${r},${r},0,${la},1,${cx+r*Math.cos(a1)},${cy+r*Math.sin(a1)} Z`} fill={c}/>;
+            })}
+          </g>
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="#ffffff20" strokeWidth={1}/>
+        </g>
+      )}
+      {/* Label */}
+      <text x={cx} y={cy+fs*0.4} textAnchor="middle" fontSize={fs} fontWeight="700"
+        fill={dim ? "#5a7a8a" : (single && isRoot ? "#111" : "#fff")}
+        fontFamily="IBM Plex Mono,monospace">{note}</text>
+    </g>
+  );
+}
+
+function getColors(degs, checked, triads) {
+  const s = new Set();
+  degs.forEach(d => {
+    if (d >= 100) {
+      // Extension note — color by its triad index (100+ti → ti)
+      const ti = d - 100;
+      if (checked.has(ti)) s.add(triads[ti].c);
+    } else {
+      checked.forEach(ti => { if (triads[ti].d.includes(d)) s.add(triads[ti].c); });
+    }
+  });
+  return [...s];
+}
+
+// Build a map of borrowed chord notes (note name → triad color) when quality is overridden
+function getBorrowedNoteMap(checked, triads, qualOver, root, sc) {
+  const m = new Map();
+  if (!qualOver) return m;
+  checked.forEach(ti => {
+    const ovr = qualOver[ti];
+    if (!ovr || ovr === triads[ti].q) return;
+    const t = triads[ti];
+    const rootNote = dn(t.d[0], root, sc);
+    const rootIdx = NOTES.indexOf(rootNote);
+    const fifth = NOTES[(rootIdx+7)%12];
+    const third = ovr === "major" ? NOTES[(rootIdx+4)%12] : NOTES[(rootIdx+3)%12];
+    [rootNote, third, fifth].forEach(n => m.set(n, t.c));
+  });
+  return m;
+}
+
+// Fretboard SVG
+function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blues, exts, fullScale, shapeOn, shapeGroups, onDotClick, qualOver, focusedNotes, focusedColor}) {
+  const none = checked.size === 0;
+  const { dots, blDots } = buildDots(pos, base, checked, triads, pd, root, sc, blues, exts, fullScale);
+  if (!dots.length) return null;
+  // Borrowed chord notes (from quality overrides) — note → color
+  const borrowedMap = getBorrowedNoteMap(checked, triads, qualOver, root, sc);
+  // Add borrowed notes that don't exist in the dots already (e.g., G# for E major in A minor scale)
+  if (borrowedMap.size > 0) {
+    const lo = Math.min(...dots.map(d=>d.af));
+    const hi = Math.max(...dots.map(d=>d.af));
+    const existingKeys = new Set(dots.map(d=>`${d.s}-${d.af}`));
+    borrowedMap.forEach((color, note) => {
+      for (let s = 0; s < 6; s++) {
+        fretsFor(note, s, lo-1, hi+1).forEach(f => {
+          const k = `${s}-${f}`;
+          if (!existingKeys.has(k)) {
+            dots.push({s, af:f, note, degs:new Set(), isRoot:false, isBorrowed:true, borrowedColor:color});
+            existingKeys.add(k);
+          }
+        });
+      }
+    });
+  }
+  // Add focused-chord notes that aren't in the scale (e.g., B for Am9 in A minor pentatonic)
+  if (focusedNotes && focusedNotes.size > 0) {
+    const lo = Math.min(...dots.map(d=>d.af));
+    const hi = Math.max(...dots.map(d=>d.af));
+    const existingKeys = new Set(dots.map(d=>`${d.s}-${d.af}`));
+    focusedNotes.forEach(note => {
+      for (let s = 0; s < 6; s++) {
+        fretsFor(note, s, lo-1, hi+1).forEach(f => {
+          const k = `${s}-${f}`;
+          if (!existingKeys.has(k)) {
+            dots.push({s, af:f, note, degs:new Set(), isRoot:false});
+            existingKeys.add(k);
+          }
+        });
+      }
+    });
+  }
+
+  const FW=Math.round(44*zoom), SH=Math.round(34*zoom), DR=Math.round(13*zoom), LP=28, TP=36;
+  const allAf = [...dots,...blDots].map(d=>d.af);
+  const mn=Math.max(0,Math.min(...allAf)-2), mx=Math.max(...allAf), nc=mx-mn+2;
+  const W=LP+nc*FW+FW, H=TP+5*SH+DR+20;
+  const fx = af => LP+(af-mn)*FW-FW/2;
+  const sy = s => TP+(5-s)*SH;
+  const wires = Array.from({length:nc+1},(_,i)=>LP+i*FW);
+  const SL = ["e","B","G","D","A","E"];
+  const blNote = NOTES[(NOTES.indexOf(root)+6)%12];
+
+  return (
+    <svg width={W} height={H} style={{display:"block"}}>
+      <defs/>
+      {INLAYS.filter(f=>f>=mn&&f<=mx+1).map(f => {
+        const x=fx(f)-FW/2+FW/4, my=TP+2.5*SH;
+        return DINLAY.has(f)
+          ? <g key={f}><circle cx={x} cy={my-SH} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/><circle cx={x} cy={my+SH} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/></g>
+          : <circle key={f} cx={x} cy={my} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/>;
+      })}
+      {Array.from({length:nc},(_,i) => <text key={i} x={LP+(i+1)*FW-FW/2} y={17} textAnchor="middle" fontSize={Math.max(8,10*zoom)} fill="#778" fontWeight="600" fontFamily="IBM Plex Mono,monospace">{mn+i+1}</text>)}
+      {wires.map((x,i) => <line key={i} x1={x} y1={TP-6} x2={x} y2={TP+5*SH+6} stroke={i===0&&mn===0?"#889":"#1e2e3e"} strokeWidth={i===0&&mn===0?4:1.5}/>)}
+      {Array.from({length:6},(_,row) => <line key={row} x1={wires[0]} y1={TP+row*SH} x2={wires[nc]} y2={TP+row*SH} stroke="#243040" strokeWidth={row===5?2:1}/>)}
+      {SL.map((nm,row) => <text key={row} x={wires[0]-10} y={TP+row*SH+4} textAnchor="middle" fontSize={Math.max(7,9*zoom)} fill="#3a5060" fontFamily="IBM Plex Mono,monospace">{nm}</text>)}
+      {blDots.map((d,i) => (
+        <g key={`b${i}`}>
+          <circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill="#2a1a3a" stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/>
+          <text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,monospace">{blNote}</text>
+        </g>
+      ))}
+      {dots.map((dot,i) => {
+        // When progression chord focused — highlight by note name (handles borrowed/out-of-scale notes)
+        let cols, dim;
+        if (focusedNotes) {
+          const inChord = focusedNotes.has(dot.note);
+          cols = inChord ? [focusedColor||accent] : [];
+          dim = !inChord;
+        } else {
+          // Check if this note is in a borrowed chord (quality override)
+          const borrowedColor = borrowedMap.get(dot.note);
+          if (borrowedColor) {
+            cols = [borrowedColor];
+            dim = false;
+          } else {
+            cols = none ? [dot.isRoot ? accent : "#3d6080"] : getColors(dot.degs, checked, triads);
+            dim = !none && cols.length === 0;
+          }
+        }
+        const finalCols = cols.length > 0 ? cols : (dot.isRoot ? [accent] : ["#2a4055"]);
+        const opacity = dim ? 0.5 : 1;
+        // Non-pentatonic scale tones (fullScale mode) — show as small ghost dots
+        if (dot.isFullOnly && cols.length === 0) {
+          return (
+            <g key={i} opacity={0.4}>
+              <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR*0.65} fill="#1e3a5a" stroke="#3a6080" strokeWidth={1}/>
+              <text x={fx(dot.af)} y={sy(dot.s)+Math.max(5,DR*0.5)} textAnchor="middle" fontSize={Math.max(6,DR*0.55)} fontWeight="700" fill="#7aaaca" fontFamily="IBM Plex Mono,monospace">{dot.note}</text>
+            </g>
+          );
+        }
+        return (
+          <g key={i} opacity={opacity}>
+            {dot.isExt && cols.length > 0 && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+4} fill="none" stroke={cols[0]} strokeWidth={1.5} strokeDasharray="3 2" opacity={0.7}/>}
+            <SvgDot cx={fx(dot.af)} cy={sy(dot.s)} r={DR} colors={finalCols} note={dot.note} isRoot={dot.isRoot} dim={false} accent={accent}/>
+            {shapeOn && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+2} fill="transparent" stroke="transparent" strokeWidth={8} style={{cursor:"pointer"}} onClick={()=>onDotClick&&onDotClick(dot.s,dot.af,dot.note)}/>}
+          </g>
+        );
+      })}
+      {shapeOn && renderManualShape(shapeGroups, fx, sy)}
+    </svg>
+  );
+}
+
+// Neck view (multiple positions) — uses buildDots per position then merges
+function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, blues, exts, shapeOn, shapeGroups, onDotClick, focusedNotes, focusedColor, qualOver}) {
+  const none = checked.size === 0 && !focusedNotes;
+  const blNote = NOTES[(NOTES.indexOf(root)+6)%12];
+
+  // Build dots for each position using the shared buildDots function, then merge
+  const dm = new Map();
+  positions.forEach((pos, pi) => {
+    const base = bases[pi];
+    // exts for neck view is a flat object {ti: '7'|'9'}
+    const posExts = exts || {};
+    const { dots } = buildDots(pos, base, checked, triads, pd, root, sc, false, posExts);
+    dots.forEach(dot => {
+      const key = `${dot.s}-${dot.af}`;
+      if (!dm.has(key)) {
+        dm.set(key, {...dot, degs: new Set(dot.degs)});
+      } else {
+        // Merge degs from overlapping positions
+        dot.degs.forEach(d => dm.get(key).degs.add(d));
+        if (dot.isRoot) dm.get(key).isRoot = true;
+        if (dot.isExt) dm.get(key).isExt = true;
+      }
+    });
+  });
+
+  const blDots = [];
+  if (blues && dm.size > 0) {
+    const afs = [...dm.values()].map(d=>d.af);
+    const lo=Math.min(...afs), hi=Math.max(...afs);
+    for (let s=0;s<6;s++) fretsFor(blNote,s,lo,hi).forEach(f=>{ if(!dm.has(`${s}-${f}`)) blDots.push({s,af:f}); });
+  }
+
+  const allD = [...dm.values()];
+  if (!allD.length) return <div style={{padding:20,textAlign:"center",color:"#334",fontFamily:"IBM Plex Mono,monospace",fontSize:10}}>Select positions above</div>;
+
+  // Add borrowed-chord notes that aren't in the scale
+  const borrowedMap = getBorrowedNoteMap(checked, triads, qualOver, root, sc);
+  if (borrowedMap.size > 0) {
+    const lo = Math.min(...allD.map(d=>d.af));
+    const hi = Math.max(...allD.map(d=>d.af));
+    const existingKeys = new Set(allD.map(d=>`${d.s}-${d.af}`));
+    borrowedMap.forEach((color, note) => {
+      for (let s = 0; s < 6; s++) {
+        fretsFor(note, s, lo, hi).forEach(f => {
+          const k = `${s}-${f}`;
+          if (!existingKeys.has(k)) {
+            allD.push({s, af:f, note, degs:new Set(), isRoot:false});
+            existingKeys.add(k);
+          }
+        });
+      }
+    });
+  }
+  // Add focused-chord notes outside scale (e.g., B for Am9 in A minor pentatonic)
+  if (focusedNotes && focusedNotes.size > 0) {
+    const lo = Math.min(...allD.map(d=>d.af));
+    const hi = Math.max(...allD.map(d=>d.af));
+    const existingKeys = new Set(allD.map(d=>`${d.s}-${d.af}`));
+    focusedNotes.forEach(note => {
+      for (let s = 0; s < 6; s++) {
+        fretsFor(note, s, lo, hi).forEach(f => {
+          const k = `${s}-${f}`;
+          if (!existingKeys.has(k)) {
+            allD.push({s, af:f, note, degs:new Set(), isRoot:false});
+            existingKeys.add(k);
+          }
+        });
+      }
+    });
+  }
+
+  const FW=Math.round(44*zoom), SH=Math.round(34*zoom), DR=Math.round(13*zoom), LP=28, TP=36;
+  const allAf=[...allD,...blDots].map(d=>d.af);
+  const mn=Math.max(0,Math.min(...allAf)-2), mx=Math.max(...allAf), nc=mx-mn+2;
+  const W=LP+nc*FW+FW, H=TP+5*SH+DR+40;
+  const fx = af => LP+(af-mn)*FW-FW/2;
+  const sy = s => TP+(5-s)*SH;
+  const wires=Array.from({length:nc+1},(_,i)=>LP+i*FW);
+  const SL=["e","B","G","D","A","E"];
+  const posLabels = positions.map((pos,pi) => {
+    const fr = pos.dots.map(d=>bases[pi]+d.f).filter(f=>f>=0);
+    return {num:pos.num, lo:Math.min(...fr), hi:Math.max(...fr)};
+  });
+
+  return (
+    <svg width={W} height={H} style={{display:"block"}}>
+      <defs/>
+      {INLAYS.filter(f=>f>=mn&&f<=mx+1).map(f => {
+        const x=fx(f)-FW/2+FW/4, my=TP+2.5*SH;
+        return DINLAY.has(f)
+          ? <g key={f}><circle cx={x} cy={my-SH} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/><circle cx={x} cy={my+SH} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/></g>
+          : <circle key={f} cx={x} cy={my} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/>;
+      })}
+      {Array.from({length:nc},(_,i) => <text key={i} x={LP+(i+1)*FW-FW/2} y={17} textAnchor="middle" fontSize={Math.max(8,10*zoom)} fill="#778" fontWeight="600" fontFamily="IBM Plex Mono,monospace">{mn+i+1}</text>)}
+      {wires.map((x,i) => <line key={i} x1={x} y1={TP-6} x2={x} y2={TP+5*SH+6} stroke={i===0&&mn===0?"#889":"#1e2e3e"} strokeWidth={i===0&&mn===0?4:1.5}/>)}
+      {Array.from({length:6},(_,row) => <line key={row} x1={wires[0]} y1={TP+row*SH} x2={wires[nc]} y2={TP+row*SH} stroke="#243040" strokeWidth={row===5?2:1}/>)}
+      {SL.map((nm,row) => <text key={row} x={wires[0]-10} y={TP+row*SH+4} textAnchor="middle" fontSize={Math.max(7,9*zoom)} fill="#3a5060" fontFamily="IBM Plex Mono,monospace">{nm}</text>)}
+      {posLabels.map(({num,lo,hi}) => {
+        const x1=fx(lo)-FW*0.4, x2=fx(hi)+FW*0.4, y=TP+5*SH+DR+10;
+        return <g key={num}><line x1={x1} y1={y} x2={x2} y2={y} stroke={accent} strokeWidth={1.5} opacity={0.5}/><line x1={x1} y1={y-4} x2={x1} y2={y+4} stroke={accent} strokeWidth={1.5} opacity={0.5}/><line x1={x2} y1={y-4} x2={x2} y2={y+4} stroke={accent} strokeWidth={1.5} opacity={0.5}/><text x={(x1+x2)/2} y={y+14} textAnchor="middle" fontSize={10} fill={accent} fontFamily="IBM Plex Mono,monospace" fontWeight="700">Pos {num}</text></g>;
+      })}
+      {blDots.map((d,i) => <g key={`b${i}`}><circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill="#2a1a3a" stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/><text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,monospace">{blNote}</text></g>)}
+      {allD.map((dot,i) => {
+        let cols, dim;
+        if (focusedNotes) {
+          const inChord = focusedNotes.has(dot.note);
+          cols = inChord ? [focusedColor||accent] : [];
+          dim = !inChord;
+        } else {
+          const borrowedColor = borrowedMap.get(dot.note);
+          if (borrowedColor) {
+            cols = [borrowedColor];
+            dim = false;
+          } else {
+            cols = none ? [dot.isRoot ? accent : "#3d6080"] : getColors(dot.degs, checked, triads);
+            dim = !none && cols.length === 0;
+          }
+        }
+        const finalCols = cols.length > 0 ? cols : (dot.isRoot ? [accent] : ["#2a4055"]);
+        return (
+          <g key={i} opacity={dim ? 0.5 : 1}>
+            {dot.isExt && cols.length > 0 && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+4} fill="none" stroke={cols[0]} strokeWidth={1.5} strokeDasharray="3 2" opacity={0.7}/>}
+            <SvgDot cx={fx(dot.af)} cy={sy(dot.s)} r={DR} colors={finalCols} note={dot.note} isRoot={dot.isRoot} dim={false} accent={accent}/>
+            {shapeOn && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+2} fill="transparent" stroke="transparent" strokeWidth={8} style={{cursor:"pointer"}} onClick={()=>onDotClick&&onDotClick(dot.s,dot.af,dot.note)}/>}
+          </g>
+        );
+      })}
+      {shapeOn && renderManualShape(shapeGroups, fx, sy)}
+    </svg>
+  );
+}
+
+// Triad card
+function TCard({t, root, on, onClick, sc, pd, onPlay, ext, onExt, qualityOverride, onQualityToggle}) {
+  const DG = {1:"R",2:"2",3:"b3",4:"4",5:"5",6:"b6",7:"b7"};
+  // Compute the chord's root note from the diatonic scale degree
+  const rootNote = dn(t.d[0], root, sc);
+  const rootIdx = NOTES.indexOf(rootNote);
+  // Determine effective quality (override or original)
+  const origQuality = t.q; // "major"|"minor"|"dim"
+  const effQuality = qualityOverride || origQuality;
+  // Build notes based on effective quality
+  let notes;
+  if (qualityOverride && qualityOverride !== origQuality) {
+    const fifth = NOTES[(rootIdx+7)%12];
+    if (qualityOverride === "major") {
+      notes = [rootNote, NOTES[(rootIdx+4)%12], fifth];
+    } else if (qualityOverride === "minor") {
+      notes = [rootNote, NOTES[(rootIdx+3)%12], fifth];
+    } else {
+      notes = t.d.map(d => dn(d,root,sc));
+    }
+  } else {
+    notes = t.d.map(d => dn(d,root,sc));
+  }
+  const extNotes = getExtNotes(t, root, sc, ext);
+  const allNotes = [...notes, ...extNotes];
+  const out = t.d.filter(d=>!pd.has(d)).map(d=>DG[d]||String(d)).join(", ");
+  // Build display name based on effective quality
+  let nm;
+  if (qualityOverride && qualityOverride !== origQuality) {
+    nm = effQuality === "major" ? rootNote : rootNote + "m";
+  } else {
+    nm = cnameExt(t, root, sc, ext);
+  }
+  const M = "'IBM Plex Mono',monospace";
+  const isFlipped = qualityOverride && qualityOverride !== origQuality;
+  return (
+    <div onClick={onClick} style={{background:on?`${t.c}18`:"rgba(255,255,255,0.02)",border:`2px solid ${on?t.c:t.c+"22"}`,borderRadius:9,padding:"8px 10px",cursor:"pointer",opacity:on?1:0.5,transition:"all .13s",boxShadow:on?`0 0 12px ${t.c}30`:"none"}}>
+      <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:4}}>
+        <div style={{width:13,height:13,borderRadius:3,border:`2px solid ${t.c}`,background:on?t.c:"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+          {on && <span style={{fontSize:8,color:"#111",fontWeight:900}}>✓</span>}
+        </div>
+        <span style={{fontSize:12,fontWeight:900,fontFamily:"'Playfair Display',serif",color:t.c}}>{t.n}</span>
+        <span style={{fontSize:17,fontWeight:900,fontFamily:"'Playfair Display',serif",color:"#eee"}}>{nm}</span>
+        {isFlipped && <span style={{fontSize:7,color:"#f0c040",fontFamily:M,padding:"1px 4px",background:"rgba(240,192,64,0.15)",border:"1px solid #f0c04044",borderRadius:3}}>borrowed</span>}
+        <span style={{fontSize:8,color:"#445",fontFamily:M,textTransform:"uppercase",letterSpacing:1,marginLeft:"auto"}}>{effQuality}</span>
+        <span onClick={e=>{e.stopPropagation();onPlay(allNotes);}} style={{fontSize:13,cursor:"pointer",color:t.c,userSelect:"none"}}>♪</span>
+      </div>
+      {/* Notes row */}
+      <div style={{display:"flex",gap:3,flexWrap:"wrap",paddingLeft:18,marginBottom:4}}>
+        {notes.map((n,i) => <span key={i} onClick={e=>{e.stopPropagation();onPlay([n]);}} style={{background:`${t.c}22`,border:`1px solid ${t.c}44`,borderRadius:4,padding:"1px 6px",fontSize:11,fontWeight:700,fontFamily:M,color:"#ddd",cursor:"pointer"}}>{n}</span>)}
+        {extNotes.map((n,i) => <span key={`e${i}`} onClick={e=>{e.stopPropagation();onPlay([n]);}} style={{background:`${t.c}40`,border:`2px solid ${t.c}`,borderRadius:4,padding:"1px 6px",fontSize:11,fontWeight:700,fontFamily:M,color:"#fff",cursor:"pointer"}}>{n}</span>)}
+      </div>
+      {/* 7 / 9 extension toggles + quality flip */}
+      <div style={{display:"flex",gap:3,paddingLeft:18,marginBottom:3,alignItems:"center"}} onClick={e=>e.stopPropagation()}>
+        {["7","9"].map(x => (
+          <button key={x} onClick={()=>onExt(x===ext?null:x)} style={{fontFamily:M,fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:4,cursor:"pointer",border:`1px solid ${ext===x?t.c:t.c+"44"}`,background:ext===x?`${t.c}30`:"transparent",color:ext===x?t.c:"#556",letterSpacing:1}}>
+            {extLabel(t,x)}
+          </button>
+        ))}
+        {(origQuality==="major"||origQuality==="minor") && onQualityToggle && (
+          <button onClick={()=>onQualityToggle(isFlipped?null:(origQuality==="major"?"minor":"major"))}
+            style={{fontFamily:M,fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:4,cursor:"pointer",
+              border:`1px solid ${isFlipped?"#f0c040":t.c+"44"}`,
+              background:isFlipped?"rgba(240,192,64,0.15)":"transparent",
+              color:isFlipped?"#f0c040":"#556",letterSpacing:1}}>
+            → {origQuality==="major"?"min":"maj"}
+          </button>
+        )}
+        {ext && <span style={{fontFamily:M,fontSize:9,color:"#556",paddingLeft:4,lineHeight:"22px"}}>extended</span>}
+      </div>
+      <div style={{paddingLeft:18,fontSize:9,color:"#445",fontFamily:M}}>
+        {t.d.map(d=>DG[d]).join(" – ")}
+        {out && <span style={{color:"#c07828",marginLeft:4}}>{out} outside pent</span>}
+      </div>
+    </div>
+  );
+}
+
+// Metronome
+function Metro({pc}) {
+  const [bpm,setBpm]=useState(80),[on,setOn]=useState(false),[beat,setBeat]=useState(0),[sig,setSig]=useState(4);
+  const ref=useRef(null), br=useRef(0), tr=useRef([]);
+  const stop = () => { clearInterval(ref.current); setOn(false); setBeat(0); br.current=0; };
+  const start = () => {
+    br.current=0; setOn(true); pc(true); setBeat(1); br.current=1;
+    ref.current = setInterval(() => { br.current=(br.current%sig)+1; setBeat(br.current); pc(br.current===1); }, (60/bpm)*1000);
+  };
+  const tap = () => {
+    const now=Date.now(); tr.current=[...tr.current.filter(t=>now-t<3000),now];
+    if (tr.current.length>1) { const d=tr.current.slice(1).map((t,i)=>t-tr.current[i]); setBpm(Math.round(60000/(d.reduce((a,b)=>a+b)/d.length))); }
+  };
+  useEffect(() => { if(on){stop();start();} }, [bpm,sig]);
+  useEffect(() => () => clearInterval(ref.current), []);
+  const M = "'IBM Plex Mono',monospace";
+  return (
+    <div style={{background:"rgba(0,0,0,0.4)",border:"1px solid #1e2e3e",borderRadius:10,padding:"10px 14px",marginBottom:10}}>
+      <div style={{fontSize:9,letterSpacing:3,color:"#3a6a8a",fontFamily:M,textTransform:"uppercase",marginBottom:8}}>Metronome</div>
+      <div style={{display:"flex",gap:5,justifyContent:"center",marginBottom:8}}>
+        {Array.from({length:sig},(_,i) => <div key={i} style={{width:11,height:11,borderRadius:"50%",background:on&&beat===i+1?(i===0?"#f0c040":"#60b8f0"):"#1e3040",transition:"background 0.05s"}}/>)}
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",justifyContent:"center"}}>
+        <span onClick={()=>setBpm(b=>Math.max(30,b-5))} style={{fontSize:14,cursor:"pointer",color:"#556",userSelect:"none",fontFamily:M}}>−5</span>
+        <span onClick={()=>setBpm(b=>Math.max(30,b-1))} style={{fontSize:14,cursor:"pointer",color:"#7ac",userSelect:"none",fontFamily:M}}>−1</span>
+        <div style={{textAlign:"center",minWidth:44}}>
+          <div style={{fontFamily:M,fontWeight:700,fontSize:18,color:"#eee"}}>{bpm}</div>
+          <div style={{fontFamily:M,fontSize:8,color:"#445"}}>BPM</div>
+        </div>
+        <span onClick={()=>setBpm(b=>Math.min(240,b+1))} style={{fontSize:14,cursor:"pointer",color:"#7ac",userSelect:"none",fontFamily:M}}>+1</span>
+        <span onClick={()=>setBpm(b=>Math.min(240,b+5))} style={{fontSize:14,cursor:"pointer",color:"#556",userSelect:"none",fontFamily:M}}>+5</span>
+        <input type="range" min={30} max={240} value={bpm} onChange={e=>setBpm(+e.target.value)} style={{width:80,accentColor:"#60b8f0"}}/>
+        <div style={{display:"flex",gap:3}}>
+          {[3,4,6].map(n => <span key={n} onClick={()=>setSig(n)} style={{fontFamily:M,fontSize:9,color:sig===n?"#fff":"#445",background:sig===n?"#2a4a6a":"transparent",border:`1px solid ${sig===n?"#3a6a9a":"#1e2e3a"}`,borderRadius:4,padding:"2px 5px",cursor:"pointer"}}>{n}/4</span>)}
+        </div>
+        <button onClick={tap} style={{fontFamily:M,fontSize:9,color:"#778",background:"rgba(255,255,255,0.04)",border:"1px solid #2a3a4a",borderRadius:5,padding:"4px 8px",cursor:"pointer"}}>TAP</button>
+        <button onClick={()=>on?stop():start()} style={{fontFamily:M,fontSize:10,fontWeight:700,background:on?"linear-gradient(135deg,#f06060,#a03030)":"linear-gradient(135deg,#40a860,#207040)",color:"#fff",border:"none",borderRadius:6,padding:"5px 12px",cursor:"pointer"}}>{on?"■ STOP":"▶ START"}</button>
+      </div>
+    </div>
+  );
+}
+
+const SHAPE_COLORS=["#f0c040","#60b8f0","#c080f0","#a0d080","#f06060","#f08040","#e040e0"];
+
+function renderManualShape(groups,fx,sy){
+  if(!groups||!groups.length) return null;
+  const R=16; // dot radius to offset line endpoints
+  const out=[];
+  groups.forEach((g,gi)=>{
+    const {dots,color,quality}=g;
+    if(!dots||!dots.length) return;
+    // Selection ring around each dot
+    dots.forEach((d,i)=>out.push(
+      <circle key={`sr-${gi}-${i}`} cx={fx(d.af)} cy={sy(d.s)} r={R+4}
+        fill="none" stroke={color} strokeWidth={2} opacity={0.85} strokeDasharray="4 3"/>
+    ));
+    // Lines between dots — offset so they start/end at dot edge not center
+    for(let i=0;i<dots.length;i++) for(let j=i+1;j<dots.length;j++){
+      const a=dots[i], b=dots[j];
+      const ax=fx(a.af), ay=sy(a.s), bx=fx(b.af), by=sy(b.s);
+      const dx=bx-ax, dy=by-ay, dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<1) continue;
+      const ux=dx/dist, uy=dy/dist; // unit vector
+      out.push(<line key={`sl-${gi}-${i}-${j}`}
+        x1={ax+ux*(R+5)} y1={ay+uy*(R+5)}
+        x2={bx-ux*(R+5)} y2={by-uy*(R+5)}
+        stroke={color} strokeWidth={1.5} opacity={0.8}
+        strokeLinecap="round" strokeDasharray="5 3"/>);
+    }
+    // Quality label at centroid
+    if(quality&&dots.length>=2){
+      const cx=dots.reduce((s,d)=>s+fx(d.af),0)/dots.length;
+      const cy=dots.reduce((s,d)=>s+sy(d.s),0)/dots.length;
+      const lbl=quality==="major"?"maj":quality==="minor"?"min":quality==="dim"?"dim°":quality;
+      out.push(<text key={`sq-${gi}`} x={cx} y={cy-R-8} textAnchor="middle"
+        fontSize={9} fontWeight="700" fill={color} opacity={0.95}
+        fontFamily="IBM Plex Mono,monospace" style={{pointerEvents:"none"}}>{lbl}</text>);
+    }
+  });
+  return out;
+}
+
+// ── Common progression presets — works in any key (uses degrees, not absolute chords) ──
+const PROG_PRESETS = {
+  pentatonic: {
+    minor: [
+      {name:"i-iv-V (Andalusian)", chords:[0,3,4]},
+      {name:"i-VI-III-VII (Pop)",   chords:[0,5,2,6]},
+      {name:"12-bar Blues (i-iv)",  chords:[0,0,0,0,3,3,0,0,4,3,0,0]},
+      {name:"i-VII-VI-VII",         chords:[0,6,5,6]},
+    ],
+    major: [
+      {name:"I-V-vi-IV (Pop)",      chords:[0,4,5,3]},
+      {name:"I-IV-V (Classic)",     chords:[0,3,4]},
+      {name:"ii-V-I (Jazz)",        chords:[1,4,0]},
+      {name:"I-vi-IV-V (50s)",      chords:[0,5,3,4]},
+      {name:"12-bar Blues",         chords:[0,0,0,0,3,3,0,0,4,3,0,0]},
+    ],
+  },
+  modal: {
+    minor: [ // dorian
+      {name:"i-IV (Dorian vamp)",   chords:[0,3]},
+      {name:"i-bVII-IV",            chords:[0,6,3]},
+    ],
+    major: [ // mixolydian
+      {name:"I-bVII-IV (Mixo)",     chords:[0,6,3]},
+      {name:"I-v-IV",               chords:[0,4,3]},
+    ],
+  },
+};
+
+function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,quality,playClick,onProgRef,prog,setProg,savedProgs,setSavedProgs}){
+  const [bpm,setBpm]=useState(80),[bpc,setBpc]=useState(4);
+  const [on,setOn]=useState(false),[cur,setCur]=useState(0),[beat,setBeat]=useState(0);
+  const [countIn,setCountIn]=useState(0);
+  const [counting,setCounting]=useState(0);
+  const [loopCount,setLoopCount]=useState(0);
+  const [loopsDone,setLoopsDone]=useState(0);
+  const [showSave,setShowSave]=useState(false);
+  const [saveName,setSaveName]=useState("");
+  const [tapTimes,setTapTimes]=useState([]);
+  const [fullscreen,setFullscreen]=useState(false);
+  const ref=useRef(null);
+  const countRef=useRef(null);
+  const sr=useRef({prog,bpm,bpc,cur,beat,loopCount,loopsDone});
+  const M="'IBM Plex Mono',monospace";
+
+  useEffect(()=>{sr.current={prog,bpm,bpc,cur,beat,loopCount,loopsDone};});
+  const [focusedIdx,setFocusedIdx]=useState(null);
+  // Tell App which prog index is focused so it can derive focusedChord live
+  useEffect(()=>{
+    if(onChordFocus){
+      if(focusedIdx!=null && prog[focusedIdx]) onChordFocus({...prog[focusedIdx],_progIdx:focusedIdx});
+      else onChordFocus(null);
+    }
+  },[focusedIdx, prog]);
+
+  // Track if current prog came from a preset, so we can rebuild on key change
+  const [presetDegrees,setPresetDegrees]=useState(null); // [degIdx,...] or null
+
+  const stop=()=>{
+    clearInterval(ref.current); clearInterval(countRef.current);
+    setOn(false);setCur(0);setBeat(0);setCounting(0);setLoopsDone(0);setFocusedIdx(null);
+    if(onChordFocus)onChordFocus(null);
+  };
+
+  const startInterval=()=>{
+    let ci=0,b=0;setCur(0);setBeat(0);setLoopsDone(0);
+    setFocusedIdx(0);
+    playChord(sr.current.prog[0].notes);
+    if(onChordFocus)onChordFocus({...sr.current.prog[0],_progIdx:0});
+    ref.current=setInterval(()=>{
+      const {prog,bpc,loopCount,loopsDone}=sr.current;if(!prog.length)return;
+      const curBeats=prog[ci].beats||bpc;
+      b=(b+1)%curBeats;setBeat(b);
+      if(b===0){
+        ci=(ci+1)%prog.length;
+        if(ci===0){
+          const nextLoops=loopsDone+1;
+          setLoopsDone(nextLoops);
+          if(loopCount>0&&nextLoops>=loopCount){stop();return;}
+        }
+        setCur(ci);
+        setFocusedIdx(ci);
+        playChord(prog[ci].notes);
+        if(onChordFocus)onChordFocus({...prog[ci],_progIdx:ci});
+      }
+    },(60/bpm)*1000);
+  };
+
+  const start=()=>{
+    if(!sr.current.prog.length)return;
+    setOn(true);
+    if(countIn>0&&playClick){
+      // run count-in: countIn bars * 4 clicks (assume 4/4 for count-in)
+      const totalClicks=countIn*4;
+      setCounting(totalClicks);
+      let clicks=0;
+      const tick=()=>{
+        playClick(clicks%4===0);
+        clicks++;
+        setCounting(totalClicks-clicks);
+        if(clicks>=totalClicks){
+          clearInterval(countRef.current);
+          startInterval();
+        }
+      };
+      tick();
+      countRef.current=setInterval(tick,(60/bpm)*1000);
+    } else {
+      startInterval();
+    }
+  };
+
+  const toggle=()=>on?stop():start();
+  useEffect(()=>{if(on&&!counting){clearInterval(ref.current);startInterval();}},[bpm,bpc]);
+  useEffect(()=>()=>{clearInterval(ref.current);clearInterval(countRef.current);},[]);
+
+  const add=ti=>{
+    const t=triads[ti];const notes=t.d.map(d=>dn(d,root,sc));
+    setProg(p=>[...p,{ti,label:cname(t,root,sc),notes,color:t.c,beats:bpc,ext:null}]);
+    setPresetDegrees(null); // user edit, no longer a tracked preset
+  };
+  const duplicateChord=idx=>{
+    setProg(p=>{
+      if(!p[idx])return p;
+      const copy={...p[idx]};
+      const next=[...p.slice(0,idx+1),copy,...p.slice(idx+1)];
+      return next;
+    });
+  };
+  const reorderChord=(from,to)=>{
+    if(from===to||from==null||to==null) return;
+    setProg(p=>{
+      if(from<0||from>=p.length||to<0||to>=p.length) return p;
+      const next=[...p];
+      const [moved]=next.splice(from,1);
+      next.splice(to,0,moved);
+      return next;
+    });
+    // Keep focus on the moved chord
+    if(focusedIdx===from) setFocusedIdx(to);
+    else if(from<focusedIdx && to>=focusedIdx) setFocusedIdx(focusedIdx-1);
+    else if(from>focusedIdx && to<=focusedIdx) setFocusedIdx(focusedIdx+1);
+  };
+  const setChordBeats=(idx,beats)=>setProg(p=>p.map((c,i)=>i===idx?{...c,beats}:c));
+  const buildExtChord=(c,ext)=>{
+    const rootNote=c.notes[0];
+    const rootIdx=NOTES.indexOf(rootNote);
+    const secondNote=c.notes[1];
+    const interval=(NOTES.indexOf(secondNote)-rootIdx+12)%12;
+    const isMinor=interval===3, isDim=interval===6;
+    const fifth=NOTES[(rootIdx+7)%12];
+    const third=isMinor||isDim?NOTES[(rootIdx+3)%12]:NOTES[(rootIdx+4)%12];
+    const baseNotes=[rootNote,third,fifth];
+    let extNotes=[];
+    if(ext){
+      const seventh=isDim?NOTES[(rootIdx+9)%12]:isMinor?NOTES[(rootIdx+10)%12]:NOTES[(rootIdx+11)%12];
+      const ninth=NOTES[(rootIdx+2)%12];
+      extNotes=ext==="9"?[seventh,ninth]:[seventh];
+    }
+    return {...c, ext, notes:[...baseNotes,...extNotes]};
+  };
+
+  const setChordExt=(idx,ext)=>{
+    setProg(p=>{
+      const c=p[idx]; if(!c) return p;
+      const updated=buildExtChord(c,ext);
+      return p.map((ch,i)=>i===idx?updated:ch);
+    });
+  };
+
+  const toggleChordQuality=(idx)=>{
+    setProg(p=>{
+      const c=p[idx]; if(!c) return p;
+      const rootNote=c.notes[0], rootIdx=NOTES.indexOf(rootNote);
+      const interval=(NOTES.indexOf(c.notes[1])-rootIdx+12)%12;
+      const isMinor=interval===3;
+      const fifth=NOTES[(rootIdx+7)%12];
+      const newThird=isMinor?NOTES[(rootIdx+4)%12]:NOTES[(rootIdx+3)%12];
+      const newLabel=isMinor?rootNote:rootNote+"m";
+      const updated={...c,notes:[rootNote,newThird,fifth],label:newLabel,ext:null};
+      return p.map((ch,i)=>i===idx?updated:ch);
+    });
+  };
+  const step=dir=>{
+    if(!prog.length)return;
+    const n=(cur+dir+prog.length)%prog.length;
+    setCur(n);setFocusedIdx(n);
+    playChord(prog[n].notes);
+    if(onChordFocus)onChordFocus({...prog[n],_progIdx:n});
+  };
+
+  // Tap tempo — average intervals between taps
+  const tapTempo=()=>{
+    const now=Date.now();
+    setTapTimes(prev=>{
+      // Reset if more than 2.5s since last tap
+      const filtered=prev.length&&now-prev[prev.length-1]>2500?[]:prev;
+      const next=[...filtered,now];
+      if(next.length>=2){
+        // compute avg interval from last 4 taps
+        const recent=next.slice(-4);
+        let total=0;
+        for(let i=1;i<recent.length;i++) total+=recent[i]-recent[i-1];
+        const avgMs=total/(recent.length-1);
+        const newBpm=Math.round(60000/avgMs);
+        if(newBpm>=30&&newBpm<=240) setBpm(newBpm);
+      }
+      return next.slice(-4);
+    });
+  };
+
+  // Save / load
+  const saveProgression=async(nm)=>{
+    if(!nm||!prog.length)return;
+    const cleanProg = prog.map(ch=>({
+      ti: ch.ti, label: ch.label, notes: ch.notes,
+      color: ch.color, beats: ch.beats||bpc, ext: ch.ext||null
+    }));
+    const newSaved={...savedProgs,[nm]:{prog:cleanProg,bpm,countIn,loopCount}};
+    setSavedProgs(newSaved);
+    const json = JSON.stringify(newSaved);
+    try { if(window.storage && window.storage.set) await window.storage.set("pent-savedProgs",json); } catch(e){}
+    try { localStorage.setItem("pent-savedProgs",json); } catch(e){}
+    setShowSave(false);setSaveName("");
+  };
+  const loadProgression=(nm)=>{
+    const data=savedProgs[nm];if(!data)return;
+    if(on)stop();
+    setProg(data.prog||[]);
+    setPresetDegrees(null);
+    if(data.bpm)setBpm(data.bpm);
+    if(data.countIn!==undefined)setCountIn(data.countIn);
+    if(data.loopCount!==undefined)setLoopCount(data.loopCount);
+  };
+  const deleteSaved=async(nm)=>{
+    const newSaved={...savedProgs};delete newSaved[nm];
+    setSavedProgs(newSaved);
+    const json = JSON.stringify(newSaved);
+    try { if(window.storage&&window.storage.set) await window.storage.set("pent-savedProgs",json); } catch(e){}
+    try { localStorage.setItem("pent-savedProgs",json); } catch(e){}
+  };
+
+  // Load preset — uses scale degree to pick the right triad index
+  const loadPreset=(preset)=>{
+    if(on)stop();
+    const newProg=preset.chords.map(deg=>{
+      const t=triads[deg];
+      const notes=t.d.map(d=>dn(d,root,sc));
+      return {ti:deg,label:cname(t,root,sc),notes,color:t.c,beats:bpc,ext:null};
+    });
+    setProg(newProg);
+    setPresetDegrees(preset.chords);
+  };
+
+  // Rebuild preset progression when key/family/quality changes
+  useEffect(()=>{
+    if(!presetDegrees) return;
+    const newProg=presetDegrees.map(deg=>{
+      const t=triads[deg]; if(!t) return null;
+      const notes=t.d.map(d=>dn(d,root,sc));
+      return {ti:deg,label:cname(t,root,sc),notes,color:t.c,beats:bpc,ext:null};
+    }).filter(Boolean);
+    setProg(newProg);
+  },[root,family,quality]);
+
+  const presets = (PROG_PRESETS[family]||{})[quality] || [];
+
+  return(
+    <div style={{
+      background:"rgba(0,0,0,0.4)",border:`1px solid ${accent}33`,borderRadius:fullscreen?0:12,
+      padding:"12px 14px",marginBottom:fullscreen?0:10,
+      ...(fullscreen?{position:"fixed",top:0,left:0,right:0,bottom:0,zIndex:999,overflowY:"auto",borderRadius:0}:{})
+    }}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
+        <div style={{fontSize:9,letterSpacing:3,color:"#3a6a8a",fontFamily:M,textTransform:"uppercase"}}>🎼 Chord Progression</div>
+        <div style={{display:"flex",gap:6,alignItems:"center"}}>
+          {prog.length>0&&<button onClick={()=>setShowSave(v=>!v)} style={{fontFamily:M,fontSize:9,color:accent,background:`${accent}15`,border:`1px solid ${accent}44`,borderRadius:5,padding:"3px 8px",cursor:"pointer"}}>💾 Save</button>}
+          <button onClick={()=>setFullscreen(v=>!v)} style={{fontFamily:M,fontSize:12,color:"#778",background:"rgba(255,255,255,0.05)",border:"1px solid #2a3a4a",borderRadius:5,padding:"2px 8px",cursor:"pointer"}} title="Toggle fullscreen">
+            {fullscreen?"✕ close":"⤢"}
+          </button>
+        </div>
+      </div>
+
+      {/* Save dialog */}
+      {showSave&&(
+        <div style={{display:"flex",gap:5,alignItems:"center",marginBottom:10,padding:"6px 8px",background:`${accent}10`,borderRadius:6}}>
+          <input value={saveName} onChange={e=>setSaveName(e.target.value)} placeholder="name your progression"
+            style={{flex:1,fontFamily:M,fontSize:11,padding:"4px 8px",background:"rgba(0,0,0,0.3)",border:`1px solid ${accent}44`,borderRadius:5,color:"#eee",outline:"none"}}/>
+          <button onClick={()=>saveProgression(saveName)} style={{fontFamily:M,fontSize:9,fontWeight:700,color:"#fff",background:`${accent}`,border:"none",borderRadius:5,padding:"5px 10px",cursor:"pointer"}}>Save</button>
+          <span onClick={()=>setShowSave(false)} style={{fontSize:14,color:"#445",cursor:"pointer",userSelect:"none"}}>✕</span>
+        </div>
+      )}
+
+      {/* Saved progressions */}
+      {Object.keys(savedProgs).length>0&&(
+        <div style={{marginBottom:10}}>
+          <div style={{fontSize:9,color:"#445",fontFamily:M,marginBottom:5}}>SAVED ↓</div>
+          <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+            {Object.keys(savedProgs).map(nm=>(
+              <div key={nm} style={{display:"flex",alignItems:"center",gap:3,background:"rgba(255,255,255,0.04)",border:"1px solid #2a3a4a",borderRadius:5,padding:"3px 6px"}}>
+                <span onClick={()=>loadProgression(nm)} style={{fontFamily:M,fontSize:10,color:"#aac",cursor:"pointer"}}>{nm}</span>
+                <span onClick={()=>deleteSaved(nm)} style={{fontSize:9,color:"#445",cursor:"pointer"}}>✕</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Presets */}
+      {presets.length>0&&(
+        <div style={{marginBottom:10}}>
+          <div style={{fontSize:9,color:"#445",fontFamily:M,marginBottom:5}}>PRESETS ↓</div>
+          <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+            {presets.map((p,i)=>(
+              <button key={i} onClick={()=>loadPreset(p)} style={{fontFamily:M,fontSize:9,color:"#9ac",background:"rgba(96,184,240,0.08)",border:"1px solid #60b8f033",borderRadius:5,padding:"3px 8px",cursor:"pointer"}}>
+                {p.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div style={{marginBottom:10}}>
+        <div style={{fontSize:9,color:"#445",fontFamily:M,marginBottom:6}}>TAP TO ADD ↓</div>
+        <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+          {triads.map((t,ti)=><button key={ti} onClick={()=>add(ti)} style={{fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:15,color:t.c,background:`${t.c}18`,border:`1px solid ${t.c}55`,borderRadius:7,padding:"7px 13px",cursor:"pointer",minHeight:38}}>{cname(t,root,sc)}<span style={{fontSize:9,fontFamily:M,marginLeft:3}}>+</span></button>)}
+        </div>
+      </div>
+
+      {prog.length>0&&(
+        <div style={{marginBottom:10}}>
+          <div style={{fontSize:9,color:"#445",fontFamily:M,marginBottom:5}}>TAP NAME = SELECT &nbsp;·&nbsp; ◀ ▶ MOVE &nbsp;·&nbsp; ⎘ DUPLICATE</div>
+          <div style={{display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
+            {prog.map((ch,idx)=>{
+              const isPlaying=on&&cur===idx&&!counting;
+              const isFocused=focusedIdx===idx;
+              const nextIdx = on && !counting ? (cur+1)%prog.length : -1;
+              const isNext = idx===nextIdx && !isPlaying;
+              const chBeats=ch.beats||bpc;
+              return(
+                <div key={idx} style={{
+                    background:isPlaying?`${ch.color}35`:`${ch.color}15`,
+                    border:`2px solid ${isFocused?ch.color:isPlaying?ch.color:isNext?ch.color+"88":ch.color+"44"}`,
+                    borderRadius:8,padding:"6px 10px",
+                    display:"flex",flexDirection:"column",alignItems:"center",gap:3,
+                    transition:"all .15s",
+                    boxShadow:isFocused?`0 0 16px ${ch.color}80`:isPlaying?`0 0 12px ${ch.color}60`:isNext?`0 0 8px ${ch.color}40`:"none",
+                    outline:isFocused?`2px solid ${ch.color}`:isNext?`1px dashed ${ch.color}aa`:"none",
+                    outlineOffset:2,
+                  }}>
+                  {/* Top row: move arrows + next indicator + duplicate */}
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",gap:4}} onClick={e=>e.stopPropagation()}>
+                    <div style={{display:"flex",gap:2}}>
+                      <span onClick={e=>{e.stopPropagation();if(idx>0)reorderChord(idx,idx-1);}}
+                        style={{fontFamily:M,fontSize:13,color:idx>0?"#9ac":"#334",cursor:idx>0?"pointer":"default",userSelect:"none",padding:"2px 5px",borderRadius:3,background:idx>0?"rgba(96,184,240,0.08)":"transparent"}}>◀</span>
+                      <span onClick={e=>{e.stopPropagation();if(idx<prog.length-1)reorderChord(idx,idx+1);}}
+                        style={{fontFamily:M,fontSize:13,color:idx<prog.length-1?"#9ac":"#334",cursor:idx<prog.length-1?"pointer":"default",userSelect:"none",padding:"2px 5px",borderRadius:3,background:idx<prog.length-1?"rgba(96,184,240,0.08)":"transparent"}}>▶</span>
+                    </div>
+                    {isNext&&<span style={{fontFamily:M,fontSize:7,color:ch.color,fontWeight:700,letterSpacing:1}}>NEXT ↑</span>}
+                    <span onClick={e=>{e.stopPropagation();duplicateChord(idx);}} title="Duplicate" style={{fontFamily:M,fontSize:14,color:"#9ac",cursor:"pointer",padding:"2px 6px",background:"rgba(96,184,240,0.08)",borderRadius:3}}>⎘</span>
+                  </div>
+                  {isPlaying&&<div style={{display:"flex",gap:2}}>{Array.from({length:chBeats},(_,i)=><div key={i} style={{width:5,height:5,borderRadius:"50%",background:beat===i?ch.color:"#1e3040",transition:"background .05s"}}/>)}</div>}
+                  <span onClick={e=>{e.stopPropagation();setFocusedIdx(idx);}} style={{fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:19,color:ch.color,cursor:"pointer",padding:"2px 6px"}}>{ch.label}{ch.ext||""}</span>
+                  {/* Chord notes — shows the actual notes that make up this chord */}
+                  <div style={{display:"flex",gap:3,flexWrap:"wrap",justifyContent:"center"}}>
+                    {ch.notes.map((n,i)=><span key={i} style={{fontFamily:M,fontWeight:700,fontSize:9,color:ch.color,background:`${ch.color}15`,border:`1px solid ${ch.color}55`,borderRadius:3,padding:"2px 5px",minWidth:18,textAlign:"center"}}>{n}</span>)}
+                  </div>
+                  <div style={{display:"flex",gap:3,alignItems:"center"}} onClick={e=>e.stopPropagation()}>
+                    <span style={{fontFamily:M,fontSize:8,color:"#445"}}>beats</span>
+                    {[1,2,4,8].map(n=>(
+                      <span key={n} onClick={e=>{e.stopPropagation();setChordBeats(idx,n);}}
+                        style={{fontFamily:M,fontSize:10,fontWeight:700,padding:"3px 7px",borderRadius:4,cursor:"pointer",
+                          background:chBeats===n?`${ch.color}40`:"transparent",
+                          border:`1px solid ${chBeats===n?ch.color:ch.color+"33"}`,
+                          color:chBeats===n?"#fff":"#778",minWidth:22,textAlign:"center"}}>
+                        {n}
+                      </span>
+                    ))}
+                  </div>
+                  <div style={{display:"flex",gap:3,alignItems:"center"}} onClick={e=>e.stopPropagation()}>
+                    <span style={{fontFamily:M,fontSize:8,color:"#445"}}>ext</span>
+                    {["7","9"].map(x=>(
+                      <span key={x} onClick={e=>{e.stopPropagation();setChordExt(idx,ch.ext===x?null:x);}}
+                        style={{fontFamily:M,fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:4,cursor:"pointer",
+                          background:ch.ext===x?`${ch.color}40`:"transparent",
+                          border:`1px solid ${ch.ext===x?ch.color:ch.color+"33"}`,
+                          color:ch.ext===x?"#fff":"#778"}}>
+                        {x}th
+                      </span>
+                    ))}
+                  </div>
+                  <div style={{display:"flex",gap:8,alignItems:"center",marginTop:2}} onClick={e=>e.stopPropagation()}>
+                    <span onClick={e=>{e.stopPropagation();toggleChordQuality(idx);}} title="Toggle major/minor" style={{fontFamily:M,fontSize:10,fontWeight:700,color:"#9ac",background:"rgba(96,184,240,0.1)",border:"1px solid #60b8f044",borderRadius:4,padding:"3px 8px",cursor:"pointer"}}>
+                      {ch.label.endsWith("m")||ch.label.endsWith("°")?"→ maj":"→ min"}
+                    </span>
+                    <span onClick={e=>{e.stopPropagation();playChord(ch.notes);}} style={{fontSize:14,color:"#778",cursor:"pointer",padding:"2px 6px"}}>♪</span>
+                    <span onClick={e=>{e.stopPropagation();setProg(p=>p.filter((_,i)=>i!==idx));if(on)stop();}} style={{fontSize:13,color:"#778",cursor:"pointer",padding:"2px 6px"}}>✕</span>
+                  </div>
+                </div>
+              );
+            })}
+            <button onClick={()=>{setProg([]);stop();}} style={{fontFamily:M,fontSize:9,color:"#334",background:"transparent",border:"1px solid #1e2e3a",borderRadius:5,padding:"3px 8px",cursor:"pointer"}}>clear</button>
+          </div>
+        </div>
+      )}
+
+      {prog.length>0&&(
+        <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+          <button onClick={()=>step(-1)} style={{fontFamily:M,fontWeight:700,fontSize:14,color:"#778",background:"rgba(255,255,255,0.04)",border:"1px solid #2a3a4a",borderRadius:6,padding:"7px 14px",cursor:"pointer",minHeight:38}}>◀</button>
+          <button onClick={toggle} style={{fontFamily:M,fontWeight:700,fontSize:13,background:on?"linear-gradient(135deg,#f06060,#a03030)":"linear-gradient(135deg,#40a860,#207040)",color:"#fff",border:"none",borderRadius:7,padding:"9px 22px",cursor:"pointer",position:"relative",minHeight:42}}>
+            {counting>0?`${Math.ceil(counting/4)} bar${Math.ceil(counting/4)>1?"s":""}…`:on?"■ STOP":"▶ AUTO"}
+          </button>
+          <button onClick={()=>step(1)} style={{fontFamily:M,fontWeight:700,fontSize:14,color:"#778",background:"rgba(255,255,255,0.04)",border:"1px solid #2a3a4a",borderRadius:6,padding:"7px 14px",cursor:"pointer",minHeight:38}}>▶</button>
+          <div style={{display:"flex",alignItems:"center",gap:6}}>
+            <span onClick={()=>setBpm(b=>Math.max(30,b-5))} style={{fontSize:12,cursor:"pointer",color:"#556",userSelect:"none",fontFamily:M,padding:"6px 8px",fontWeight:700}}>−5</span>
+            <span onClick={()=>setBpm(b=>Math.max(30,b-1))} style={{fontSize:12,cursor:"pointer",color:"#7ac",userSelect:"none",fontFamily:M,padding:"6px 8px",fontWeight:700}}>−1</span>
+            <div style={{textAlign:"center",minWidth:42}}><div style={{fontFamily:M,fontWeight:700,fontSize:17,color:"#eee"}}>{bpm}</div><div style={{fontFamily:M,fontSize:7,color:"#445"}}>BPM</div></div>
+            <span onClick={()=>setBpm(b=>Math.min(240,b+1))} style={{fontSize:12,cursor:"pointer",color:"#7ac",userSelect:"none",fontFamily:M,padding:"6px 8px",fontWeight:700}}>+1</span>
+            <span onClick={()=>setBpm(b=>Math.min(240,b+5))} style={{fontSize:12,cursor:"pointer",color:"#556",userSelect:"none",fontFamily:M,padding:"6px 8px",fontWeight:700}}>+5</span>
+          </div>
+          {/* Tap tempo */}
+          <button onClick={tapTempo} style={{fontFamily:M,fontWeight:700,fontSize:9,color:tapTimes.length>0?accent:"#556",background:tapTimes.length>0?`${accent}15`:"rgba(255,255,255,0.04)",border:`1px solid ${tapTimes.length>0?accent+"44":"#2a3a4a"}`,borderRadius:5,padding:"4px 8px",cursor:"pointer",letterSpacing:1}}>
+            TAP {tapTimes.length>0&&<span style={{opacity:0.6}}>({tapTimes.length})</span>}
+          </button>
+          <div style={{display:"flex",gap:3,alignItems:"center"}}>
+            <span style={{fontFamily:M,fontSize:8,color:"#445"}}>default beats:</span>
+            {[1,2,4,8].map(n=><span key={n} onClick={()=>setBpc(n)} style={{fontFamily:M,fontSize:9,color:bpc===n?"#fff":"#445",background:bpc===n?"#2a4a6a":"transparent",border:`1px solid ${bpc===n?"#3a6a9a":"#1e2e3a"}`,borderRadius:4,padding:"2px 6px",cursor:"pointer"}}>{n}</span>)}
+          </div>
+        </div>
+      )}
+
+      {/* Count-in + Loop count */}
+      {prog.length>0&&(
+        <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginTop:8,paddingTop:8,borderTop:"1px solid #1e2e3a"}}>
+          <div style={{display:"flex",gap:3,alignItems:"center"}}>
+            <span style={{fontFamily:M,fontSize:8,color:"#445"}}>count-in:</span>
+            {[0,1,2].map(n=><span key={n} onClick={()=>setCountIn(n)} style={{fontFamily:M,fontSize:9,color:countIn===n?"#fff":"#445",background:countIn===n?"#2a4a6a":"transparent",border:`1px solid ${countIn===n?"#3a6a9a":"#1e2e3a"}`,borderRadius:4,padding:"2px 6px",cursor:"pointer"}}>{n===0?"off":`${n} bar${n>1?"s":""}`}</span>)}
+          </div>
+          <div style={{display:"flex",gap:3,alignItems:"center"}}>
+            <span style={{fontFamily:M,fontSize:8,color:"#445"}}>loop:</span>
+            {[0,2,4,8].map(n=><span key={n} onClick={()=>setLoopCount(n)} style={{fontFamily:M,fontSize:9,color:loopCount===n?"#fff":"#445",background:loopCount===n?"#2a4a6a":"transparent",border:`1px solid ${loopCount===n?"#3a6a9a":"#1e2e3a"}`,borderRadius:4,padding:"2px 6px",cursor:"pointer"}}>{n===0?"∞":`${n}x`}</span>)}
+            {on&&loopCount>0&&<span style={{fontFamily:M,fontSize:9,color:accent}}>{loopsDone}/{loopCount}</span>}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  const [root,setRoot]=useState("A");
+  const [family,setFamily]=useState("pentatonic"); // "pentatonic" | "modal"
+  const [quality,setQuality]=useState("minor");    // "major" | "minor" (meaning differs per family)
+  const [openPos,setOpenPos]=useState(new Set([1]));
+  const [cht,setCht]=useState({});
+  const [exts,setExts]=useState({});
+  const [neck,setNeck]=useState(false), [zoom,setZoom]=useState(1);
+  const [ncht,setNcht]=useState(new Set());
+  const [nexts,setNexts]=useState({});
+  const [blues,setBlues]=useState(false), [metro,setMetro]=useState(false);
+  const [fullScale,setFullScale]=useState(false);
+  const [shapeOn,setShapeOn]=useState(false);
+  // shapeGroups keyed by chord label (or "_global") → [{color,dots,quality}]
+  const [shapeMap,setShapeMap]=useState({"_global":[{color:SHAPE_COLORS[0],dots:[],quality:null}]});
+  const [qualOver,setQualOver]=useState({}); // {ti: "major"|"minor"|null} - per-triad quality override
+  const [showProg,setShowProg]=useState(false);
+  const [savedProgs,setSavedProgs]=useState({});
+  const [focusedProgIdx,setFocusedProgIdx]=useState(null);
+  const [prog,setProg]=useState([]);
+  const progRef=useRef([]);
+
+  // Load saved progressions on App mount — tries window.storage first, then localStorage
+  useEffect(()=>{
+    (async()=>{
+      let loaded = null;
+      try {
+        if(window.storage && window.storage.get) {
+          const r = await window.storage.get("pent-savedProgs");
+          if(r && r.value) loaded = JSON.parse(r.value);
+        }
+      } catch(e) {}
+      if(!loaded) {
+        try {
+          const ls = localStorage.getItem("pent-savedProgs");
+          if(ls) loaded = JSON.parse(ls);
+        } catch(e) {}
+      }
+      if(loaded) setSavedProgs(loaded);
+    })();
+  },[]);
+  const [neckFull,setNeckFull]=useState(false);
+  const [played,setPlayed]=useState(null);
+
+  // Derive focusedChord LIVE from prog+focusedProgIdx — always reflects latest notes
+  const focusedChord = focusedProgIdx!=null && prog[focusedProgIdx] ? prog[focusedProgIdx] : null;
+
+  // Current shape key — per-chord when progression active, global otherwise
+  const shapeKey = focusedChord ? focusedChord.label : "_global";
+  const shapeGroups = shapeMap[shapeKey] || [{color:SHAPE_COLORS[0],dots:[],quality:null}];
+  const setShapeGroups = (updater) => setShapeMap(prev=>{
+    const cur = prev[shapeKey] || [{color:SHAPE_COLORS[0],dots:[],quality:null}];
+    const next = typeof updater==="function" ? updater(cur) : updater;
+    return {...prev, [shapeKey]: next};
+  });
+  const ctxRef = useRef(null);
+  const samplesRef = useRef({});
+  const [samplesReady, setSamplesReady] = useState(false);
+  const [samplesLoading, setSamplesLoading] = useState(false);
+
+  const getCtx = () => {
+    if(!ctxRef.current) ctxRef.current = new(window.AudioContext||window.webkitAudioContext)();
+    if(ctxRef.current.state==="suspended") ctxRef.current.resume();
+    return ctxRef.current;
+  };
+
+  // Sample set — one per open string + octave up
+  const SAMPLE_NOTES = [
+    {name:"E2", midi:40}, {name:"A2", midi:45}, {name:"D3", midi:50},
+    {name:"G3", midi:55}, {name:"B3", midi:59}, {name:"E4", midi:64},
+    {name:"A4", midi:69}, {name:"D5", midi:74},
+  ];
+
+  const noteMidi = useCallback((note, oct) => {
+    const idx = NOTES.indexOf(note);
+    return (oct + 1) * 12 + idx;
+  }, []);
+
+  // Find nearest sample and return {buffer, detune in cents}
+  const nearestSample = useCallback((midi) => {
+    let best = SAMPLE_NOTES[0], bestDist = Math.abs(midi - SAMPLE_NOTES[0].midi);
+    SAMPLE_NOTES.forEach(s => {
+      const d = Math.abs(midi - s.midi);
+      if(d < bestDist) { bestDist = d; best = s; }
+    });
+    return { buf: samplesRef.current[best.name], detune: (midi - best.midi) * 100 };
+  }, []);
+
+  const loadSamples = useCallback(async () => {
+    if(samplesReady || samplesLoading) return;
+    setSamplesLoading(true);
+    const ctx = getCtx();
+    const loaded = {};
+    let count = 0;
+    await Promise.all(SAMPLE_NOTES.map(async ({name}) => {
+      try {
+        const res = await fetch(`./samples/${name}.mp3`);
+        if(res.ok) {
+          const ab = await res.arrayBuffer();
+          loaded[name] = await ctx.decodeAudioData(ab);
+          count++;
+        }
+      } catch(e) {}
+    }));
+    if(count > 0) {
+      samplesRef.current = loaded;
+      setSamplesReady(true);
+    }
+    setSamplesLoading(false);
+  }, [samplesReady, samplesLoading]);
+
+  const playSample = useCallback((note, oct, startTime, dur=2.5, vol=0.7) => {
+    try {
+      const ctx = getCtx();
+      const midi = noteMidi(note, oct);
+      const {buf, detune} = nearestSample(midi);
+      if(!buf) return;
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.detune.value = detune;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0, startTime);
+      gain.gain.linearRampToValueAtTime(vol, startTime + 0.008);
+      gain.gain.setValueAtTime(vol, startTime + dur * 0.5);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + dur);
+      src.connect(gain);
+      gain.connect(ctx.destination);
+      src.start(startTime);
+      src.stop(startTime + dur + 0.05);
+    } catch(e) {}
+  }, [noteMidi, nearestSample]);
+
+  // Karplus-Strong fallback when samples not loaded
+  const pluckString = useCallback((freq, startTime, dur=2.0, vol=0.55) => {
+    try {
+      const ctx = getCtx();
+      const bufSize = Math.max(2, Math.round(ctx.sampleRate / freq));
+      const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for(let i=0; i<bufSize; i++) data[i] = Math.random()*2-1;
+      const src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      const filt = ctx.createBiquadFilter();
+      filt.type="lowpass"; filt.frequency.value=freq*5;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0, startTime);
+      gain.gain.linearRampToValueAtTime(vol, startTime+0.005);
+      gain.gain.setValueAtTime(vol, startTime+dur*0.2);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime+dur);
+      src.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
+      src.start(startTime); src.stop(startTime+dur+0.05);
+    } catch(e) {}
+  }, []);
+
+  const noteFreq = useCallback((note, oct) => {
+    const midi = noteMidi(note, oct);
+    return 440 * Math.pow(2, (midi-69)/12);
+  }, [noteMidi]);
+
+  const playNote = useCallback((note, dur=1.5, oct=4) => {
+    const ctx = getCtx();
+    if(samplesReady) playSample(note, oct, ctx.currentTime, dur);
+    else pluckString(noteFreq(note, oct), ctx.currentTime, dur);
+  }, [samplesReady, playSample, pluckString, noteFreq]);
+
+  const playChord = useCallback((notes) => {
+    const ctx = getCtx();
+    const now = ctx.currentTime;
+    notes.forEach((note, i) => {
+      const oct = i < Math.ceil(notes.length/2) ? 3 : 4;
+      const strum = i * 0.038;
+      if(samplesReady) playSample(note, oct, now+strum, 2.8, 0.72);
+      else pluckString(noteFreq(note, oct), now+strum, 2.5, 0.6);
+    });
+  }, [samplesReady, playSample, pluckString, noteFreq]);
+
+  const playClick = useCallback((accent=false) => {
+    try {
+      const c=getCtx(), o=c.createOscillator(), g=c.createGain();
+      o.connect(g); g.connect(c.destination);
+      o.type="square"; o.frequency.value=accent?1200:800;
+      g.gain.setValueAtTime(accent?0.3:0.15,c.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.04);
+      o.start(c.currentTime); o.stop(c.currentTime+0.04);
+    } catch(e) {}
+  }, []);
+
+  // Derive mode from family + quality
+  // Pentatonic family: major=major, minor=minor
+  // Modal family:      major=mixolydian, minor=dorian
+  const mode = family==="pentatonic"
+    ? quality
+    : quality==="major" ? "mixolydian" : "dorian";
+
+  const maj=mode==="major", isDor=mode==="dorian", isMix=mode==="mixolydian";
+  const TR=maj?MT:isDor?DT:isMix?XT:NT;
+  const POS=maj?MP:isDor?DP:isMix?XP:NP;
+  const SC=maj?MS:isDor?DS:isMix?XS:NS;
+  const PD=maj?MPD:isDor?DPD:isMix?XPD:NPD;
+  const ps=maj?majP(root):isDor?dorP(root):isMix?mixP(root):minP(root);
+  const pl=maj?["R","2","3","5","6"]:isDor?["R","2","b3","5","6"]:isMix?["R","2","3","5","b7"]:["R","b3","4","5","b7"];
+
+  const SCALE_COLORS={major:"#f0c040",minor:"#60b8f0",dorian:"#a0d080",mixolydian:"#f08040"};
+  const ac=SCALE_COLORS[mode]||"#f0c040";
+  const qualityGrads={
+    major:"linear-gradient(135deg,#c8a030,#8a6010)",
+    minor:"linear-gradient(135deg,#4090c0,#204880)",
+  };
+  const rf=fretE(root), rk=maj?relMin(root):isDor?relMaj(root):isMix?relMin(root):relMaj(root);
+  const M="'IBM Plex Mono',monospace";
+
+  const getBase=pos=>{let f=rf+pos.off;if(f<0)f+=12;return f;};
+  const togPos=n=>setOpenPos(p=>{const s=new Set(p);s.has(n)?s.delete(n):s.add(n);return s;});
+  const togCht=(pn,ti)=>setCht(p=>{const c=new Set(p[pn]||[]);c.has(ti)?c.delete(ti):c.add(ti);return{...p,[pn]:c};});
+  const clr=pn=>setCht(p=>({...p,[pn]:new Set()}));
+  const all=pn=>setCht(p=>({...p,[pn]:new Set([0,1,2,3,4,5,6])}));
+  const togN=ti=>setNcht(p=>{const s=new Set(p);s.has(ti)?s.delete(ti):s.add(ti);return s;});
+  const setExt=(pn,ti,val)=>setExts(p=>({...p,[pn]:{...(p[pn]||{}),[Number(ti)]:val}}));
+  const setNextExt=(ti,val)=>setNexts(p=>({...p,[ti]:val}));
+  const swMode=(fam,qual)=>{
+    setFamily(fam); setQuality(qual);
+    setCht({}); setNcht(new Set()); setExts({}); setNexts({});
+    setOpenPos(new Set([1]));
+  };
+  const swQuality=q=>swMode(family,q);
+  const swRel=()=>{ swQuality(quality==="major"?"minor":"major"); setRoot(rk); };
+  const hear=n=>{setPlayed(n);playNote(n,0.6,4);};
+  const hearCh=notes=>{setPlayed(notes.join(" "));playChord(notes);};
+  const toggleDot=(s,af,note)=>{
+    if(!shapeOn) return;
+    setShapeGroups(prev=>{
+      const groups=[...prev];
+      const cur={...groups[groups.length-1],dots:[...groups[groups.length-1].dots]};
+      const key=`${s}-${af}`;
+      const idx=cur.dots.findIndex(d=>`${d.s}-${d.af}`===key);
+      if(idx>=0){ cur.dots=cur.dots.filter((_,i)=>i!==idx); groups[groups.length-1]=cur; return groups; }
+      if(cur.dots.length>=4){
+        groups[groups.length-1]=cur;
+        return [...groups,{color:SHAPE_COLORS[groups.length%SHAPE_COLORS.length],dots:[{s,af,note}],quality:null}];
+      }
+      cur.dots=[...cur.dots,{s,af,note}];
+      groups[groups.length-1]=cur;
+      return groups;
+    });
+  };
+
+  const openList=POS.filter(p=>openPos.has(p.num));
+  const openBases=openList.map(p=>getBase(p));
+
+  return (
+    <div style={{minHeight:"100vh",background:"#0b1018",backgroundImage:"radial-gradient(ellipse at 15% 15%,#131f30 0%,transparent 55%),radial-gradient(ellipse at 85% 85%,#0e1820 0%,transparent 55%)",color:"#ddd",padding:"12px 8px 48px"}}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;600&display=swap');
+        *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+        html,body{overscroll-behavior-y:none;}
+        button,span[onclick]{touch-action:manipulation;}
+        .sc::-webkit-scrollbar{height:4px;}
+        .sc::-webkit-scrollbar-thumb{background:#2a4a6a;border-radius:2px;}
+        @media (max-width: 480px) {
+          .mob-tight{gap:3px !important;}
+          .mob-stack{flex-direction:column !important;align-items:stretch !important;}
+          .mob-hide{display:none !important;}
+          .mob-full{max-width:100% !important;}
+          button,.tap{min-height:32px;}
+        }
+      `}</style>
+
+      <div style={{textAlign:"center",marginBottom:12}}>
+        <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:"clamp(22px,5vw,36px)",fontWeight:900,margin:0,background:`linear-gradient(130deg,${ac},${maj?"#60b8f0":"#f0c040"})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Pentatonic Triads</h1>
+        {played && <div style={{fontFamily:M,fontSize:10,color:ac,marginTop:3}}>♪ {played}</div>}
+        {/* Scale family selector */}
+        <div style={{display:"flex",justifyContent:"center",marginTop:10,gap:6}}>
+          {[
+            {id:"pentatonic",label:"Pentatonic"},
+            {id:"modal",     label:"Modal"},
+          ].map(({id,label})=>(
+            <button key={id} onClick={()=>swMode(id,quality)} style={{
+              background:family===id?`linear-gradient(135deg,${ac},${ac}88)`:"rgba(255,255,255,0.05)",
+              color:family===id?"#fff":"#445",fontFamily:M,fontWeight:700,fontSize:11,
+              padding:"6px 22px",border:`1px solid ${family===id?ac+"66":"#1e2e3e"}`,
+              letterSpacing:2,textTransform:"uppercase",borderRadius:7,cursor:"pointer",
+              boxShadow:family===id?`0 2px 12px ${ac}40`:"none",
+            }}>{label}</button>
+          ))}
+        </div>
+        {/* Major / Minor quality toggle */}
+        <div style={{display:"flex",justifyContent:"center",marginTop:6,gap:0}}>
+          {[
+            {q:"major", label: family==="modal"?"Mixolydian":"Major"},
+            {q:"minor", label: family==="modal"?"Dorian":"Minor"},
+          ].map(({q,label})=>(
+            <button key={q} onClick={()=>swQuality(q)} style={{
+              background:quality===q?qualityGrads[q]:"rgba(255,255,255,0.04)",
+              color:quality===q?"#fff":"#445",fontFamily:M,fontWeight:700,fontSize:10,
+              padding:"5px 18px",border:"1px solid #1e2e3e",letterSpacing:1,
+              textTransform:"uppercase",cursor:"pointer",
+              borderRadius:q==="major"?"6px 0 0 6px":"0 6px 6px 0",
+            }}>{label}</button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{background:"rgba(255,255,255,0.022)",border:"1px solid #182535",borderRadius:12,padding:"10px 12px",maxWidth:660,margin:"0 auto 10px"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8,flexWrap:"wrap",gap:4}}>
+          <div style={{fontSize:9,letterSpacing:3,color:"#3a6a8a",fontFamily:M,textTransform:"uppercase"}}>
+            {root} {mode.charAt(0).toUpperCase()+mode.slice(1)} · Fret {rf}
+          </div>
+          <button onClick={swRel} style={{fontFamily:M,fontSize:9,color:"#60b8f0",background:"rgba(96,184,240,0.08)",border:"1px solid #60b8f030",borderRadius:6,padding:"3px 10px",cursor:"pointer",letterSpacing:1,textTransform:"uppercase"}}>
+            ⇄ {maj?"Rel. minor":isDor?"Rel. major":isMix?"Rel. minor":"Rel. major"}: {rk}
+          </button>
+        </div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:4,justifyContent:"center",marginBottom:8}}>
+          {NOTES.map(k=><button key={k} onClick={()=>setRoot(k)} style={{background:root===k?`linear-gradient(135deg,${ac},${maj?"#b07800":isDor?"#205020":isMix?"#704010":"#2060a0"})`:"rgba(255,255,255,0.04)",color:root===k?"#fff":"#778",fontFamily:M,fontWeight:700,fontSize:13,borderRadius:6,padding:"7px 13px",border:root===k?"none":"1px solid #1a2a38",cursor:"pointer",minHeight:38,minWidth:38}}>{k}</button>)}
+        </div>
+        <div style={{display:"flex",gap:4,flexWrap:"wrap",justifyContent:"center"}}>
+          {ps.map((n,i)=><div key={i} onClick={()=>hear(n)} style={{textAlign:"center",background:i===0?`${ac}18`:"#ffffff07",border:`1px solid ${i===0?ac+"55":"#1e2e3a"}`,borderRadius:5,padding:"2px 8px",cursor:"pointer"}}><div style={{fontFamily:M,fontWeight:700,fontSize:12,color:i===0?ac:"#bbb"}}>{n}</div><div style={{fontSize:8,color:"#3a6a8a"}}>{pl[i]}</div></div>)}
+          {blues && <div onClick={()=>hear(NOTES[(NOTES.indexOf(root)+6)%12])} style={{textAlign:"center",background:"#2a1a3a",border:"1px solid #e040e050",borderRadius:5,padding:"2px 8px",cursor:"pointer"}}><div style={{fontFamily:M,fontWeight:700,fontSize:12,color:"#e040e0"}}>{NOTES[(NOTES.indexOf(root)+6)%12]}</div><div style={{fontSize:8,color:"#e040e0"}}>b5</div></div>}
+        </div>
+      </div>
+
+      <div style={{maxWidth:660,margin:"0 auto 10px",display:"flex",gap:5,flexWrap:"wrap",justifyContent:"center"}}>
+        {[{l:"🎵 Metro",a:metro,fn:()=>setMetro(v=>!v)},{l:"♭5 Blues",a:blues,fn:()=>setBlues(v=>!v)},{l:"7 Notes",a:fullScale,fn:()=>setFullScale(v=>!v)},{l:"🎼 Prog",a:showProg,fn:()=>setShowProg(v=>!v)},{l:"⬡ Shape",a:shapeOn,fn:()=>{setShapeOn(v=>!v);setShapeMap({"_global":[{color:SHAPE_COLORS[0],dots:[],quality:null}]});}},{l:"◉ Neck",a:neck,fn:()=>setNeck(v=>!v)}].map(b=><button key={b.l} onClick={b.fn} style={{fontFamily:M,fontWeight:700,fontSize:10,background:b.a?`${ac}22`:"rgba(255,255,255,0.04)",color:b.a?ac:"#556",border:`1px solid ${b.a?ac+"55":"#1e2e3a"}`,borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>{b.l}</button>)}
+        <button onClick={()=>{getCtx();loadSamples();}} style={{fontFamily:M,fontWeight:700,fontSize:10,background:samplesReady?"rgba(64,168,96,0.2)":samplesLoading?"rgba(255,200,0,0.15)":"rgba(255,255,255,0.04)",color:samplesReady?"#40a860":samplesLoading?"#ffc800":"#556",border:`1px solid ${samplesReady?"#40a86055":samplesLoading?"#ffc80055":"#1e2e3a"}`,borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>
+          {samplesReady?"🎸 Guitar On":samplesLoading?"🎸 Loading...":"🎸 Guitar"}
+        </button>
+      </div>
+
+      {shapeOn && (
+        <div style={{maxWidth:660,margin:"0 auto 10px",background:"rgba(0,0,0,0.3)",border:`1px solid ${ac}33`,borderRadius:10,padding:"10px 12px"}}>
+          <div style={{fontFamily:M,fontSize:9,color:"#3a6a8a",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>
+            {focusedChord ? `Shape for ${focusedChord.label} — tap notes on fretboard` : "Chord Shape — tap a chord name above to select it, then tap notes"}
+          </div>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"flex-start"}}>
+            {shapeGroups.map((g,gi)=>(
+              <div key={gi} style={{background:`${g.color}15`,border:`1px solid ${g.color}44`,borderRadius:8,padding:"6px 8px",minWidth:80}}>
+                <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:5}}>
+                  <div style={{width:8,height:8,borderRadius:"50%",background:g.color,flexShrink:0}}/>
+                  <span style={{fontFamily:M,fontSize:10,color:g.color,fontWeight:700,flex:1}}>
+                    {g.dots.length===0?"tap notes…":g.dots.map(d=>d.note).join("·")}
+                  </span>
+                  <span style={{fontFamily:M,fontSize:8,color:"#556"}}>({g.dots.length}/4)</span>
+                  {g.dots.length>0&&<span onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,dots:[]}:x))} style={{fontSize:9,cursor:"pointer",color:"#445",userSelect:"none"}}>✕</span>}
+                </div>
+                <div style={{display:"flex",gap:2,flexWrap:"wrap"}}>
+                  {["maj","min","dim","7","9"].map(q=>(
+                    <span key={q} onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,quality:g.quality===q?null:q}:x))}
+                      style={{fontFamily:M,fontSize:8,padding:"1px 5px",borderRadius:3,cursor:"pointer",
+                        background:g.quality===q?`${g.color}30`:"transparent",
+                        border:`1px solid ${g.quality===q?g.color:g.color+"33"}`,
+                        color:g.quality===q?g.color:"#445"}}>
+                      {q}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+            {shapeGroups[shapeGroups.length-1].dots.length>0&&shapeGroups.length<7&&(
+              <button onClick={()=>setShapeGroups(p=>[...p,{color:SHAPE_COLORS[p.length%SHAPE_COLORS.length],dots:[],quality:null}])}
+                style={{fontFamily:M,fontSize:9,color:ac,background:`${ac}15`,border:`1px solid ${ac}44`,borderRadius:6,padding:"5px 10px",cursor:"pointer",alignSelf:"center"}}>
+                + New chord
+              </button>
+            )}
+            <button onClick={()=>setShapeGroups([{color:SHAPE_COLORS[0],dots:[],quality:null}])}
+              style={{fontFamily:M,fontSize:9,color:"#334",background:"transparent",border:"1px solid #1e2e3a",borderRadius:6,padding:"5px 8px",cursor:"pointer",alignSelf:"center",marginLeft:"auto"}}>
+              clear all
+            </button>
+          </div>
+        </div>
+      )}
+
+      {metro && <div style={{maxWidth:660,margin:"0 auto 10px"}}><Metro pc={playClick}/></div>}
+      {showProg && <div style={{maxWidth:660,margin:"0 auto 10px"}}><ProgBuilder triads={TR} root={root} sc={SC} accent={ac} playChord={hearCh} onChordFocus={ch=>{setFocusedProgIdx(ch!=null?(ch._progIdx??null):null);}} family={family} quality={quality} playClick={playClick} prog={prog} setProg={setProg} savedProgs={savedProgs} setSavedProgs={setSavedProgs}/></div>}
+
+      {neck && (()=>{
+        const neckContent = (
+          <>
+            <div style={{display:"flex",alignItems:"center",gap:6,padding:"8px 12px",borderBottom:"1px solid #182535",flexWrap:"wrap"}}>
+              <div style={{display:"flex",gap:3}}>{POS.map(p=><button key={p.num} onClick={()=>togPos(p.num)} style={{background:openPos.has(p.num)?`${ac}25`:"rgba(255,255,255,0.04)",color:openPos.has(p.num)?ac:"#445",fontFamily:M,fontWeight:700,fontSize:10,padding:"3px 8px",border:`1px solid ${openPos.has(p.num)?ac+"66":"#1e2e3a"}`,borderRadius:5,cursor:"pointer"}}>P{p.num}</button>)}</div>
+              <div style={{display:"flex",alignItems:"center",gap:4,marginLeft:"auto"}}>
+                <span onClick={()=>setZoom(z=>Math.max(0.5,+(z-0.15).toFixed(2)))} style={{fontSize:14,cursor:"pointer",color:"#556",userSelect:"none"}}>−</span>
+                <input type="range" min={0.5} max={2} step={0.05} value={zoom} onChange={e=>setZoom(+e.target.value)} style={{width:60,accentColor:ac}}/>
+                <span onClick={()=>setZoom(z=>Math.min(2,+(z+0.15).toFixed(2)))} style={{fontSize:14,cursor:"pointer",color:"#556",userSelect:"none"}}>+</span>
+                <span style={{fontFamily:M,fontSize:9,color:"#445",minWidth:28}}>{Math.round(zoom*100)}%</span>
+              </div>
+              <div style={{display:"flex",gap:8}}>
+                <span onClick={()=>setNcht(new Set([0,1,2,3,4,5,6]))} style={{fontFamily:M,fontSize:9,color:"#4a8aaa",cursor:"pointer"}}>all</span>
+                <span onClick={()=>setNcht(new Set())} style={{fontFamily:M,fontSize:9,color:"#334",cursor:"pointer"}}>none</span>
+              </div>
+              <button onClick={()=>setNeckFull(v=>!v)} style={{fontFamily:M,fontSize:11,color:"#778",background:"rgba(255,255,255,0.05)",border:"1px solid #2a3a4a",borderRadius:5,padding:"2px 8px",cursor:"pointer"}}>
+                {neckFull?"✕":"⤢"}
+              </button>
+            </div>
+            <div style={{overflowX:"auto",overflowY:neckFull?"auto":"hidden",padding:"10px 8px 8px",flex:neckFull?1:undefined}}>
+              {(()=>{
+                let neckFocusedNotes = null;
+                if (focusedChord) {
+                  const ti = Number(focusedChord.ti);
+                  const ovr = qualOver[ti];
+                  const t = TR[ti];
+                  if (ovr && t && ovr !== t.q) {
+                    const rootNote = dn(t.d[0], root, SC);
+                    const rootIdx = NOTES.indexOf(rootNote);
+                    const newThird = ovr==="major" ? NOTES[(rootIdx+4)%12] : NOTES[(rootIdx+3)%12];
+                    const fifth = NOTES[(rootIdx+7)%12];
+                    neckFocusedNotes = new Set([rootNote, newThird, fifth]);
+                  } else {
+                    neckFocusedNotes = new Set(focusedChord.notes);
+                  }
+                }
+                return (
+                  <Neck positions={openList} root={root} bases={openBases}
+                    checked={focusedChord ? new Set([focusedChord.ti]) : ncht}
+                    triads={TR} pd={PD}
+                    accent={focusedChord ? focusedChord.color : ac}
+                    sc={SC} zoom={neckFull ? Math.max(1.2, (window.innerHeight-80) / (5*34+56)) : zoom}
+                    blues={blues} exts={nexts}
+                    shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={toggleDot}
+                    focusedNotes={neckFocusedNotes}
+                    focusedColor={focusedChord ? focusedChord.color : null}
+                    qualOver={qualOver}/>
+                );
+              })()}
+            </div>
+            {!neckFull && (
+              <div style={{padding:"10px 12px 12px",borderTop:"1px solid #182535"}}>
+                <div style={{fontSize:9,letterSpacing:3,color:"#3a6a8a",fontFamily:M,textTransform:"uppercase",marginBottom:6}}>Triads · {root} {mode}</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
+                  {TR.map((t,ti)=><TCard key={ti} t={t} root={root} on={ncht.has(ti)} onClick={()=>togN(ti)} sc={SC} pd={PD} onPlay={hearCh} ext={nexts[ti]||null} onExt={val=>setNextExt(ti,val)} qualityOverride={qualOver[ti]||null} onQualityToggle={q=>setQualOver(p=>({...p,[ti]:q}))}/>)}
+                </div>
+              </div>
+            )}
+          </>
+        );
+        return neckFull ? (
+          <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,zIndex:999,background:"#080f18",display:"flex",flexDirection:"column",overflow:"hidden"}}>
+            {/* toolbar */}
+            <div style={{display:"flex",alignItems:"center",gap:6,padding:"6px 10px",borderBottom:"1px solid #182535",flexWrap:"nowrap",flexShrink:0,overflowX:"auto"}}>
+              <div style={{display:"flex",gap:3,flexShrink:0}}>{POS.map(p=><button key={p.num} onClick={()=>togPos(p.num)} style={{background:openPos.has(p.num)?`${ac}25`:"rgba(255,255,255,0.04)",color:openPos.has(p.num)?ac:"#445",fontFamily:M,fontWeight:700,fontSize:10,padding:"3px 8px",border:`1px solid ${openPos.has(p.num)?ac+"66":"#1e2e3a"}`,borderRadius:5,cursor:"pointer"}}>P{p.num}</button>)}</div>
+              <div style={{display:"flex",alignItems:"center",gap:4,marginLeft:"auto",flexShrink:0}}>
+                <span onClick={()=>setZoom(z=>Math.max(0.5,+(z-0.1).toFixed(2)))} style={{fontSize:14,cursor:"pointer",color:"#556",userSelect:"none"}}>−</span>
+                <span style={{fontFamily:M,fontSize:9,color:"#445",minWidth:28}}>{Math.round(zoom*100)}%</span>
+                <span onClick={()=>setZoom(z=>Math.min(3,+(z+0.1).toFixed(2)))} style={{fontSize:14,cursor:"pointer",color:"#556",userSelect:"none"}}>+</span>
+              </div>
+              <span onClick={()=>setNcht(new Set([0,1,2,3,4,5,6]))} style={{fontFamily:M,fontSize:9,color:"#4a8aaa",cursor:"pointer",flexShrink:0}}>all</span>
+              <span onClick={()=>setNcht(new Set())} style={{fontFamily:M,fontSize:9,color:"#334",cursor:"pointer",flexShrink:0}}>none</span>
+              <button onClick={()=>setNeckFull(false)} style={{fontFamily:M,fontSize:11,color:"#eee",background:"rgba(255,255,255,0.08)",border:"1px solid #3a4a5a",borderRadius:5,padding:"3px 10px",cursor:"pointer",flexShrink:0}}>✕ close</button>
+            </div>
+            {/* fretboard — fills remaining height, scrolls horizontally */}
+            <div style={{flex:1,overflowX:"auto",overflowY:"hidden",display:"flex",alignItems:"center"}}>
+              {(()=>{
+                let neckFocusedNotes2 = null;
+                if (focusedChord) {
+                  const ti = Number(focusedChord.ti);
+                  const ovr = qualOver[ti], t = TR[ti];
+                  if (ovr && t && ovr !== t.q) {
+                    const rootNote = dn(t.d[0], root, SC);
+                    const rootIdx = NOTES.indexOf(rootNote);
+                    const newThird = ovr==="major" ? NOTES[(rootIdx+4)%12] : NOTES[(rootIdx+3)%12];
+                    neckFocusedNotes2 = new Set([rootNote, newThird, NOTES[(rootIdx+7)%12]]);
+                  } else {
+                    neckFocusedNotes2 = new Set(focusedChord.notes);
+                  }
+                }
+                // Auto-zoom to fill height: 5 strings * SH(34) + padding(56) = base height at zoom=1
+                const autoZoom = Math.max(0.8, (window.innerHeight - 80) / (5*34 + 56));
+                // On mobile landscape (short height, wider width), prefer height fitting
+                const isLandscape = window.innerWidth > window.innerHeight;
+                const mobZoom = isLandscape ? Math.max(1.0, (window.innerHeight - 100) / (5*34 + 56)) : autoZoom;
+                const fz = neckFull ? mobZoom * zoom : zoom;
+                return (
+                  <Neck positions={openList} root={root} bases={openBases}
+                    checked={focusedChord ? new Set([focusedChord.ti]) : ncht}
+                    triads={TR} pd={PD}
+                    accent={focusedChord ? focusedChord.color : ac}
+                    sc={SC} zoom={fz} blues={blues} exts={nexts}
+                    shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={toggleDot}
+                    focusedNotes={neckFocusedNotes2}
+                    focusedColor={focusedChord ? focusedChord.color : null}
+                    qualOver={qualOver}/>
+                );
+              })()}
+            </div>
+            {/* chord banner at bottom */}
+            {focusedChord && (
+              <div style={{padding:"5px 14px",background:`${focusedChord.color}22`,borderTop:`1px solid ${focusedChord.color}55`,display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
+                <span style={{fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:20,color:focusedChord.color}}>{focusedChord.label}</span>
+                <div style={{display:"flex",gap:5}}>
+                  {focusedChord.notes.map((n,i)=><span key={i} style={{background:`${focusedChord.color}22`,border:`1px solid ${focusedChord.color}55`,borderRadius:4,padding:"1px 7px",fontSize:11,fontWeight:700,fontFamily:M,color:"#eee"}}>{n}</span>)}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div style={{maxWidth:660,margin:"0 auto 10px",background:"rgba(0,0,0,0.5)",border:`1px solid ${ac}33`,borderRadius:12,overflow:"hidden"}}>
+            {neckContent}
+          </div>
+        );
+      })()}
+
+      <div style={{maxWidth:660,margin:"0 auto",display:"flex",flexDirection:"column",gap:8}}>
+        {/* Focused chord banner — uses qualOver if set for this triad */}
+        {focusedChord && (()=>{
+          const ti = Number(focusedChord.ti);
+          const ovr = qualOver[ti];
+          const t = TR[ti];
+          let bannerLabel = focusedChord.label;
+          let bannerNotes = focusedChord.notes;
+          if (ovr && t && ovr !== t.q) {
+            const rootNote = dn(t.d[0], root, SC);
+            const rootIdx = NOTES.indexOf(rootNote);
+            const third = ovr==="major" ? NOTES[(rootIdx+4)%12] : NOTES[(rootIdx+3)%12];
+            const fifth = NOTES[(rootIdx+7)%12];
+            bannerNotes = [rootNote, third, fifth];
+            bannerLabel = ovr==="major" ? rootNote : rootNote+"m";
+          }
+          return (
+            <div style={{background:`${focusedChord.color}18`,border:`2px solid ${focusedChord.color}`,borderRadius:12,padding:"10px 16px",display:"flex",alignItems:"center",gap:12}}>
+              <div style={{fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:32,color:focusedChord.color}}>{bannerLabel}</div>
+              <div style={{flex:1}}>
+                <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                  {bannerNotes.map((n,i)=><span key={i} style={{background:`${focusedChord.color}22`,border:`1px solid ${focusedChord.color}55`,borderRadius:4,padding:"2px 8px",fontSize:13,fontWeight:700,fontFamily:M,color:"#eee"}}>{n}</span>)}
+                </div>
+                {ovr && ovr !== (t&&t.q) && <div style={{fontFamily:M,fontSize:9,color:"#f0c040",marginTop:3}}>borrowed ({ovr})</div>}
+                <div style={{fontFamily:M,fontSize:9,color:"#445",marginTop:2}}>Highlighted on all positions below</div>
+              </div>
+              <span onClick={()=>setFocusedProgIdx(null)} style={{fontSize:18,cursor:"pointer",color:"#445",userSelect:"none"}}>✕</span>
+            </div>
+          );
+        })()}
+        {/* Compute effective focused notes — uses qualOver to replace replaced third */}
+        {(()=>{
+          let effectiveFocusedNotes = null;
+          let replacedNotes = new Set(); // notes to dim (e.g. G when G# replaces it)
+          if (focusedChord) {
+            const ti = Number(focusedChord.ti);
+            const ovr = qualOver[ti];
+            const t = TR[ti];
+            if (ovr && t && ovr !== t.q) {
+              const rootNote = dn(t.d[0], root, SC);
+              const rootIdx = NOTES.indexOf(rootNote);
+              const newThird = ovr==="major" ? NOTES[(rootIdx+4)%12] : NOTES[(rootIdx+3)%12];
+              const oldThird = ovr==="major" ? NOTES[(rootIdx+3)%12] : NOTES[(rootIdx+4)%12];
+              const fifth = NOTES[(rootIdx+7)%12];
+              effectiveFocusedNotes = new Set([rootNote, newThird, fifth]);
+              replacedNotes = new Set([oldThird]);
+            } else {
+              effectiveFocusedNotes = new Set(focusedChord.notes);
+            }
+          }
+          return null; // just computing, rendered below
+        })()}
+        {POS.map(pos => {
+          // Recompute effective notes per pos render (can't use variables from IIFE above)
+          let effectiveFocusedNotes = null;
+          if (focusedChord) {
+            const ti = Number(focusedChord.ti);
+            const ovr = qualOver[ti];
+            const t = TR[ti];
+            if (ovr && t && ovr !== t.q) {
+              const rootNote = dn(t.d[0], root, SC);
+              const rootIdx = NOTES.indexOf(rootNote);
+              const newThird = ovr==="major" ? NOTES[(rootIdx+4)%12] : NOTES[(rootIdx+3)%12];
+              const fifth = NOTES[(rootIdx+7)%12];
+              effectiveFocusedNotes = new Set([rootNote, newThird, fifth]);
+            } else {
+              effectiveFocusedNotes = new Set(focusedChord.notes);
+            }
+          }
+          const isExp=openPos.has(pos.num);
+          // When progression chord focused, override checked set to highlight that chord
+          const ch = focusedChord ? new Set([focusedChord.ti]) : (cht[pos.num]||new Set());
+          const base=getBase(pos);
+          const labels = focusedChord ? focusedChord.label : [...(cht[pos.num]||new Set())].map(ti=>TR[ti].n).join(" + ");
+          return (
+            <div key={pos.num} style={{background:"rgba(255,255,255,0.018)",border:`1px solid ${isExp?"#253545":"#182030"}`,borderRadius:12,overflow:"hidden",boxShadow:isExp?"0 4px 20px rgba(0,0,0,0.4)":"none"}}>
+              <div onClick={()=>togPos(pos.num)} style={{padding:"10px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:10,background:isExp?`${ac}08`:"transparent",borderBottom:isExp?"1px solid #182535":"none"}}>
+                <div style={{width:28,height:28,borderRadius:"50%",flexShrink:0,background:isExp?`linear-gradient(135deg,${ac},${maj?"#b07800":isDor?"#205020":isMix?"#704010":"#2060a0"})`:"rgba(255,255,255,0.05)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:13,color:isExp?"#fff":"#556"}}>{pos.num}</div>
+                <div style={{flex:1}}>
+                  <div style={{fontFamily:"'Playfair Display',serif",fontWeight:700,fontSize:13,color:"#ccc"}}>Position {pos.num}</div>
+                  <div style={{fontFamily:M,fontSize:9,color:"#3a5060",marginTop:1}}>{pos.sd} · fret {base}{ch.size>0&&<span style={{color:ac,marginLeft:6}}>{labels}</span>}</div>
+                </div>
+                <div style={{display:"flex",gap:2,flexWrap:"wrap",justifyContent:"flex-end",maxWidth:150}}>
+                  {TR.map((t,ti)=><span key={ti} style={{fontFamily:M,fontWeight:700,fontSize:8,color:t.c,background:ch.has(ti)?`${t.c}30`:`${t.c}0e`,border:`1px solid ${ch.has(ti)?t.c:t.c+"28"}`,borderRadius:3,padding:"1px 4px",opacity:ch.has(ti)||ch.size===0?1:0.3}}>{t.n}</span>)}
+                </div>
+                <div style={{color:"#2a4058",fontSize:14,transition:"transform .2s",transform:isExp?"rotate(180deg)":"none",flexShrink:0}}>▾</div>
+              </div>
+              {isExp && (
+                <div style={{padding:"12px 12px 14px"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                    <div style={{fontSize:9,letterSpacing:2,color:"#3a6a8a",fontFamily:M,textTransform:"uppercase"}}>{ch.size===0?`${root} ${mode} · fret ${base}`:`${labels} · fret ${base}`}</div>
+                    <div style={{display:"flex",gap:12}}>
+                      <span onClick={e=>{e.stopPropagation();all(pos.num);}} style={{fontFamily:M,fontSize:9,color:"#4a8aaa",cursor:"pointer"}}>all</span>
+                      <span onClick={e=>{e.stopPropagation();clr(pos.num);}} style={{fontFamily:M,fontSize:9,color:"#334",cursor:"pointer"}}>none</span>
+                    </div>
+                  </div>
+                  <div className="sc" style={{background:"rgba(0,0,0,0.45)",borderRadius:10,padding:"8px",border:"1px solid #182030",overflowX:"auto",marginBottom:12}}>
+                    <Fretboard pos={pos} root={root} base={base} checked={ch} triads={TR} pd={PD} accent={focusedChord?focusedChord.color:ac} sc={SC} zoom={1} blues={blues} exts={exts[pos.num]||{}} fullScale={fullScale} shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={toggleDot} qualOver={qualOver} focusedNotes={effectiveFocusedNotes} focusedColor={focusedChord?focusedChord.color:null}/>
+                  </div>
+                  <div style={{fontSize:9,letterSpacing:2,color:"#3a6a8a",fontFamily:M,textTransform:"uppercase",marginBottom:6}}>Tap triads to highlight · tap notes to hear</div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
+                    {TR.map((t,ti)=><TCard key={ti} t={t} root={root} on={ch.has(ti)} onClick={e=>{e.stopPropagation();togCht(pos.num,ti);}} sc={SC} pd={PD} onPlay={hearCh} ext={(exts[pos.num]||{})[ti]||(exts[pos.num]||{})[String(ti)]||null} onExt={val=>setExt(pos.num,ti,val)} qualityOverride={qualOver[ti]||null} onQualityToggle={q=>setQualOver(p=>({...p,[ti]:q}))}/>)}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<App />);
+
+  </script>
+</body>
+</html>

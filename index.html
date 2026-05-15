@@ -746,7 +746,7 @@ const PROG_PRESETS = {
   },
 };
 
-function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,quality,playClick,onProgRef,prog,setProg,savedProgs,setSavedProgs}){
+function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,quality,playClick,onProgRef,prog,setProg,savedProgs,setSavedProgs,startDrums,stopDrums,drumOn,setDrumOn,drumPattern,setDrumPattern}){
   const [bpm,setBpm]=useState(80),[bpc,setBpc]=useState(4);
   const [on,setOn]=useState(false),[cur,setCur]=useState(0),[beat,setBeat]=useState(0);
   const [countIn,setCountIn]=useState(0);
@@ -762,7 +762,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
   const sr=useRef({prog,bpm,bpc,cur,beat,loopCount,loopsDone});
   const M="'IBM Plex Mono',monospace";
 
-  useEffect(()=>{sr.current={prog,bpm,bpc,cur,beat,loopCount,loopsDone};});
+  useEffect(()=>{sr.current={prog,bpm,bpc,cur,beat,loopCount,loopsDone,drumOn,drumPattern};});
   const [focusedIdx,setFocusedIdx]=useState(null);
   // Tell App which prog index is focused so it can derive focusedChord live
   useEffect(()=>{
@@ -779,6 +779,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
     clearInterval(ref.current); clearInterval(countRef.current);
     setOn(false);setCur(0);setBeat(0);setCounting(0);setLoopsDone(0);setFocusedIdx(null);
     if(onChordFocus)onChordFocus(null);
+    if(stopDrums) stopDrums();
   };
 
   const startInterval=()=>{
@@ -786,6 +787,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
     setFocusedIdx(0);
     playChord(sr.current.prog[0].notes);
     if(onChordFocus)onChordFocus({...sr.current.prog[0],_progIdx:0});
+    if(sr.current.drumOn && startDrums) startDrums(sr.current.bpm, sr.current.drumPattern);
     ref.current=setInterval(()=>{
       const {prog,bpc,loopCount,loopsDone}=sr.current;if(!prog.length)return;
       const curBeats=prog[ci].beats||bpc;
@@ -1150,6 +1152,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
 
       {/* Count-in + Loop count */}
       {prog.length>0&&(
+        <React.Fragment>
         <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginTop:8,paddingTop:8,borderTop:"1px solid #1e2e3a"}}>
           <div style={{display:"flex",gap:3,alignItems:"center"}}>
             <span style={{fontFamily:M,fontSize:8,color:"#445"}}>count-in:</span>
@@ -1161,10 +1164,39 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
             {on&&loopCount>0&&<span style={{fontFamily:M,fontSize:9,color:accent}}>{loopsDone}/{loopCount}</span>}
           </div>
         </div>
+        <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginTop:8,paddingTop:8,borderTop:"1px solid #1e2e3a"}}>
+          <div style={{display:"flex",gap:3,alignItems:"center"}}>
+            <span style={{fontFamily:M,fontSize:8,color:"#445"}}>drums:</span>
+            <span onClick={()=>{
+              const next=!drumOn;
+              setDrumOn(next);
+              if(next&&on&&startDrums) startDrums(sr.current.bpm, drumPattern);
+              if(!next&&stopDrums) stopDrums();
+            }} style={{fontFamily:M,fontSize:9,padding:"2px 8px",borderRadius:4,cursor:"pointer",color:drumOn?"#fff":"#445",background:drumOn?"#2a4a6a":"transparent",border:"1px solid "+(drumOn?"#3a6a9a":"#1e2e3a")}}>{drumOn?"on":"off"}</span>
+          </div>
+          {drumOn&&<div style={{display:"flex",gap:3,alignItems:"center",flexWrap:"wrap"}}>
+            <span style={{fontFamily:M,fontSize:8,color:"#445"}}>pattern:</span>
+            {["Shuffle","Blues","SlowBlues","BluesRock","Boogie","Jazz","SwingJazz","Bossa","Rock","Funk"].map(p=><span key={p} onClick={()=>{setDrumPattern(p);if(on&&startDrums)startDrums(sr.current.bpm,p);}} style={{fontFamily:M,fontSize:9,padding:"2px 6px",borderRadius:4,cursor:"pointer",color:drumPattern===p?"#fff":"#445",background:drumPattern===p?"#2a4a6a":"transparent",border:"1px solid "+(drumPattern===p?"#3a6a9a":"#1e2e3a")}}>{p}</span>)}
+          </div>}
+        </div>
+        </React.Fragment>
       )}
     </div>
   );
 }
+
+const DRUM_PATTERNS = {
+  Shuffle:    {kick:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+  Blues:      {kick:[1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
+  SlowBlues:  {kick:[1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],hihat:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0]},
+  BluesRock:  {kick:[1,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+  Boogie:     {kick:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],hihat:[1,1,0,1,1,0,1,1,0,1,1,0,1,1,0,1]},
+  Jazz:       {kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],snare:[0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0],hihat:[1,0,1,1,0,1,1,0,1,0,1,1,0,1,1,0]},
+  SwingJazz:  {kick:[1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0],hihat:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0]},
+  Bossa:      {kick:[1,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0],snare:[0,0,1,0,0,1,0,0,1,0,0,1,0,0,1,0],hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+  Rock:       {kick:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
+  Funk:       {kick:[1,0,0,1,0,0,0,0,1,0,0,1,0,0,1,0],snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0],hihat:[1,1,0,1,1,0,1,0,1,1,0,1,1,0,1,1]},
+};
 
 function App() {
   const [root,setRoot]=useState("A");
@@ -1226,132 +1258,101 @@ function App() {
   const [samplesReady, setSamplesReady] = useState(false);
   const [samplesLoading, setSamplesLoading] = useState(false);
 
-  const getCtx = () => {
-    if(!ctxRef.current) ctxRef.current = new(window.AudioContext||window.webkitAudioContext)();
-    if(ctxRef.current.state==="suspended") ctxRef.current.resume();
-    return ctxRef.current;
-  };
+  const getCtx = () => { if(!ctxRef.current) ctxRef.current=new(window.AudioContext||window.webkitAudioContext)(); if(ctxRef.current.state==="suspended") ctxRef.current.resume(); return ctxRef.current; };
 
-  // Sample set — one per open string + octave up
   const SAMPLE_NOTES = [
-    {name:"E2", midi:40}, {name:"A2", midi:45}, {name:"D3", midi:50},
-    {name:"G3", midi:55}, {name:"B3", midi:59}, {name:"E4", midi:64},
-    {name:"A4", midi:69}, {name:"D5", midi:74},
+    {name:"E2",midi:40},{name:"A2",midi:45},{name:"D3",midi:50},
+    {name:"G3",midi:55},{name:"B3",midi:59},{name:"E4",midi:64},
+    {name:"A4",midi:69},{name:"D5",midi:74},
   ];
 
-  const noteMidi = useCallback((note, oct) => {
-    const idx = NOTES.indexOf(note);
-    return (oct + 1) * 12 + idx;
-  }, []);
+  const noteMidi = (note, oct) => { const idx=NOTES.indexOf(note); return (oct+1)*12+idx; };
 
-  // Find nearest sample and return {buffer, detune in cents}
-  const nearestSample = useCallback((midi) => {
-    let best = SAMPLE_NOTES[0], bestDist = Math.abs(midi - SAMPLE_NOTES[0].midi);
-    SAMPLE_NOTES.forEach(s => {
-      const d = Math.abs(midi - s.midi);
-      if(d < bestDist) { bestDist = d; best = s; }
-    });
-    return { buf: samplesRef.current[best.name], detune: (midi - best.midi) * 100 };
-  }, []);
+  const nearestSample = (midi) => {
+    let best=SAMPLE_NOTES[0], bestD=Math.abs(midi-SAMPLE_NOTES[0].midi);
+    SAMPLE_NOTES.forEach(s=>{ const d=Math.abs(midi-s.midi); if(d<bestD){bestD=d;best=s;} });
+    return {buf:samplesRef.current[best.name], detune:(midi-best.midi)*100};
+  };
 
   const loadSamples = useCallback(async () => {
-    if(samplesReady || samplesLoading) return;
+    if(samplesReady||samplesLoading) return;
     setSamplesLoading(true);
-    const ctx = getCtx();
-    const loaded = {};
-    let count = 0;
+    const ctx=getCtx(); const loaded={};
     await Promise.all(SAMPLE_NOTES.map(async ({name}) => {
       try {
-        const res = await fetch(`./${name}.mp3`);
-        if(res.ok) {
-          const ab = await res.arrayBuffer();
-          loaded[name] = await ctx.decodeAudioData(ab);
-          count++;
-        }
-      } catch(e) {}
+        const res=await fetch("./"+name+".mp3");
+        if(res.ok){ const ab=await res.arrayBuffer(); loaded[name]=await ctx.decodeAudioData(ab); }
+      } catch(e){}
     }));
-    if(count > 0) {
-      samplesRef.current = loaded;
-      setSamplesReady(true);
-    }
+    if(Object.keys(loaded).length>0){ samplesRef.current=loaded; setSamplesReady(true); }
     setSamplesLoading(false);
   }, [samplesReady, samplesLoading]);
 
-  const playSample = useCallback((note, oct, startTime, dur=2.5, vol=0.7) => {
+  const playSample = useCallback((note, oct, startTime, dur, vol) => {
     try {
-      const ctx = getCtx();
-      const midi = noteMidi(note, oct);
-      const {buf, detune} = nearestSample(midi);
-      if(!buf) return;
-      const src = ctx.createBufferSource();
-      src.buffer = buf;
-      src.detune.value = detune;
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0, startTime);
-      gain.gain.linearRampToValueAtTime(vol, startTime + 0.008);
-      gain.gain.setValueAtTime(vol, startTime + dur * 0.5);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + dur);
-      src.connect(gain);
-      gain.connect(ctx.destination);
-      src.start(startTime);
-      src.stop(startTime + dur + 0.05);
-    } catch(e) {}
-  }, [noteMidi, nearestSample]);
-
-  // Karplus-Strong fallback when samples not loaded
-  const pluckString = useCallback((freq, startTime, dur=2.0, vol=0.55) => {
-    try {
-      const ctx = getCtx();
-      const bufSize = Math.max(2, Math.round(ctx.sampleRate / freq));
-      const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-      const data = buf.getChannelData(0);
-      for(let i=0; i<bufSize; i++) data[i] = Math.random()*2-1;
-      const src = ctx.createBufferSource();
-      src.buffer = buf; src.loop = true;
-      const filt = ctx.createBiquadFilter();
-      filt.type="lowpass"; filt.frequency.value=freq*5;
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0, startTime);
-      gain.gain.linearRampToValueAtTime(vol, startTime+0.005);
-      gain.gain.setValueAtTime(vol, startTime+dur*0.2);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime+dur);
-      src.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
-      src.start(startTime); src.stop(startTime+dur+0.05);
-    } catch(e) {}
+      const ctx=getCtx(), midi=noteMidi(note,oct), s=nearestSample(midi);
+      if(!s.buf) return;
+      const src=ctx.createBufferSource(), g=ctx.createGain();
+      src.buffer=s.buf; src.detune.value=s.detune;
+      g.gain.setValueAtTime(0,startTime);
+      g.gain.linearRampToValueAtTime(vol||0.7,startTime+0.008);
+      g.gain.setValueAtTime(vol||0.7,startTime+(dur||2)*0.5);
+      g.gain.exponentialRampToValueAtTime(0.001,startTime+(dur||2));
+      src.connect(g); g.connect(ctx.destination);
+      src.start(startTime); src.stop(startTime+(dur||2)+0.05);
+    } catch(e){}
   }, []);
 
-  const noteFreq = useCallback((note, oct) => {
-    const midi = noteMidi(note, oct);
-    return 440 * Math.pow(2, (midi-69)/12);
-  }, [noteMidi]);
+  const pluckFallback = useCallback((freq, startTime, dur, vol) => {
+    try {
+      const ctx=getCtx(), bufSize=Math.max(2,Math.round(ctx.sampleRate/freq));
+      const buf=ctx.createBuffer(1,bufSize,ctx.sampleRate), data=buf.getChannelData(0);
+      for(let i=0;i<bufSize;i++) data[i]=Math.random()*2-1;
+      const src=ctx.createBufferSource(), filt=ctx.createBiquadFilter(), g=ctx.createGain();
+      src.buffer=buf; src.loop=true; filt.type="lowpass"; filt.frequency.value=freq*5;
+      g.gain.setValueAtTime(0,startTime); g.gain.linearRampToValueAtTime(vol||0.55,startTime+0.005);
+      g.gain.setValueAtTime(vol||0.55,startTime+(dur||2)*0.2);
+      g.gain.exponentialRampToValueAtTime(0.001,startTime+(dur||2));
+      src.connect(filt); filt.connect(g); g.connect(ctx.destination);
+      src.start(startTime); src.stop(startTime+(dur||2)+0.05);
+    } catch(e){}
+  }, []);
 
-  const playNote = useCallback((note, dur=1.5, oct=4) => {
-    const ctx = getCtx();
-    if(samplesReady) playSample(note, oct, ctx.currentTime, dur);
-    else pluckString(noteFreq(note, oct), ctx.currentTime, dur);
-  }, [samplesReady, playSample, pluckString, noteFreq]);
+  const playNote = useCallback((note, dur, oct) => {
+    const d=dur||1.5, o=oct||4, ctx=getCtx();
+    if(samplesReady) playSample(note,o,ctx.currentTime,d,0.7);
+    else pluckFallback((NOTE_FREQ[note]||440)*Math.pow(2,(o-4)),ctx.currentTime,d,0.55);
+  }, [samplesReady, playSample, pluckFallback]);
 
   const playChord = useCallback((notes) => {
-    const ctx = getCtx();
-    const now = ctx.currentTime;
-    notes.forEach((note, i) => {
-      const oct = i < Math.ceil(notes.length/2) ? 3 : 4;
-      const strum = i * 0.038;
-      if(samplesReady) playSample(note, oct, now+strum, 2.8, 0.72);
-      else pluckString(noteFreq(note, oct), now+strum, 2.5, 0.6);
+    const ctx=getCtx(), now=ctx.currentTime;
+    notes.forEach((note,i) => {
+      const oct=i<Math.ceil(notes.length/2)?3:4, strum=i*0.038;
+      if(samplesReady) playSample(note,oct,now+strum,2.8,0.72);
+      else pluckFallback((NOTE_FREQ[note]||440)*Math.pow(2,(oct-4)),now+strum,2.5,0.6);
     });
-  }, [samplesReady, playSample, pluckString, noteFreq]);
+  }, [samplesReady, playSample, pluckFallback]);
 
-  const playClick = useCallback((accent=false) => {
-    try {
-      const c=getCtx(), o=c.createOscillator(), g=c.createGain();
-      o.connect(g); g.connect(c.destination);
-      o.type="square"; o.frequency.value=accent?1200:800;
-      g.gain.setValueAtTime(accent?0.3:0.15,c.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.04);
-      o.start(c.currentTime); o.stop(c.currentTime+0.04);
-    } catch(e) {}
-  }, []);
+  const playClick = useCallback((accent) => { try { const c=getCtx(),o=c.createOscillator(),g=c.createGain(); o.connect(g);g.connect(c.destination);o.type="square";o.frequency.value=accent?1200:800;g.gain.setValueAtTime(accent?0.3:0.15,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.04);o.start(c.currentTime);o.stop(c.currentTime+0.04); } catch(e){} }, []);
+
+  const playKick = useCallback((t) => { try { const c=getCtx(),o=c.createOscillator(),g=c.createGain(); o.connect(g);g.connect(c.destination);o.type="sine";o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(40,t+0.08);g.gain.setValueAtTime(1.0,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.35);o.start(t);o.stop(t+0.36); } catch(e){} }, []);
+  const playSnare = useCallback((t) => { try { const c=getCtx(),o=c.createOscillator(),og=c.createGain(); o.type="triangle";o.frequency.value=200;o.connect(og);og.connect(c.destination);og.gain.setValueAtTime(0.5,t);og.gain.exponentialRampToValueAtTime(0.001,t+0.15);o.start(t);o.stop(t+0.16); const buf=c.createBuffer(1,c.sampleRate*0.2,c.sampleRate),data=buf.getChannelData(0); for(let i=0;i<data.length;i++) data[i]=Math.random()*2-1; const ns=c.createBufferSource(),ng=c.createGain(),filt=c.createBiquadFilter(); filt.type="highpass";filt.frequency.value=1500;ns.buffer=buf;ns.connect(filt);filt.connect(ng);ng.connect(c.destination);ng.gain.setValueAtTime(0.7,t);ng.gain.exponentialRampToValueAtTime(0.001,t+0.18);ns.start(t);ns.stop(t+0.19); } catch(e){} }, []);
+  const playHihat = useCallback((t,open) => { try { const c=getCtx(),dur=open?0.25:0.05,buf=c.createBuffer(1,c.sampleRate*0.05,c.sampleRate),data=buf.getChannelData(0); for(let i=0;i<data.length;i++) data[i]=Math.random()*2-1; const ns=c.createBufferSource(),ng=c.createGain(),filt=c.createBiquadFilter(); filt.type="highpass";filt.frequency.value=7000;ns.buffer=buf;ns.connect(filt);filt.connect(ng);ng.connect(c.destination);ng.gain.setValueAtTime(0.3,t);ng.gain.exponentialRampToValueAtTime(0.001,t+dur);ns.start(t);ns.stop(t+dur+0.01); } catch(e){} }, []);
+
+  const drumRef = useRef(null);
+  const [drumOn, setDrumOn] = useState(false);
+  const [drumPattern, setDrumPattern] = useState("Shuffle");
+
+  const startDrums = useCallback((bpm, pattern) => {
+    if(drumRef.current) clearInterval(drumRef.current);
+    const pat=DRUM_PATTERNS[pattern]||DRUM_PATTERNS["Shuffle"];
+    const stepMs=(60/bpm)/4*1000;
+    let step=0;
+    const tick=()=>{ const c=getCtx(),t=c.currentTime+0.02; if(pat.kick[step])playKick(t); if(pat.snare[step])playSnare(t); if(pat.hihat[step])playHihat(t,step%4===2); step=(step+1)%16; };
+    tick(); drumRef.current=setInterval(tick,stepMs);
+  }, [playKick, playSnare, playHihat]);
+
+  const stopDrums = useCallback(() => { if(drumRef.current){clearInterval(drumRef.current);drumRef.current=null;} }, []);
 
   // Derive mode from family + quality
   // Pentatonic family: major=major, minor=minor
@@ -1488,9 +1489,7 @@ function App() {
 
       <div style={{maxWidth:660,margin:"0 auto 10px",display:"flex",gap:5,flexWrap:"wrap",justifyContent:"center"}}>
         {[{l:"🎵 Metro",a:metro,fn:()=>setMetro(v=>!v)},{l:"♭5 Blues",a:blues,fn:()=>setBlues(v=>!v)},{l:"7 Notes",a:fullScale,fn:()=>setFullScale(v=>!v)},{l:"🎼 Prog",a:showProg,fn:()=>setShowProg(v=>!v)},{l:"⬡ Shape",a:shapeOn,fn:()=>{setShapeOn(v=>!v);setShapeMap({"_global":[{color:SHAPE_COLORS[0],dots:[],quality:null}]});}},{l:"◉ Neck",a:neck,fn:()=>setNeck(v=>!v)}].map(b=><button key={b.l} onClick={b.fn} style={{fontFamily:M,fontWeight:700,fontSize:10,background:b.a?`${ac}22`:"rgba(255,255,255,0.04)",color:b.a?ac:"#556",border:`1px solid ${b.a?ac+"55":"#1e2e3a"}`,borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>{b.l}</button>)}
-        <button onClick={()=>{getCtx();loadSamples();}} style={{fontFamily:M,fontWeight:700,fontSize:10,background:samplesReady?"rgba(64,168,96,0.2)":samplesLoading?"rgba(255,200,0,0.15)":"rgba(255,255,255,0.04)",color:samplesReady?"#40a860":samplesLoading?"#ffc800":"#556",border:`1px solid ${samplesReady?"#40a86055":samplesLoading?"#ffc80055":"#1e2e3a"}`,borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>
-          {samplesReady?"🎸 Guitar On":samplesLoading?"🎸 Loading...":"🎸 Guitar"}
-        </button>
+        <button onClick={()=>{getCtx();loadSamples();}} style={{fontFamily:M,fontWeight:700,fontSize:10,background:samplesReady?"rgba(64,168,96,0.2)":samplesLoading?"rgba(255,200,0,0.1)":"rgba(255,255,255,0.04)",color:samplesReady?"#40a860":samplesLoading?"#ffc800":"#556",border:"1px solid "+(samplesReady?"#40a86055":samplesLoading?"#ffc80055":"#1e2e3a"),borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>{samplesReady?"🎸 Guitar On":samplesLoading?"🎸 Loading...":"🎸 Guitar"}</button>
       </div>
 
       {shapeOn && (
@@ -1537,7 +1536,7 @@ function App() {
       )}
 
       {metro && <div style={{maxWidth:660,margin:"0 auto 10px"}}><Metro pc={playClick}/></div>}
-      {showProg && <div style={{maxWidth:660,margin:"0 auto 10px"}}><ProgBuilder triads={TR} root={root} sc={SC} accent={ac} playChord={hearCh} onChordFocus={ch=>{setFocusedProgIdx(ch!=null?(ch._progIdx??null):null);}} family={family} quality={quality} playClick={playClick} prog={prog} setProg={setProg} savedProgs={savedProgs} setSavedProgs={setSavedProgs}/></div>}
+      {showProg && <div style={{maxWidth:660,margin:"0 auto 10px"}}><ProgBuilder triads={TR} root={root} sc={SC} accent={ac} playChord={hearCh} onChordFocus={ch=>{setFocusedProgIdx(ch!=null?(ch._progIdx??null):null);}} family={family} quality={quality} playClick={playClick} prog={prog} setProg={setProg} savedProgs={savedProgs} setSavedProgs={setSavedProgs} startDrums={startDrums} stopDrums={stopDrums} drumOn={drumOn} setDrumOn={setDrumOn} drumPattern={drumPattern} setDrumPattern={setDrumPattern}/></div>}
 
       {neck && (()=>{
         const neckContent = (

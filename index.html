@@ -1262,7 +1262,7 @@ function App() {
     let count = 0;
     await Promise.all(SAMPLE_NOTES.map(async ({name}) => {
       try {
-        const res = await fetch(`./samples/${name}.mp3`);
+        const res = await fetch(`./${name}.mp3`);
         if(res.ok) {
           const ab = await res.arrayBuffer();
           loaded[name] = await ctx.decodeAudioData(ab);

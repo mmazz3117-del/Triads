@@ -128,6 +128,19 @@
 
     .dot-row { display: flex; justify-content: center; gap: 6px; opacity: 0.35; }
     .dot-pip { width: 5px; height: 5px; border-radius: 50%; }
+
+    .readme-link {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: clamp(10px, 2.5vw, 12px);
+      letter-spacing: 1.5px; text-transform: uppercase;
+      color: #5a9ab8; text-decoration: none;
+      border: 1px solid #3a6a8a55;
+      border-radius: 6px; padding: 8px 20px;
+      margin-bottom: 28px;
+      display: inline-block;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .readme-link:hover { color: #7ab8d8; border-color: #3a6a8a99; }
   </style>
 </head>
 <body>
@@ -210,6 +223,10 @@
 
     <!-- CTA button -->
     <button id="splashBtn" type="button" class="splash-cta">▶&nbsp; Open App</button>
+
+    <a href="https://github.com/mmazz3117-del/Triads/blob/main/README.md"
+       target="_blank" rel="noopener noreferrer"
+       class="readme-link">📖&nbsp; How to use</a>
 
     <div class="dot-row">
       <div class="dot-pip" style="background:#f0c040"></div>

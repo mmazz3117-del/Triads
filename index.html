@@ -746,7 +746,7 @@ const PROG_PRESETS = {
   },
 };
 
-function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,quality,playClick,onProgRef,prog,setProg,savedProgs,setSavedProgs,startDrums,stopDrums,drumOn,setDrumOn,drumPattern,setDrumPattern,drumVol,setDrumVol}){
+function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,quality,playClick,onProgRef,prog,setProg,savedProgs,setSavedProgs,startDrums,stopDrums,drumOn,setDrumOn,drumPattern,setDrumPattern,drumVol,setDrumVol,shapeMap,setShapeMap}){
   const [bpm,setBpm]=useState(80),[bpc,setBpc]=useState(4);
   const [on,setOn]=useState(false),[cur,setCur]=useState(0),[beat,setBeat]=useState(0);
   const [countIn,setCountIn]=useState(0);
@@ -932,17 +932,22 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
 
   // Save / load
   const saveProgression=async(nm)=>{
-    if(!nm||!prog.length)return;
+    if(!nm||!nm.trim()||!prog.length) return;
     const cleanProg = prog.map(ch=>({
       ti: ch.ti, label: ch.label, notes: ch.notes,
       color: ch.color, beats: ch.beats||bpc, ext: ch.ext||null
     }));
-    const newSaved={...savedProgs,[nm]:{prog:cleanProg,bpm,countIn,loopCount}};
+    const savedShapes = {};
+    if(shapeMap) {
+      const progLabels = new Set(cleanProg.map(ch=>ch.label));
+      Object.keys(shapeMap).forEach(k=>{ if(progLabels.has(k)||k==="_global") savedShapes[k]=shapeMap[k]; });
+    }
+    const newSaved={...savedProgs,[nm.trim()]:{prog:cleanProg,bpm,countIn,loopCount,shapeMap:savedShapes}};
     setSavedProgs(newSaved);
     const json = JSON.stringify(newSaved);
     try { if(window.storage && window.storage.set) await window.storage.set("pent-savedProgs",json); } catch(e){}
     try { localStorage.setItem("pent-savedProgs",json); } catch(e){}
-    setShowSave(false);setSaveName("");
+    setShowSave(false); setSaveName("");
   };
   const loadProgression=(nm)=>{
     const data=savedProgs[nm];if(!data)return;
@@ -952,6 +957,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
     if(data.bpm)setBpm(data.bpm);
     if(data.countIn!==undefined)setCountIn(data.countIn);
     if(data.loopCount!==undefined)setLoopCount(data.loopCount);
+    if(data.shapeMap) setShapeMap(data.shapeMap);
   };
   const deleteSaved=async(nm)=>{
     const newSaved={...savedProgs};delete newSaved[nm];
@@ -1004,11 +1010,15 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
 
       {/* Save dialog */}
       {showSave&&(
-        <div style={{display:"flex",gap:5,alignItems:"center",marginBottom:10,padding:"6px 8px",background:`${accent}10`,borderRadius:6}}>
-          <input value={saveName} onChange={e=>setSaveName(e.target.value)} placeholder="name your progression"
-            style={{flex:1,fontFamily:M,fontSize:11,padding:"4px 8px",background:"rgba(0,0,0,0.3)",border:`1px solid ${accent}44`,borderRadius:5,color:"#eee",outline:"none"}}/>
-          <button onClick={()=>saveProgression(saveName)} style={{fontFamily:M,fontSize:9,fontWeight:700,color:"#fff",background:`${accent}`,border:"none",borderRadius:5,padding:"5px 10px",cursor:"pointer"}}>Save</button>
-          <span onClick={()=>setShowSave(false)} style={{fontSize:14,color:"#445",cursor:"pointer",userSelect:"none"}}>✕</span>
+        <div style={{display:"flex",gap:5,alignItems:"center",marginBottom:10,padding:"6px 8px",background:accent+"10",borderRadius:6}}>
+          <input value={saveName} onChange={e=>setSaveName(e.target.value)}
+            onKeyDown={e=>{if(e.key==="Enter"&&saveName.trim())saveProgression(saveName.trim());}}
+            placeholder="name your progression"
+            style={{flex:1,fontFamily:M,fontSize:11,padding:"6px 8px",background:"rgba(0,0,0,0.3)",border:"1px solid "+accent+"44",borderRadius:5,color:"#eee",outline:"none"}}/>
+          <button
+            onPointerUp={()=>{if(saveName.trim())saveProgression(saveName.trim());}}
+            style={{fontFamily:M,fontSize:11,fontWeight:700,color:"#fff",background:accent,border:"none",borderRadius:5,padding:"8px 14px",cursor:"pointer",minHeight:36,minWidth:52,touchAction:"manipulation"}}>Save</button>
+          <span onPointerUp={()=>setShowSave(false)} style={{fontSize:16,color:"#556",cursor:"pointer",userSelect:"none",padding:"4px 6px"}}>✕</span>
         </div>
       )}
 
@@ -1546,14 +1556,14 @@ function App() {
         <button onClick={()=>{getCtx();loadSamples();}} style={{fontFamily:M,fontWeight:700,fontSize:10,background:samplesReady?"rgba(64,168,96,0.2)":samplesLoading?"rgba(255,200,0,0.1)":"rgba(255,255,255,0.04)",color:samplesReady?"#40a860":samplesLoading?"#ffc800":"#556",border:"1px solid "+(samplesReady?"#40a86055":samplesLoading?"#ffc80055":"#1e2e3a"),borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>{samplesReady?"🎸 Guitar On":samplesLoading?"🎸 Loading...":"🎸 Guitar"}</button>
       </div>
 
-      {shapeOn && (
-        <div style={{maxWidth:660,margin:"0 auto 10px",background:"rgba(0,0,0,0.3)",border:`1px solid ${ac}33`,borderRadius:10,padding:"10px 12px"}}>
+      {shapeOn&&(
+        <div style={{maxWidth:660,margin:"0 auto 10px",background:"rgba(0,0,0,0.3)",border:"1px solid "+ac+"33",borderRadius:10,padding:"10px 12px"}}>
           <div style={{fontFamily:M,fontSize:9,color:"#3a6a8a",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>
-            {focusedChord ? `Shape for ${focusedChord.label} — tap notes on fretboard` : "Chord Shape — tap a chord name above to select it, then tap notes"}
+            {focusedChord?"Shape for "+focusedChord.label+" — tap notes on fretboard":"Chord Shape — tap a chord name above to select it, then tap notes"}
           </div>
           <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"flex-start"}}>
             {shapeGroups.map((g,gi)=>(
-              <div key={gi} style={{background:`${g.color}15`,border:`1px solid ${g.color}44`,borderRadius:8,padding:"6px 8px",minWidth:80}}>
+              <div key={gi} style={{background:g.color+"15",border:"1px solid "+g.color+"44",borderRadius:8,padding:"6px 8px",minWidth:80}}>
                 <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:5}}>
                   <div style={{width:8,height:8,borderRadius:"50%",background:g.color,flexShrink:0}}/>
                   <span style={{fontFamily:M,fontSize:10,color:g.color,fontWeight:700,flex:1}}>
@@ -1566,8 +1576,8 @@ function App() {
                   {["maj","min","dim","7","9"].map(q=>(
                     <span key={q} onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,quality:g.quality===q?null:q}:x))}
                       style={{fontFamily:M,fontSize:8,padding:"1px 5px",borderRadius:3,cursor:"pointer",
-                        background:g.quality===q?`${g.color}30`:"transparent",
-                        border:`1px solid ${g.quality===q?g.color:g.color+"33"}`,
+                        background:g.quality===q?g.color+"30":"transparent",
+                        border:"1px solid "+(g.quality===q?g.color:g.color+"33"),
                         color:g.quality===q?g.color:"#445"}}>
                       {q}
                     </span>
@@ -1577,7 +1587,7 @@ function App() {
             ))}
             {shapeGroups[shapeGroups.length-1].dots.length>0&&shapeGroups.length<7&&(
               <button onClick={()=>setShapeGroups(p=>[...p,{color:SHAPE_COLORS[p.length%SHAPE_COLORS.length],dots:[],quality:null}])}
-                style={{fontFamily:M,fontSize:9,color:ac,background:`${ac}15`,border:`1px solid ${ac}44`,borderRadius:6,padding:"5px 10px",cursor:"pointer",alignSelf:"center"}}>
+                style={{fontFamily:M,fontSize:9,color:ac,background:ac+"15",border:"1px solid "+ac+"44",borderRadius:6,padding:"5px 10px",cursor:"pointer",alignSelf:"center"}}>
                 + New chord
               </button>
             )}
@@ -1590,7 +1600,7 @@ function App() {
       )}
 
       {metro && <div style={{maxWidth:660,margin:"0 auto 10px"}}><Metro pc={playClick}/></div>}
-      {showProg && <div style={{maxWidth:660,margin:"0 auto 10px"}}><ProgBuilder triads={TR} root={root} sc={SC} accent={ac} playChord={hearCh} onChordFocus={ch=>{setFocusedProgIdx(ch!=null?(ch._progIdx??null):null);}} family={family} quality={quality} playClick={playClick} prog={prog} setProg={setProg} savedProgs={savedProgs} setSavedProgs={setSavedProgs} startDrums={startDrums} stopDrums={stopDrums} drumOn={drumOn} setDrumOn={setDrumOn} drumPattern={drumPattern} setDrumPattern={setDrumPattern} drumVol={drumVol} setDrumVol={setDrumVol}/></div>}
+      {showProg && <div style={{maxWidth:660,margin:"0 auto 10px"}}><ProgBuilder triads={TR} root={root} sc={SC} accent={ac} playChord={hearCh} onChordFocus={ch=>{setFocusedProgIdx(ch!=null?(ch._progIdx??null):null);}} family={family} quality={quality} playClick={playClick} prog={prog} setProg={setProg} savedProgs={savedProgs} setSavedProgs={setSavedProgs} startDrums={startDrums} stopDrums={stopDrums} drumOn={drumOn} setDrumOn={setDrumOn} drumPattern={drumPattern} setDrumPattern={setDrumPattern} drumVol={drumVol} setDrumVol={setDrumVol} shapeMap={shapeMap} setShapeMap={setShapeMap}/></div>}
 
       {neck && (()=>{
         const neckContent = (
@@ -1644,6 +1654,46 @@ function App() {
             </div>
             {!neckFull && (
               <div style={{padding:"10px 12px 12px",borderTop:"1px solid #182535"}}>
+                {shapeOn&&<div style={{marginBottom:10,padding:"8px 10px",background:"rgba(0,0,0,0.25)",borderRadius:8,border:"1px solid "+ac+"33"}}>
+                  <div style={{fontFamily:M,fontSize:9,color:"#3a6a8a",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>
+                    {focusedChord?"Shape for "+focusedChord.label+" — tap notes":"Chord Shape — tap notes on fretboard"}
+                  </div>
+                  <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"flex-start"}}>
+                    {shapeGroups.map((g,gi)=>(
+                      <div key={gi} style={{background:g.color+"15",border:"1px solid "+g.color+"44",borderRadius:8,padding:"6px 8px",minWidth:80}}>
+                        <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:5}}>
+                          <div style={{width:8,height:8,borderRadius:"50%",background:g.color,flexShrink:0}}/>
+                          <span style={{fontFamily:M,fontSize:10,color:g.color,fontWeight:700,flex:1}}>
+                            {g.dots.length===0?"tap notes…":g.dots.map(d=>d.note).join("·")}
+                          </span>
+                          <span style={{fontFamily:M,fontSize:8,color:"#556"}}>({g.dots.length}/4)</span>
+                          {g.dots.length>0&&<span onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,dots:[]}:x))} style={{fontSize:9,cursor:"pointer",color:"#445",userSelect:"none"}}>✕</span>}
+                        </div>
+                        <div style={{display:"flex",gap:2,flexWrap:"wrap"}}>
+                          {["maj","min","dim","7","9"].map(q=>(
+                            <span key={q} onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,quality:g.quality===q?null:q}:x))}
+                              style={{fontFamily:M,fontSize:8,padding:"1px 5px",borderRadius:3,cursor:"pointer",
+                                background:g.quality===q?g.color+"30":"transparent",
+                                border:"1px solid "+(g.quality===q?g.color:g.color+"33"),
+                                color:g.quality===q?g.color:"#445"}}>
+                              {q}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                    {shapeGroups[shapeGroups.length-1].dots.length>0&&shapeGroups.length<7&&(
+                      <button onClick={()=>setShapeGroups(p=>[...p,{color:SHAPE_COLORS[p.length%SHAPE_COLORS.length],dots:[],quality:null}])}
+                        style={{fontFamily:M,fontSize:9,color:ac,background:ac+"15",border:"1px solid "+ac+"44",borderRadius:6,padding:"5px 10px",cursor:"pointer",alignSelf:"center"}}>
+                        + New chord
+                      </button>
+                    )}
+                    <button onClick={()=>setShapeGroups([{color:SHAPE_COLORS[0],dots:[],quality:null}])}
+                      style={{fontFamily:M,fontSize:9,color:"#334",background:"transparent",border:"1px solid #1e2e3a",borderRadius:6,padding:"5px 8px",cursor:"pointer",alignSelf:"center",marginLeft:"auto"}}>
+                      clear all
+                    </button>
+                  </div>
+                </div>}
                 <div style={{fontSize:9,letterSpacing:3,color:"#3a6a8a",fontFamily:M,textTransform:"uppercase",marginBottom:6}}>Triads · {root} {mode}</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
                   {TR.map((t,ti)=><TCard key={ti} t={t} root={root} on={ncht.has(ti)} onClick={()=>togN(ti)} sc={SC} pd={PD} onPlay={hearCh} ext={nexts[ti]||null} onExt={val=>setNextExt(ti,val)} qualityOverride={qualOver[ti]||null} onQualityToggle={q=>setQualOver(p=>({...p,[ti]:q}))}/>)}
@@ -1814,9 +1864,49 @@ function App() {
                       <span onClick={e=>{e.stopPropagation();clr(pos.num);}} style={{fontFamily:M,fontSize:9,color:"#334",cursor:"pointer"}}>none</span>
                     </div>
                   </div>
-                  <div className="sc" style={{background:"rgba(0,0,0,0.45)",borderRadius:10,padding:"8px",border:"1px solid #182030",overflowX:"auto",marginBottom:12}}>
+                  <div style={{background:"rgba(0,0,0,0.45)",borderRadius:10,padding:"8px",border:"1px solid #182030",overflowX:"auto",marginBottom:showProg?6:12}}>
                     <Fretboard pos={pos} root={root} base={base} checked={ch} triads={TR} pd={PD} accent={focusedChord?focusedChord.color:ac} sc={SC} zoom={1} blues={blues} exts={exts[pos.num]||{}} fullScale={fullScale} shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={toggleDot} qualOver={qualOver} focusedNotes={effectiveFocusedNotes} focusedColor={focusedChord?focusedChord.color:null}/>
                   </div>
+                  {shapeOn&&<div style={{marginBottom:10,padding:"8px 10px",background:"rgba(0,0,0,0.25)",borderRadius:8,border:"1px solid "+ac+"33"}}>
+                    <div style={{fontFamily:M,fontSize:9,color:"#3a6a8a",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>
+                      {focusedChord?"Shape for "+focusedChord.label+" — tap notes":"Chord Shape — tap notes on fretboard"}
+                    </div>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"flex-start"}}>
+                      {shapeGroups.map((g,gi)=>(
+                        <div key={gi} style={{background:g.color+"15",border:"1px solid "+g.color+"44",borderRadius:8,padding:"6px 8px",minWidth:80}}>
+                          <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:5}}>
+                            <div style={{width:8,height:8,borderRadius:"50%",background:g.color,flexShrink:0}}/>
+                            <span style={{fontFamily:M,fontSize:10,color:g.color,fontWeight:700,flex:1}}>
+                              {g.dots.length===0?"tap notes…":g.dots.map(d=>d.note).join("·")}
+                            </span>
+                            <span style={{fontFamily:M,fontSize:8,color:"#556"}}>({g.dots.length}/4)</span>
+                            {g.dots.length>0&&<span onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,dots:[]}:x))} style={{fontSize:9,cursor:"pointer",color:"#445",userSelect:"none"}}>✕</span>}
+                          </div>
+                          <div style={{display:"flex",gap:2,flexWrap:"wrap"}}>
+                            {["maj","min","dim","7","9"].map(q=>(
+                              <span key={q} onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,quality:g.quality===q?null:q}:x))}
+                                style={{fontFamily:M,fontSize:8,padding:"1px 5px",borderRadius:3,cursor:"pointer",
+                                  background:g.quality===q?g.color+"30":"transparent",
+                                  border:"1px solid "+(g.quality===q?g.color:g.color+"33"),
+                                  color:g.quality===q?g.color:"#445"}}>
+                                {q}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                      {shapeGroups[shapeGroups.length-1].dots.length>0&&shapeGroups.length<7&&(
+                        <button onClick={()=>setShapeGroups(p=>[...p,{color:SHAPE_COLORS[p.length%SHAPE_COLORS.length],dots:[],quality:null}])}
+                          style={{fontFamily:M,fontSize:9,color:ac,background:ac+"15",border:"1px solid "+ac+"44",borderRadius:6,padding:"5px 10px",cursor:"pointer",alignSelf:"center"}}>
+                          + New chord
+                        </button>
+                      )}
+                      <button onClick={()=>setShapeGroups([{color:SHAPE_COLORS[0],dots:[],quality:null}])}
+                        style={{fontFamily:M,fontSize:9,color:"#334",background:"transparent",border:"1px solid #1e2e3a",borderRadius:6,padding:"5px 8px",cursor:"pointer",alignSelf:"center",marginLeft:"auto"}}>
+                        clear all
+                      </button>
+                    </div>
+                  </div>}
                   <div style={{fontSize:9,letterSpacing:2,color:"#3a6a8a",fontFamily:M,textTransform:"uppercase",marginBottom:6}}>Tap triads to highlight · tap notes to hear</div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
                     {TR.map((t,ti)=><TCard key={ti} t={t} root={root} on={ch.has(ti)} onClick={e=>{e.stopPropagation();togCht(pos.num,ti);}} sc={SC} pd={PD} onPlay={hearCh} ext={(exts[pos.num]||{})[ti]||(exts[pos.num]||{})[String(ti)]||null} onExt={val=>setExt(pos.num,ti,val)} qualityOverride={qualOver[ti]||null} onQualityToggle={q=>setQualOver(p=>({...p,[ti]:q}))}/>)}

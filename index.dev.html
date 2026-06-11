@@ -28,10 +28,20 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <!-- Fonts load async (media swap trick) so they never block first paint -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet"></noscript>
+  <style>
+    /* Metric-matched local fallbacks — text renders in these until the web
+       fonts arrive, sized so the swap doesn't shift layout (CLS fix). */
+    @font-face { font-family: "Plex Mono Fallback"; src: local("Courier New"), local("Courier");
+      size-adjust: 100%; ascent-override: 102.5%; descent-override: 27.5%; line-gap-override: 0%; }
+    @font-face { font-family: "Playfair Fallback"; src: local("Georgia"), local("Times New Roman");
+      size-adjust: 106%; ascent-override: 108.2%; descent-override: 26.6%; line-gap-override: 0%; }
+  </style>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { background: #0b1018; }
@@ -92,7 +102,7 @@
       position: absolute; top: 50%; transform: translateY(-50%);
       width: 17px; height: 17px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-family: 'IBM Plex Mono', monospace; font-size: 7px; font-weight: 700; z-index: 2;
+      font-family: 'IBM Plex Mono', 'Plex Mono Fallback', monospace; font-size: 7px; font-weight: 700; z-index: 2;
     }
     .nd-root   { background: #f0c040; color: #111; border: 1.5px solid #fff4; }
     .nd-blue   { background: #60b8f0; color: #111; }
@@ -103,20 +113,20 @@
 
     /* ── typography ── */
     .sp-h1 {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Playfair Display', 'Playfair Fallback', serif;
       font-size: clamp(28px, 8vw, 50px); font-weight: 900; line-height: 1.1;
       background: linear-gradient(130deg, #f0c040, #60b8f0);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       margin-bottom: 6px;
     }
     .sub {
-      font-family: 'IBM Plex Mono', monospace;
+      font-family: 'IBM Plex Mono', 'Plex Mono Fallback', monospace;
       font-size: clamp(13px, 3.5vw, 18px); letter-spacing: 4px;
       color: #5a9ab8; text-transform: uppercase; font-weight: 600; margin-bottom: 24px;
     }
     .divider { width: 50px; height: 1px; background: linear-gradient(to right, transparent, #3a6a8a, transparent); margin: 0 auto 24px; }
     .desc {
-      font-family: 'IBM Plex Mono', monospace; font-size: clamp(11px, 3vw, 13px);
+      font-family: 'IBM Plex Mono', 'Plex Mono Fallback', monospace; font-size: clamp(11px, 3vw, 13px);
       line-height: 1.85; color: #7a9ab0; max-width: 440px; margin: 0 auto 28px;
     }
     .desc strong { color: #a0c8e0; font-weight: 600; }
@@ -124,7 +134,7 @@
     /* ── pills ── */
     .pills { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; margin-bottom: 32px; }
     .pill {
-      font-family: 'IBM Plex Mono', monospace; font-size: clamp(8px, 2vw, 9px);
+      font-family: 'IBM Plex Mono', 'Plex Mono Fallback', monospace; font-size: clamp(8px, 2vw, 9px);
       letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; border: 1px solid;
     }
     .py { color:#f0c040; border-color:#f0c04044; background:#f0c04010; }
@@ -135,7 +145,7 @@
 
     /* ── CTA button ── */
     .splash-cta {
-      font-family: 'IBM Plex Mono', monospace;
+      font-family: 'IBM Plex Mono', 'Plex Mono Fallback', monospace;
       font-size: clamp(13px, 3.5vw, 16px); font-weight: 700;
       letter-spacing: 2px; text-transform: uppercase;
       padding: 18px 52px; border-radius: 10px; border: none;
@@ -154,7 +164,7 @@
     .dot-pip { width: 5px; height: 5px; border-radius: 50%; }
 
     .readme-link {
-      font-family: 'IBM Plex Mono', monospace;
+      font-family: 'IBM Plex Mono', 'Plex Mono Fallback', monospace;
       font-size: clamp(10px, 2.5vw, 12px);
       letter-spacing: 1.5px; text-transform: uppercase;
       color: #5a9ab8; text-decoration: none;
@@ -267,6 +277,9 @@
 
 
 <!-- React app -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
 <script type="text/babel">
 const { useState, useRef, useEffect, useCallback } = React;
 
@@ -536,7 +549,7 @@ function SvgDot({cx, cy, r, colors, note, isRoot, dim, accent}) {
       {/* Label */}
       <text x={cx} y={cy+fs*0.4} textAnchor="middle" fontSize={fs} fontWeight="700"
         fill={dim ? "#5a7a8a" : (single && isRoot ? "#111" : "#fff")}
-        fontFamily="IBM Plex Mono,monospace">{note}</text>
+        fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{note}</text>
     </g>
   );
 }
@@ -633,14 +646,14 @@ function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blue
           ? <g key={f}><circle cx={x} cy={my-SH} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/><circle cx={x} cy={my+SH} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/></g>
           : <circle key={f} cx={x} cy={my} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/>;
       })}
-      {Array.from({length:nc},(_,i) => <text key={i} x={LP+(i+1)*FW-FW/2} y={17} textAnchor="middle" fontSize={Math.max(8,10*zoom)} fill="#778" fontWeight="600" fontFamily="IBM Plex Mono,monospace">{mn+i+1}</text>)}
+      {Array.from({length:nc},(_,i) => <text key={i} x={LP+(i+1)*FW-FW/2} y={17} textAnchor="middle" fontSize={Math.max(8,10*zoom)} fill="#778" fontWeight="600" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{mn+i+1}</text>)}
       {wires.map((x,i) => <line key={i} x1={x} y1={TP-6} x2={x} y2={TP+5*SH+6} stroke={i===0&&mn===0?"#889":"#1e2e3e"} strokeWidth={i===0&&mn===0?4:1.5}/>)}
       {Array.from({length:6},(_,row) => <line key={row} x1={wires[0]} y1={TP+row*SH} x2={wires[nc]} y2={TP+row*SH} stroke="#243040" strokeWidth={row===5?2:1}/>)}
-      {SL.map((nm,row) => <text key={row} x={wires[0]-10} y={TP+row*SH+4} textAnchor="middle" fontSize={Math.max(7,9*zoom)} fill="#3a5060" fontFamily="IBM Plex Mono,monospace">{nm}</text>)}
+      {SL.map((nm,row) => <text key={row} x={wires[0]-10} y={TP+row*SH+4} textAnchor="middle" fontSize={Math.max(7,9*zoom)} fill="#3a5060" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{nm}</text>)}
       {blDots.map((d,i) => (
         <g key={`b${i}`}>
           <circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill="#2a1a3a" stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/>
-          <text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,monospace">{blNote}</text>
+          <text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{blNote}</text>
         </g>
       ))}
       {dots.map((dot,i) => {
@@ -668,7 +681,7 @@ function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blue
           return (
             <g key={i} opacity={0.4}>
               <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR*0.65} fill="#1e3a5a" stroke="#3a6080" strokeWidth={1}/>
-              <text x={fx(dot.af)} y={sy(dot.s)+Math.max(5,DR*0.5)} textAnchor="middle" fontSize={Math.max(6,DR*0.55)} fontWeight="700" fill="#7aaaca" fontFamily="IBM Plex Mono,monospace">{dot.note}</text>
+              <text x={fx(dot.af)} y={sy(dot.s)+Math.max(5,DR*0.5)} textAnchor="middle" fontSize={Math.max(6,DR*0.55)} fontWeight="700" fill="#7aaaca" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{dot.note}</text>
             </g>
           );
         }
@@ -718,7 +731,7 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
   }
 
   const allD = [...dm.values()];
-  if (!allD.length) return <div style={{padding:20,textAlign:"center",color:"#334",fontFamily:"IBM Plex Mono,monospace",fontSize:10}}>Select positions above</div>;
+  if (!allD.length) return <div style={{padding:20,textAlign:"center",color:"#334",fontFamily:"IBM Plex Mono,Plex Mono Fallback,monospace",fontSize:10}}>Select positions above</div>;
 
   // Add borrowed-chord notes that aren't in the scale
   const borrowedMap = getBorrowedNoteMap(checked, triads, qualOver, root, sc);
@@ -778,15 +791,15 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
           ? <g key={f}><circle cx={x} cy={my-SH} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/><circle cx={x} cy={my+SH} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/></g>
           : <circle key={f} cx={x} cy={my} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/>;
       })}
-      {Array.from({length:nc},(_,i) => <text key={i} x={LP+(i+1)*FW-FW/2} y={17} textAnchor="middle" fontSize={Math.max(8,10*zoom)} fill="#778" fontWeight="600" fontFamily="IBM Plex Mono,monospace">{mn+i+1}</text>)}
+      {Array.from({length:nc},(_,i) => <text key={i} x={LP+(i+1)*FW-FW/2} y={17} textAnchor="middle" fontSize={Math.max(8,10*zoom)} fill="#778" fontWeight="600" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{mn+i+1}</text>)}
       {wires.map((x,i) => <line key={i} x1={x} y1={TP-6} x2={x} y2={TP+5*SH+6} stroke={i===0&&mn===0?"#889":"#1e2e3e"} strokeWidth={i===0&&mn===0?4:1.5}/>)}
       {Array.from({length:6},(_,row) => <line key={row} x1={wires[0]} y1={TP+row*SH} x2={wires[nc]} y2={TP+row*SH} stroke="#243040" strokeWidth={row===5?2:1}/>)}
-      {SL.map((nm,row) => <text key={row} x={wires[0]-10} y={TP+row*SH+4} textAnchor="middle" fontSize={Math.max(7,9*zoom)} fill="#3a5060" fontFamily="IBM Plex Mono,monospace">{nm}</text>)}
+      {SL.map((nm,row) => <text key={row} x={wires[0]-10} y={TP+row*SH+4} textAnchor="middle" fontSize={Math.max(7,9*zoom)} fill="#3a5060" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{nm}</text>)}
       {posLabels.map(({num,lo,hi}) => {
         const x1=fx(lo)-FW*0.4, x2=fx(hi)+FW*0.4, y=TP+5*SH+DR+10;
-        return <g key={num}><line x1={x1} y1={y} x2={x2} y2={y} stroke={accent} strokeWidth={1.5} opacity={0.5}/><line x1={x1} y1={y-4} x2={x1} y2={y+4} stroke={accent} strokeWidth={1.5} opacity={0.5}/><line x1={x2} y1={y-4} x2={x2} y2={y+4} stroke={accent} strokeWidth={1.5} opacity={0.5}/><text x={(x1+x2)/2} y={y+14} textAnchor="middle" fontSize={10} fill={accent} fontFamily="IBM Plex Mono,monospace" fontWeight="700">Pos {num}</text></g>;
+        return <g key={num}><line x1={x1} y1={y} x2={x2} y2={y} stroke={accent} strokeWidth={1.5} opacity={0.5}/><line x1={x1} y1={y-4} x2={x1} y2={y+4} stroke={accent} strokeWidth={1.5} opacity={0.5}/><line x1={x2} y1={y-4} x2={x2} y2={y+4} stroke={accent} strokeWidth={1.5} opacity={0.5}/><text x={(x1+x2)/2} y={y+14} textAnchor="middle" fontSize={10} fill={accent} fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace" fontWeight="700">Pos {num}</text></g>;
       })}
-      {blDots.map((d,i) => <g key={`b${i}`}><circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill="#2a1a3a" stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/><text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,monospace">{blNote}</text></g>)}
+      {blDots.map((d,i) => <g key={`b${i}`}><circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill="#2a1a3a" stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/><text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{blNote}</text></g>)}
       {allD.map((dot,i) => {
         let cols, dim;
         if (focusedNotes) {
@@ -850,7 +863,7 @@ function TCard({t, root, on, onClick, sc, pd, onPlay, ext, onExt, qualityOverrid
   } else {
     nm = cnameExt(t, root, sc, ext);
   }
-  const M = "'IBM Plex Mono',monospace";
+  const M = "'IBM Plex Mono','Plex Mono Fallback',monospace";
   const isFlipped = qualityOverride && qualityOverride !== origQuality;
   return (
     <div onClick={onClick} style={{background:on?`${t.c}18`:"rgba(255,255,255,0.02)",border:`2px solid ${on?t.c:t.c+"22"}`,borderRadius:9,padding:"8px 10px",cursor:"pointer",opacity:on?1:0.5,transition:"all .13s",boxShadow:on?`0 0 12px ${t.c}30`:"none"}}>
@@ -858,8 +871,8 @@ function TCard({t, root, on, onClick, sc, pd, onPlay, ext, onExt, qualityOverrid
         <div style={{width:13,height:13,borderRadius:3,border:`2px solid ${t.c}`,background:on?t.c:"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
           {on && <span style={{fontSize:8,color:"#111",fontWeight:900}}>✓</span>}
         </div>
-        <span style={{fontSize:12,fontWeight:900,fontFamily:"'Playfair Display',serif",color:t.c}}>{t.n}</span>
-        <span style={{fontSize:17,fontWeight:900,fontFamily:"'Playfair Display',serif",color:"#eee"}}>{nm}</span>
+        <span style={{fontSize:12,fontWeight:900,fontFamily:"'Playfair Display','Playfair Fallback',serif",color:t.c}}>{t.n}</span>
+        <span style={{fontSize:17,fontWeight:900,fontFamily:"'Playfair Display','Playfair Fallback',serif",color:"#eee"}}>{nm}</span>
         {isFlipped && <span style={{fontSize:7,color:"#f0c040",fontFamily:M,padding:"1px 4px",background:"rgba(240,192,64,0.15)",border:"1px solid #f0c04044",borderRadius:3}}>borrowed</span>}
         <span style={{fontSize:8,color:"#445",fontFamily:M,textTransform:"uppercase",letterSpacing:1,marginLeft:"auto"}}>{effQuality}</span>
         <span onClick={e=>{e.stopPropagation();onPlay(allNotes);}} style={{fontSize:13,cursor:"pointer",color:t.c,userSelect:"none"}}>♪</span>
@@ -910,7 +923,7 @@ function Metro({pc}) {
   };
   useEffect(() => { if(on){stop();start();} }, [bpm,sig]);
   useEffect(() => () => clearInterval(ref.current), []);
-  const M = "'IBM Plex Mono',monospace";
+  const M = "'IBM Plex Mono','Plex Mono Fallback',monospace";
   return (
     <div style={{background:"rgba(0,0,0,0.4)",border:"1px solid #1e2e3e",borderRadius:10,padding:"10px 14px",marginBottom:10}}>
       <div style={{fontSize:9,letterSpacing:3,color:"#3a6a8a",fontFamily:M,textTransform:"uppercase",marginBottom:8}}>Metronome</div>
@@ -971,7 +984,7 @@ function renderManualShape(groups,fx,sy){
       const lbl=quality==="major"?"maj":quality==="minor"?"min":quality==="dim"?"dim°":quality;
       out.push(<text key={`sq-${gi}`} x={cx} y={cy-R-8} textAnchor="middle"
         fontSize={9} fontWeight="700" fill={color} opacity={0.95}
-        fontFamily="IBM Plex Mono,monospace" style={{pointerEvents:"none"}}>{lbl}</text>);
+        fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace" style={{pointerEvents:"none"}}>{lbl}</text>);
     }
   });
   return out;
@@ -1020,7 +1033,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
   const ref=useRef(null);
   const countRef=useRef(null);
   const sr=useRef({prog,bpm,bpc,cur,beat,loopCount,loopsDone});
-  const M="'IBM Plex Mono',monospace";
+  const M="'IBM Plex Mono','Plex Mono Fallback',monospace";
 
   useEffect(()=>{sr.current={prog,bpm,bpc,cur,beat,loopCount,loopsDone,drumOn,drumPattern,drumVol};});
   const [focusedIdx,setFocusedIdx]=useState(null);
@@ -1363,7 +1376,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
       <div style={{marginBottom:10}}>
         <div style={{fontSize:9,color:"#445",fontFamily:M,marginBottom:6}}>TAP TO ADD ↓</div>
         <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-          {triads.map((t,ti)=><button key={ti} onClick={()=>add(ti)} style={{fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:15,color:t.c,background:`${t.c}18`,border:`1px solid ${t.c}55`,borderRadius:7,padding:"7px 13px",cursor:"pointer",minHeight:38}}>{cname(t,root,sc)}<span style={{fontSize:9,fontFamily:M,marginLeft:3}}>+</span></button>)}
+          {triads.map((t,ti)=><button key={ti} onClick={()=>add(ti)} style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:15,color:t.c,background:`${t.c}18`,border:`1px solid ${t.c}55`,borderRadius:7,padding:"7px 13px",cursor:"pointer",minHeight:38}}>{cname(t,root,sc)}<span style={{fontSize:9,fontFamily:M,marginLeft:3}}>+</span></button>)}
         </div>
       </div>
 
@@ -1400,7 +1413,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
                     <span onClick={e=>{e.stopPropagation();duplicateChord(idx);}} title="Duplicate" style={{fontFamily:M,fontSize:14,color:"#9ac",cursor:"pointer",padding:"2px 6px",background:"rgba(96,184,240,0.08)",borderRadius:3}}>⎘</span>
                   </div>
                   {isPlaying&&<div style={{display:"flex",gap:2}}>{Array.from({length:chBeats},(_,i)=><div key={i} style={{width:5,height:5,borderRadius:"50%",background:beat===i?ch.color:"#1e3040",transition:"background .05s"}}/>)}</div>}
-                  <span onClick={e=>{e.stopPropagation();setFocusedIdx(idx);}} style={{fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:19,color:ch.color,cursor:"pointer",padding:"2px 6px"}}>{chordExtName(ch)}</span>
+                  <span onClick={e=>{e.stopPropagation();setFocusedIdx(idx);}} style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:19,color:ch.color,cursor:"pointer",padding:"2px 6px"}}>{chordExtName(ch)}</span>
                   {/* Chord notes — shows the actual notes that make up this chord */}
                   <div style={{display:"flex",gap:3,flexWrap:"wrap",justifyContent:"center"}}>
                     {ch.notes.map((n,i)=><span key={i} style={{fontFamily:M,fontWeight:700,fontSize:9,color:ch.color,background:`${ch.color}15`,border:`1px solid ${ch.color}55`,borderRadius:3,padding:"2px 5px",minWidth:18,textAlign:"center"}}>{n}</span>)}
@@ -1756,7 +1769,7 @@ function App() {
     minor:"linear-gradient(135deg,#4090c0,#204880)",
   };
   const rf=fretE(root), rk=maj?relMin(root):isDor?relMaj(root):isMix?relMin(root):relMaj(root);
-  const M="'IBM Plex Mono',monospace";
+  const M="'IBM Plex Mono','Plex Mono Fallback',monospace";
 
   const getBase=pos=>{let f=rf+pos.off;const minF=Math.min(...pos.dots.map(d=>d.f));while(f+minF<0)f+=12;return f;};
   const togPos=n=>setOpenPos(p=>{const s=new Set(p);s.has(n)?s.delete(n):s.add(n);return s;});
@@ -1806,7 +1819,6 @@ function App() {
   return (
     <div style={{minHeight:"100vh",background:"#0b1018",backgroundImage:"radial-gradient(ellipse at 15% 15%,#131f30 0%,transparent 55%),radial-gradient(ellipse at 85% 85%,#0e1820 0%,transparent 55%)",color:"#ddd",padding:"12px 8px 48px"}}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;600&display=swap');
         *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
         html,body{overscroll-behavior-y:none;}
         button,span[onclick]{touch-action:manipulation;}
@@ -1822,7 +1834,7 @@ function App() {
       `}</style>
 
       <div style={{textAlign:"center",marginBottom:12}}>
-        <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:"clamp(22px,5vw,36px)",fontWeight:900,margin:0,background:`linear-gradient(130deg,${ac},${maj?"#60b8f0":"#f0c040"})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Pentatonic Triads</h1>
+        <h1 style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontSize:"clamp(22px,5vw,36px)",fontWeight:900,margin:0,background:`linear-gradient(130deg,${ac},${maj?"#60b8f0":"#f0c040"})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Pentatonic Triads</h1>
         {played && <div style={{fontFamily:M,fontSize:10,color:ac,marginTop:3}}>♪ {played}</div>}
         {/* Scale family selector */}
         <div style={{display:"flex",justifyContent:"center",marginTop:10,gap:6}}>
@@ -2077,7 +2089,7 @@ function App() {
             {/* chord banner at bottom */}
             {focusedChord && (
               <div style={{padding:"5px 14px",background:`${focusedChord.color}22`,borderTop:`1px solid ${focusedChord.color}55`,display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
-                <span style={{fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:20,color:focusedChord.color}}>{focusedChord.label}</span>
+                <span style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:20,color:focusedChord.color}}>{focusedChord.label}</span>
                 <div style={{display:"flex",gap:5}}>
                   {focusedChord.notes.map((n,i)=><span key={i} style={{background:`${focusedChord.color}22`,border:`1px solid ${focusedChord.color}55`,borderRadius:4,padding:"1px 7px",fontSize:11,fontWeight:700,fontFamily:M,color:"#eee"}}>{n}</span>)}
                 </div>
@@ -2109,7 +2121,7 @@ function App() {
           }
           return (
             <div style={{background:`${focusedChord.color}18`,border:`2px solid ${focusedChord.color}`,borderRadius:12,padding:"10px 16px",display:"flex",alignItems:"center",gap:12}}>
-              <div style={{fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:32,color:focusedChord.color}}>{bannerLabel}</div>
+              <div style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:32,color:focusedChord.color}}>{bannerLabel}</div>
               <div style={{flex:1}}>
                 <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
                   {bannerNotes.map((n,i)=><span key={i} style={{background:`${focusedChord.color}22`,border:`1px solid ${focusedChord.color}55`,borderRadius:4,padding:"2px 8px",fontSize:13,fontWeight:700,fontFamily:M,color:"#eee"}}>{n}</span>)}
@@ -2168,9 +2180,9 @@ function App() {
           return (
             <div key={pos.num} style={{background:"rgba(255,255,255,0.018)",border:`1px solid ${isExp?"#253545":"#182030"}`,borderRadius:12,overflow:"hidden",boxShadow:isExp?"0 4px 20px rgba(0,0,0,0.4)":"none"}}>
               <div onClick={()=>togPos(pos.num)} style={{padding:"10px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:10,background:isExp?`${ac}08`:"transparent",borderBottom:isExp?"1px solid #182535":"none"}}>
-                <div style={{width:28,height:28,borderRadius:"50%",flexShrink:0,background:isExp?`linear-gradient(135deg,${ac},${maj?"#b07800":isDor?"#205020":isMix?"#704010":"#2060a0"})`:"rgba(255,255,255,0.05)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:13,color:isExp?"#fff":"#556"}}>{pos.num}</div>
+                <div style={{width:28,height:28,borderRadius:"50%",flexShrink:0,background:isExp?`linear-gradient(135deg,${ac},${maj?"#b07800":isDor?"#205020":isMix?"#704010":"#2060a0"})`:"rgba(255,255,255,0.05)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:13,color:isExp?"#fff":"#556"}}>{pos.num}</div>
                 <div style={{flex:1}}>
-                  <div style={{fontFamily:"'Playfair Display',serif",fontWeight:700,fontSize:13,color:"#ccc"}}>Position {pos.num}</div>
+                  <div style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:700,fontSize:13,color:"#ccc"}}>Position {pos.num}</div>
                   <div style={{fontFamily:M,fontSize:9,color:"#3a5060",marginTop:1}}>{pos.sd} · fret {base}{ch.size>0&&<span style={{color:ac,marginLeft:6}}>{labels}</span>}</div>
                 </div>
                 <div style={{display:"flex",gap:2,flexWrap:"wrap",justifyContent:"flex-end",maxWidth:150}}>

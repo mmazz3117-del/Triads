@@ -93,6 +93,7 @@
       --split-stroke: #ffffff20;
       --bluenote-bg: #2a1a3a;
       --shadow: 0 4px 20px rgba(0,0,0,0.4);
+      --shadow-card: 0 2px 14px rgba(0,0,0,0.32);
     }
     html[data-theme="medium"] {
       --bg: #1c2533;
@@ -143,56 +144,58 @@
       --split-stroke: #ffffff30;
       --bluenote-bg: #3a2750;
       --shadow: 0 4px 20px rgba(0,0,0,0.35);
+      --shadow-card: 0 2px 14px rgba(0,0,0,0.28);
     }
     html[data-theme="light"] {
-      --bg: #eef2f6;
+      --bg: #f5f2ec;
       --bg-glow1: #ffffff;
-      --bg-glow2: #e2e9f0;
-      --bg-deep: #e6ebf1;
-      --panel: rgba(13,32,52,0.04);
-      --panel2: rgba(13,32,52,0.035);
-      --card: rgba(13,32,52,0.03);
-      --card2: #0d203408;
-      --btn: rgba(13,32,52,0.06);
-      --btn2: rgba(13,32,52,0.08);
-      --btn3: rgba(13,32,52,0.12);
-      --well: rgba(13,32,52,0.06);
-      --well2: #ffffff;
-      --well3: rgba(13,32,52,0.05);
-      --well4: rgba(13,32,52,0.05);
-      --well5: rgba(13,32,52,0.04);
-      --border: #c4d0dc;
-      --border-soft: #cdd8e2;
-      --border-dim: #d3dde6;
-      --divider: #d9e2ea;
-      --border-lit: #aebfcf;
-      --btn-border: #b9c8d6;
-      --sel-bg: #2f5377;
-      --sel-border: #4a7aa6;
-      --text: #16222e;
-      --text-soft: #2c3c4c;
-      --muted: #5e7186;
-      --muted2: #7b8da2;
-      --label: #8a9bae;
-      --faint: #a3b2c2;
-      --label2: #6c8094;
-      --heading: #4a7396;
+      --bg-glow2: #ece7dd;
+      --bg-deep: #efebe2;
+      --panel: rgba(80,65,40,0.05);
+      --panel2: rgba(80,65,40,0.045);
+      --card: rgba(80,65,40,0.04);
+      --card2: #6a553a0d;
+      --btn: rgba(80,65,40,0.07);
+      --btn2: rgba(80,65,40,0.09);
+      --btn3: rgba(80,65,40,0.13);
+      --well: rgba(80,65,40,0.06);
+      --well2: #fffdf8;
+      --well3: rgba(80,65,40,0.05);
+      --well4: rgba(80,65,40,0.055);
+      --well5: rgba(80,65,40,0.045);
+      --border: #d8cfbd;
+      --border-soft: #ded6c6;
+      --border-dim: #e2dbcc;
+      --divider: #e6dfd1;
+      --border-lit: #c6b9a2;
+      --btn-border: #cfc4ae;
+      --sel-bg: #3a5a7c;
+      --sel-border: #54799e;
+      --text: #2a241a;
+      --text-soft: #4a4334;
+      --muted: #756b5a;
+      --muted2: #8d8270;
+      --label: #a2977f;
+      --faint: #b8ae99;
+      --label2: #837a66;
+      --heading: #8a7350;
       --link: #2f6ea8;
       --link2: #3a7cb8;
       --link3: #2f6e96;
-      --nut: #5a6a7a;
-      --string: #b9c6d2;
-      --inlay: #d4dde6;
-      --dot: #7d9ab4;
-      --dot-dim: #b6c6d4;
-      --dot-text-dim: #7c8ea0;
-      --ghost-bg: #dde7f0;
-      --ghost-border: #9fb4c8;
-      --ghost-text: #54718c;
+      --nut: #6e6253;
+      --string: #c9c0ab;
+      --inlay: #e4ddcc;
+      --dot: #7d8fa4;
+      --dot-dim: #c4bca8;
+      --dot-text-dim: #8a8068;
+      --ghost-bg: #ede6d4;
+      --ghost-border: #b5a88c;
+      --ghost-text: #6e6244;
       --root-stroke: #00000066;
       --split-stroke: #00000022;
-      --bluenote-bg: #f0e2fa;
-      --shadow: 0 4px 18px rgba(30,50,70,0.16);
+      --bluenote-bg: #f5e8fa;
+      --shadow: 0 4px 18px rgba(90,70,40,0.14);
+      --shadow-card: 0 2px 12px rgba(90,70,40,0.10);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { background: var(--bg); }
@@ -407,11 +410,11 @@
     </div>
 
     <!-- CTA button -->
-    <button id="splashBtn" type="button" class="splash-cta">▶&nbsp; Open App</button>
+    <button id="splashBtn" type="button" class="splash-cta"><svg width="11" height="11" viewBox="0 0 24 24" style="vertical-align:-1px;margin-right:7px"><polygon points="6 4 20 12 6 20 6 4" fill="currentColor"/></svg>Open App</button>
 
-    <a href="https://github.com/mmazz3117-del/Triads/blob/main/README.md"
+    <a href="./pentatonic-triads-walkthrough.html"
        target="_blank" rel="noopener noreferrer"
-       class="readme-link">📖&nbsp; How to use</a>
+       class="readme-link"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/></svg>How to use</a>
 
     <div class="dot-row">
       <div class="dot-pip" style="background:#f0c040"></div>
@@ -677,10 +680,54 @@ function buildDots(pos, base, checked, triads, pd, root, sc, blues, exts, fullSc
 const THEMES = {
   dark:   {inlay:"#1e3040",muted:"#778",nut:"#889",string:"#243040",label2:"#3a5060",dot:"#3d6080",dotDim:"#2a4055",dotTextDim:"#5a7a8a",ghostBg:"#1e3a5a",ghostBorder:"#3a6080",ghostText:"#7aaaca",rootStroke:"#ffffffaa",splitStroke:"#ffffff20",bluenoteBg:"#2a1a3a",wire:"#1e2e3e"},
   medium: {inlay:"#33445a",muted:"#9fb0c0",nut:"#aab8c6",string:"#3c4f64",label2:"#7c93a8",dot:"#5b7e9c",dotDim:"#46607a",dotTextDim:"#8aa2b6",ghostBg:"#2e4866",ghostBorder:"#547698",ghostText:"#a9c4dc",rootStroke:"#ffffffcc",splitStroke:"#ffffff30",bluenoteBg:"#3a2750",wire:"#34465c"},
-  light:  {inlay:"#d4dde6",muted:"#5e7186",nut:"#5a6a7a",string:"#b9c6d2",label2:"#6c8094",dot:"#7d9ab4",dotDim:"#b6c6d4",dotTextDim:"#7c8ea0",ghostBg:"#dde7f0",ghostBorder:"#9fb4c8",ghostText:"#54718c",rootStroke:"#00000066",splitStroke:"#00000022",bluenoteBg:"#f0e2fa",wire:"#c4d0dc"},
+  light:  {inlay:"#e4ddcc",muted:"#756b5a",nut:"#6e6253",string:"#c9c0ab",label2:"#837a66",dot:"#7d8fa4",dotDim:"#c4bca8",dotTextDim:"#8a8068",ghostBg:"#ede6d4",ghostBorder:"#b5a88c",ghostText:"#6e6244",rootStroke:"#00000066",splitStroke:"#00000022",bluenoteBg:"#f5e8fa",wire:"#d8cfbd"},
 };
+THEMES.light.darkAccents = true; // accents darken for text/border contrast on paper
 const THEME_ORDER = ["dark","medium","light"];
 let T = THEMES.dark;
+
+// Accent colors darkened for readable text/borders on the light theme.
+// Fretboard DOTS keep the saturated originals in every theme — these only
+// apply where accents are used as text or thin borders on pale backgrounds.
+const ACCENT_DARKEN = {
+  "#f0c040":"#96720e", "#60b8f0":"#1d6fae", "#a0d080":"#4f7a28",
+  "#f06060":"#c23434", "#f08040":"#bd5512", "#c080f0":"#8b3fc6",
+  "#c0a0c0":"#8a6890", "#e040e0":"#a722a7", "#ffc800":"#8f7200",
+  "#40a860":"#2c7d47",
+};
+const ax = c => (T.darkAccents && ACCENT_DARKEN[c]) ? ACCENT_DARKEN[c] : c;
+
+// Per-position colors for the Neck view (P1–P5), matching the tutorial
+const POS_COLORS = ["#60b8f0","#a0d080","#f0c040","#f06060","#c080f0"];
+
+// ── Inline SVG icon set ──────────────────────────────────────────
+// One consistent set instead of emoji (which render differently per
+// device). stroke=currentColor so icons inherit the surrounding text
+// color, including theme-darkened accents.
+const ICONS = {
+  note:    <g><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></g>,
+  copy:    <g><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></g>,
+  x:       <g><path d="M18 6 6 18"/><path d="M6 6l12 12"/></g>,
+  swap:    <g><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></g>,
+  save:    <g><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></g>,
+  speaker: <g><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor" stroke="none"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a9 9 0 0 1 0 14"/></g>,
+  book:    <g><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/></g>,
+  metro:   <g><path d="M9 3h6l3 17H6z"/><path d="m12 13 5-7"/></g>,
+  queue:   <g><path d="M3 5h10"/><path d="M3 11h10"/><path d="M3 17h6"/><path d="M16 17V6l5-1"/><circle cx="14" cy="17" r="2.5"/></g>,
+  expand:  <g><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></g>,
+  play:    <g><polygon points="6 4 20 12 6 20 6 4" fill="currentColor" stroke="none"/></g>,
+  stop:    <g><rect x="6" y="6" width="12" height="12" rx="1" fill="currentColor" stroke="none"/></g>,
+  chevL:   <g><path d="M15 18l-6-6 6-6"/></g>,
+  chevR:   <g><path d="M9 18l6-6-6-6"/></g>,
+  hex:     <g><path d="M12 2l8 5v10l-8 5-8-5V7z"/></g>,
+  neckIc:  <g><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></g>,
+};
+const Ic = ({n, s=12, style}) => (
+  <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+    style={{display:"inline-block",verticalAlign:"-2px",flexShrink:0,...style}}>{ICONS[n]}</svg>
+);
+
 
 let __dotUid = 0;
 function SvgDot({cx, cy, r, colors, note, isRoot, dim, accent}) {
@@ -861,7 +908,7 @@ function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blue
 }
 
 // Neck view (multiple positions) — uses buildDots per position then merges
-function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, blues, exts, shapeOn, shapeGroups, onDotClick, focusedNotes, focusedColor, qualOver}) {
+function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, blues, exts, shapeOn, shapeGroups, onDotClick, focusedNotes, focusedColor, qualOver, posColors}) {
   const none = checked.size === 0 && !focusedNotes;
   const blNote = NOTES[(NOTES.indexOf(root)+6)%12];
 
@@ -875,10 +922,11 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
     dots.forEach(dot => {
       const key = `${dot.s}-${dot.af}`;
       if (!dm.has(key)) {
-        dm.set(key, {...dot, degs: new Set(dot.degs)});
+        dm.set(key, {...dot, degs: new Set(dot.degs), posNums: new Set([pos.num])});
       } else {
         // Merge degs from overlapping positions
         dot.degs.forEach(d => dm.get(key).degs.add(d));
+        dm.get(key).posNums.add(pos.num);
         if (dot.isRoot) dm.get(key).isRoot = true;
         if (dot.isExt) dm.get(key).isExt = true;
       }
@@ -893,7 +941,7 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
   }
 
   const allD = [...dm.values()];
-  if (!allD.length) return <div style={{padding:20,textAlign:"center",color:"var(--faint)",fontFamily:"IBM Plex Mono,Plex Mono Fallback,monospace",fontSize:10}}>Select positions above</div>;
+  if (!allD.length) return <div style={{padding:"24px 16px",textAlign:"center",fontFamily:"IBM Plex Mono,Plex Mono Fallback,monospace"}}><div style={{fontSize:11,color:"var(--text-soft)",marginBottom:4}}>The neck is dark</div><div style={{fontSize:9,color:"var(--muted)",lineHeight:1.7}}>Tap P1–P5 above to light up a position — or all five to see the whole map.</div></div>;
 
   // Add borrowed-chord notes that aren't in the scale
   const borrowedMap = getBorrowedNoteMap(checked, triads, qualOver, root, sc);
@@ -957,9 +1005,10 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
       {wires.map((x,i) => <line key={i} x1={x} y1={TP-6} x2={x} y2={TP+5*SH+6} stroke={i===0&&mn===0?T.nut:T.wire} strokeWidth={i===0&&mn===0?4:1.5}/>)}
       {Array.from({length:6},(_,row) => <line key={row} x1={wires[0]} y1={TP+row*SH} x2={wires[nc]} y2={TP+row*SH} stroke={T.string} strokeWidth={row===5?2:1}/>)}
       {SL.map((nm,row) => <text key={row} x={wires[0]-10} y={TP+row*SH+4} textAnchor="middle" fontSize={Math.max(7,9*zoom)} fill={T.label2} fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{nm}</text>)}
-      {posLabels.map(({num,lo,hi}) => {
-        const x1=fx(lo)-FW*0.4, x2=fx(hi)+FW*0.4, y=TP+5*SH+DR+10;
-        return <g key={num}><line x1={x1} y1={y} x2={x2} y2={y} stroke={accent} strokeWidth={1.5} opacity={0.5}/><line x1={x1} y1={y-4} x2={x1} y2={y+4} stroke={accent} strokeWidth={1.5} opacity={0.5}/><line x1={x2} y1={y-4} x2={x2} y2={y+4} stroke={accent} strokeWidth={1.5} opacity={0.5}/><text x={(x1+x2)/2} y={y+14} textAnchor="middle" fontSize={10} fill={accent} fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace" fontWeight="700">Pos {num}</text></g>;
+      {posLabels.map(({num,lo,hi},pi) => {
+        const pc=ax(POS_COLORS[(num-1)%POS_COLORS.length]);
+        const x1=fx(lo)-FW*0.4, x2=fx(hi)+FW*0.4, y=TP+5*SH+DR+10+(pi%2)*9;
+        return <g key={num}><line x1={x1} y1={y} x2={x2} y2={y} stroke={pc} strokeWidth={1.5} opacity={0.75}/><line x1={x1} y1={y-4} x2={x1} y2={y+4} stroke={pc} strokeWidth={1.5} opacity={0.75}/><line x1={x2} y1={y-4} x2={x2} y2={y+4} stroke={pc} strokeWidth={1.5} opacity={0.75}/><text x={(x1+x2)/2} y={y+14} textAnchor="middle" fontSize={10} fill={pc} fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace" fontWeight="700">P{num}</text></g>;
       })}
       {blDots.map((d,i) => <g key={`b${i}`}><circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill={T.bluenoteBg} stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/><text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{blNote}</text></g>)}
       {allD.map((dot,i) => {
@@ -968,6 +1017,10 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
           const inChord = focusedNotes.has(dot.note);
           cols = inChord ? [focusedColor||accent] : [];
           dim = !inChord;
+        } else if (posColors && dot.posNums && dot.posNums.size > 0) {
+          // Color by position — notes shared by two boxes split between both colors
+          cols = [...dot.posNums].sort((a,b)=>a-b).map(n=>POS_COLORS[(n-1)%POS_COLORS.length]);
+          dim = false;
         } else {
           const borrowedColor = borrowedMap.get(dot.note);
           if (borrowedColor) {
@@ -1028,35 +1081,35 @@ function TCard({t, root, on, onClick, sc, pd, onPlay, ext, onExt, qualityOverrid
   const M = "'IBM Plex Mono','Plex Mono Fallback',monospace";
   const isFlipped = qualityOverride && qualityOverride !== origQuality;
   return (
-    <div onClick={onClick} style={{background:on?`${t.c}18`:"var(--card)",border:`2px solid ${on?t.c:t.c+"22"}`,borderRadius:9,padding:"8px 10px",cursor:"pointer",opacity:on?1:0.5,transition:"all .13s",boxShadow:on?`0 0 12px ${t.c}30`:"none"}}>
+    <div onClick={onClick} style={{background:on?`${ax(t.c)}18`:"var(--card)",border:`2px solid ${on?ax(t.c):ax(t.c)+"22"}`,borderRadius:9,padding:"8px 10px",cursor:"pointer",opacity:on?1:0.5,transition:"all .13s",boxShadow:on?`0 0 12px ${ax(t.c)}30`:"none"}}>
       <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:4}}>
-        <div style={{width:13,height:13,borderRadius:3,border:`2px solid ${t.c}`,background:on?t.c:"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+        <div style={{width:13,height:13,borderRadius:3,border:`2px solid ${ax(t.c)}`,background:on?ax(t.c):"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
           {on && <span style={{fontSize:8,color:"#111",fontWeight:900}}>✓</span>}
         </div>
-        <span style={{fontSize:12,fontWeight:900,fontFamily:"'Playfair Display','Playfair Fallback',serif",color:t.c}}>{t.n}</span>
+        <span style={{fontSize:12,fontWeight:900,fontFamily:"'Playfair Display','Playfair Fallback',serif",color:ax(t.c)}}>{t.n}</span>
         <span style={{fontSize:17,fontWeight:900,fontFamily:"'Playfair Display','Playfair Fallback',serif",color:"var(--text)"}}>{nm}</span>
-        {isFlipped && <span style={{fontSize:7,color:"#f0c040",fontFamily:M,padding:"1px 4px",background:"rgba(240,192,64,0.15)",border:"1px solid #f0c04044",borderRadius:3}}>borrowed</span>}
+        {isFlipped && <span style={{fontSize:7,color:ax("#f0c040"),fontFamily:M,padding:"1px 4px",background:"rgba(240,192,64,0.15)",border:"1px solid #f0c04044",borderRadius:3}}>borrowed</span>}
         <span style={{fontSize:8,color:"var(--label)",fontFamily:M,textTransform:"uppercase",letterSpacing:1,marginLeft:"auto"}}>{effQuality}</span>
-        <span onClick={e=>{e.stopPropagation();onPlay(allNotes);}} style={{fontSize:13,cursor:"pointer",color:t.c,userSelect:"none"}}>♪</span>
+        <span onClick={e=>{e.stopPropagation();onPlay(allNotes);}} style={{fontSize:13,cursor:"pointer",color:ax(t.c),userSelect:"none"}}><Ic n="note" s={13}/></span>
       </div>
       {/* Notes row */}
       <div style={{display:"flex",gap:3,flexWrap:"wrap",paddingLeft:18,marginBottom:4}}>
-        {notes.map((n,i) => <span key={i} onClick={e=>{e.stopPropagation();onPlay([n]);}} style={{background:`${t.c}22`,border:`1px solid ${t.c}44`,borderRadius:4,padding:"1px 6px",fontSize:11,fontWeight:700,fontFamily:M,color:"var(--text)",cursor:"pointer"}}>{n}</span>)}
-        {extNotes.map((n,i) => <span key={`e${i}`} onClick={e=>{e.stopPropagation();onPlay([n]);}} style={{background:`${t.c}40`,border:`2px solid ${t.c}`,borderRadius:4,padding:"1px 6px",fontSize:11,fontWeight:700,fontFamily:M,color:"#fff",cursor:"pointer"}}>{n}</span>)}
+        {notes.map((n,i) => <span key={i} onClick={e=>{e.stopPropagation();onPlay([n]);}} style={{background:`${ax(t.c)}22`,border:`1px solid ${ax(t.c)}44`,borderRadius:4,padding:"1px 6px",fontSize:11,fontWeight:700,fontFamily:M,color:"var(--text)",cursor:"pointer"}}>{n}</span>)}
+        {extNotes.map((n,i) => <span key={`e${i}`} onClick={e=>{e.stopPropagation();onPlay([n]);}} style={{background:`${ax(t.c)}40`,border:`2px solid ${ax(t.c)}`,borderRadius:4,padding:"1px 6px",fontSize:11,fontWeight:700,fontFamily:M,color:"#fff",cursor:"pointer"}}>{n}</span>)}
       </div>
       {/* 7 / 9 extension toggles + quality flip */}
       <div style={{display:"flex",gap:3,paddingLeft:18,marginBottom:3,alignItems:"center"}} onClick={e=>e.stopPropagation()}>
         {["7","9"].map(x => (
-          <button key={x} onClick={()=>onExt(x===ext?null:x)} style={{fontFamily:M,fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:4,cursor:"pointer",border:`1px solid ${ext===x?t.c:t.c+"44"}`,background:ext===x?`${t.c}30`:"transparent",color:ext===x?t.c:"var(--muted2)",letterSpacing:1}}>
+          <button key={x} onClick={()=>onExt(x===ext?null:x)} style={{fontFamily:M,fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:4,cursor:"pointer",border:`1px solid ${ext===x?ax(t.c):ax(t.c)+"44"}`,background:ext===x?`${ax(t.c)}30`:"transparent",color:ext===x?ax(t.c):"var(--muted2)",letterSpacing:1}}>
             {extLabel(t,root,sc,x)}
           </button>
         ))}
         {(origQuality==="major"||origQuality==="minor") && onQualityToggle && (
           <button onClick={()=>onQualityToggle(isFlipped?null:(origQuality==="major"?"minor":"major"))}
             style={{fontFamily:M,fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:4,cursor:"pointer",
-              border:`1px solid ${isFlipped?"#f0c040":t.c+"44"}`,
+              border:`1px solid ${isFlipped?ax("#f0c040"):ax(t.c)+"44"}`,
               background:isFlipped?"rgba(240,192,64,0.15)":"transparent",
-              color:isFlipped?"#f0c040":"var(--muted2)",letterSpacing:1}}>
+              color:isFlipped?ax("#f0c040"):"var(--muted2)",letterSpacing:1}}>
             → {origQuality==="major"?"min":"maj"}
           </button>
         )}
@@ -1087,8 +1140,8 @@ function Metro({pc}) {
   useEffect(() => () => clearInterval(ref.current), []);
   const M = "'IBM Plex Mono','Plex Mono Fallback',monospace";
   return (
-    <div style={{background:"var(--well)",border:"1px solid var(--border)",borderRadius:10,padding:"10px 14px",marginBottom:10}}>
-      <div style={{fontSize:9,letterSpacing:3,color:"var(--heading)",fontFamily:M,textTransform:"uppercase",marginBottom:8}}>Metronome</div>
+    <div style={{background:"var(--well)",border:"1px solid var(--border)",borderRadius:14,padding:"12px 14px",marginBottom:14,boxShadow:"var(--shadow-card)"}}>
+      <div style={{fontSize:11,fontWeight:700,letterSpacing:2.5,color:"var(--heading)",fontFamily:M,textTransform:"uppercase",marginBottom:8,display:"flex",alignItems:"center",gap:6}}><Ic n="metro" s={12}/>Metronome</div>
       <div style={{display:"flex",gap:5,justifyContent:"center",marginBottom:8}}>
         {Array.from({length:sig},(_,i) => <div key={i} style={{width:11,height:11,borderRadius:"50%",background:on&&beat===i+1?(i===0?"#f0c040":"#60b8f0"):"var(--inlay)",transition:"background 0.05s"}}/>)}
       </div>
@@ -1106,7 +1159,7 @@ function Metro({pc}) {
           {[3,4,6].map(n => <span key={n} onClick={()=>setSig(n)} style={{fontFamily:M,fontSize:9,color:sig===n?"#fff":"var(--label)",background:sig===n?"var(--sel-bg)":"transparent",border:`1px solid ${sig===n?"var(--sel-border)":"var(--border)"}`,borderRadius:4,padding:"2px 5px",cursor:"pointer"}}>{n}/4</span>)}
         </div>
         <button onClick={tap} style={{fontFamily:M,fontSize:9,color:"var(--muted)",background:"var(--btn)",border:"1px solid var(--btn-border)",borderRadius:5,padding:"4px 8px",cursor:"pointer"}}>TAP</button>
-        <button onClick={()=>on?stop():start()} style={{fontFamily:M,fontSize:10,fontWeight:700,background:on?"linear-gradient(135deg,#f06060,#a03030)":"linear-gradient(135deg,#40a860,#207040)",color:"#fff",border:"none",borderRadius:6,padding:"5px 12px",cursor:"pointer"}}>{on?"■ STOP":"▶ START"}</button>
+        <button onClick={()=>on?stop():start()} style={{fontFamily:M,fontSize:10,fontWeight:700,background:on?"linear-gradient(135deg,#f06060,#a03030)":"linear-gradient(135deg,#40a860,#207040)",color:"#fff",border:"none",borderRadius:6,padding:"5px 12px",cursor:"pointer"}}>{on?<><Ic n="stop" s={10} style={{marginRight:5}}/>STOP</>:<><Ic n="play" s={10} style={{marginRight:5}}/>START</>}</button>
       </div>
     </div>
   );
@@ -1182,6 +1235,7 @@ const PROG_PRESETS = {
 };
 
 function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,quality,playClick,onProgRef,prog,setProg,savedProgs,setSavedProgs,startDrums,stopDrums,drumOn,setDrumOn,drumPattern,setDrumPattern,drumVol,setDrumVol,shapeMap,setShapeMap}){
+  accent=ax(accent); // HTML-only component — darken accents for light theme
   const [bpm,setBpm]=useState(80),[bpc,setBpc]=useState(4);
   const [on,setOn]=useState(false),[cur,setCur]=useState(0),[beat,setBeat]=useState(0);
   const [countIn,setCountIn]=useState(0);
@@ -1408,7 +1462,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
     if(!nm||!nm.trim()||!prog.length) return;
     const cleanProg = prog.map(ch=>({
       ti: ch.ti, label: ch.label, notes: ch.notes,
-      color: ch.color, beats: ch.beats||bpc, ext: ch.ext||null
+      color: ax(ch.color), beats: ch.beats||bpc, ext: ch.ext||null
     }));
     const savedShapes = {};
     if(shapeMap) {
@@ -1471,16 +1525,16 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
 
   return(
     <div style={{
-      background:"var(--well)",border:`1px solid ${accent}33`,borderRadius:fullscreen?0:12,
+      background:"var(--well)",border:`1px solid ${accent}33`,borderRadius:fullscreen?0:16,boxShadow:fullscreen?"none":"var(--shadow-card)",
       padding:"12px 14px",marginBottom:fullscreen?0:10,
       ...(fullscreen?{position:"fixed",top:0,left:0,right:0,bottom:0,zIndex:999,overflowY:"auto",borderRadius:0}:{})
     }}>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-        <div style={{fontSize:9,letterSpacing:3,color:"var(--heading)",fontFamily:M,textTransform:"uppercase"}}>🎼 Chord Progression</div>
+        <div style={{fontSize:11,fontWeight:700,letterSpacing:2.5,color:"var(--heading)",fontFamily:M,textTransform:"uppercase",display:"flex",alignItems:"center",gap:6}}><Ic n="queue" s={13}/>Chord Progression</div>
         <div style={{display:"flex",gap:6,alignItems:"center"}}>
-          {prog.length>0&&<button onClick={()=>setShowSave(v=>!v)} style={{fontFamily:M,fontSize:9,color:accent,background:`${accent}15`,border:`1px solid ${accent}44`,borderRadius:5,padding:"3px 8px",cursor:"pointer"}}>💾 Save</button>}
+          {prog.length>0&&<button onClick={()=>setShowSave(v=>!v)} style={{fontFamily:M,fontSize:9,color:accent,background:`${accent}15`,border:`1px solid ${accent}44`,borderRadius:5,padding:"3px 8px",cursor:"pointer"}}><Ic n="save" s={11} style={{marginRight:5}}/>Save</button>}
           <button onClick={()=>setFullscreen(v=>!v)} style={{fontFamily:M,fontSize:12,color:"var(--muted)",background:"var(--btn2)",border:"1px solid var(--btn-border)",borderRadius:5,padding:"2px 8px",cursor:"pointer"}} title="Toggle fullscreen">
-            {fullscreen?"✕ close":"⤢"}
+            {fullscreen?<><Ic n="x" s={10} style={{marginRight:4}}/>close</>:<Ic n="expand" s={12}/>}
           </button>
         </div>
       </div>
@@ -1490,19 +1544,24 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
         <div style={{display:"flex",gap:5,alignItems:"center",marginBottom:10,padding:"6px 8px",background:accent+"10",borderRadius:6}}>
           <input value={saveName} onChange={e=>setSaveName(e.target.value)}
             onKeyDown={e=>{if(e.key==="Enter"&&saveName.trim())saveProgression(saveName.trim());}}
-            placeholder="name your progression"
+            placeholder="name it — e.g. slow blues in A"
             style={{flex:1,fontFamily:M,fontSize:11,padding:"6px 8px",background:"var(--well4)",border:"1px solid "+accent+"44",borderRadius:5,color:"var(--text)",outline:"none"}}/>
           <button
             onPointerUp={()=>{if(saveName.trim())saveProgression(saveName.trim());}}
             style={{fontFamily:M,fontSize:11,fontWeight:700,color:"#fff",background:accent,border:"none",borderRadius:5,padding:"8px 14px",cursor:"pointer",minHeight:36,minWidth:52,touchAction:"manipulation"}}>Save</button>
-          <span onPointerUp={()=>setShowSave(false)} style={{fontSize:16,color:"var(--muted2)",cursor:"pointer",userSelect:"none",padding:"4px 6px"}}>✕</span>
+          <span onPointerUp={()=>setShowSave(false)} style={{padding:"4px 6px",cursor:"pointer",color:"var(--muted2)",display:"inline-flex"}}><Ic n="x" s={13}/></span>
+        </div>
+      )}
+      {showSave&&Object.keys(savedProgs).length===0&&(
+        <div style={{fontFamily:M,fontSize:8,color:"var(--muted)",margin:"-4px 2px 10px",lineHeight:1.7}}>
+          Saving keeps your chords, beats, extensions and shapes — right here, next time you open the app.
         </div>
       )}
 
       {/* Saved progressions */}
       {Object.keys(savedProgs).length>0&&(
         <div style={{marginBottom:10}}>
-          <div style={{fontSize:9,color:"var(--label)",fontFamily:M,marginBottom:5}}>SAVED ↓</div>
+          <div style={{fontSize:9,color:"var(--label)",fontFamily:M,marginBottom:5}}>SAVED — TAP A NAME TO LOAD ↓</div>
           <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
             {Object.keys(savedProgs).map(nm=>(
               <div key={nm} style={{display:"flex",alignItems:"center",gap:6,background:"var(--btn)",border:`1px solid ${confirmDelete===nm?"#f0604066":"var(--btn-border)"}`,borderRadius:5,padding:"5px 10px",transition:"border-color .15s"}}>
@@ -1510,10 +1569,10 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
                 {confirmDelete===nm ? (
                   <span style={{display:"flex",alignItems:"center",gap:3}}>
                     <span onPointerUp={()=>deleteSaved(nm)} style={{fontFamily:M,fontSize:9,color:"#f06060",cursor:"pointer",fontWeight:700,padding:"1px 4px",background:"#f0606022",borderRadius:3}}>del?</span>
-                    <span onPointerUp={()=>setConfirmDelete(null)} style={{fontSize:9,color:"var(--muted2)",cursor:"pointer",padding:"1px 3px"}}>✕</span>
+                    <span onPointerUp={()=>setConfirmDelete(null)} style={{color:"var(--muted2)",cursor:"pointer",padding:"1px 3px",display:"inline-flex"}}><Ic n="x" s={9}/></span>
                   </span>
                 ) : (
-                  <span onPointerUp={()=>setConfirmDelete(nm)} style={{fontSize:11,color:"var(--label)",cursor:"pointer",padding:"0 2px",lineHeight:1}}>✕</span>
+                  <span onPointerUp={()=>setConfirmDelete(nm)} style={{color:"var(--label)",cursor:"pointer",padding:"0 2px",display:"inline-flex"}}><Ic n="x" s={10}/></span>
                 )}
               </div>
             ))}
@@ -1524,7 +1583,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
       {/* Presets */}
       {presets.length>0&&(
         <div style={{marginBottom:10}}>
-          <div style={{fontSize:9,color:"var(--label)",fontFamily:M,marginBottom:5}}>PRESETS ↓</div>
+          <div style={{fontSize:9,color:"var(--label)",fontFamily:M,marginBottom:5}}>OR START FROM A PRESET ↓</div>
           <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
             {presets.map((p,i)=>(
               <button key={i} onClick={()=>loadPreset(p)} style={{fontFamily:M,fontSize:9,color:"var(--link)",background:"rgba(96,184,240,0.08)",border:"1px solid #60b8f033",borderRadius:5,padding:"3px 8px",cursor:"pointer"}}>
@@ -1536,15 +1595,21 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
       )}
 
       <div style={{marginBottom:10}}>
-        <div style={{fontSize:9,color:"var(--label)",fontFamily:M,marginBottom:6}}>TAP TO ADD ↓</div>
+        <div style={{fontSize:9,color:"var(--label)",fontFamily:M,marginBottom:6}}>TAP A CHORD TO ADD IT ↓</div>
         <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-          {triads.map((t,ti)=><button key={ti} onClick={()=>add(ti)} style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:15,color:t.c,background:`${t.c}18`,border:`1px solid ${t.c}55`,borderRadius:7,padding:"7px 13px",cursor:"pointer",minHeight:38}}>{cname(t,root,sc)}<span style={{fontSize:9,fontFamily:M,marginLeft:3}}>+</span></button>)}
+          {triads.map((t,ti)=><button key={ti} onClick={()=>add(ti)} style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:15,color:ax(t.c),background:`${ax(t.c)}18`,border:`1px solid ${ax(t.c)}55`,borderRadius:7,padding:"7px 13px",cursor:"pointer",minHeight:38}}>{cname(t,root,sc)}<span style={{fontSize:9,fontFamily:M,marginLeft:3}}>+</span></button>)}
         </div>
       </div>
 
+      {prog.length===0&&(
+        <div style={{border:"1.5px dashed var(--border-lit)",borderRadius:10,padding:"16px 18px",textAlign:"center",marginBottom:12,background:"var(--card)"}}>
+          <div style={{fontFamily:M,fontSize:11,fontWeight:600,color:"var(--text-soft)",marginBottom:5}}>Your progression starts here</div>
+          <div style={{fontFamily:M,fontSize:9,color:"var(--muted)",lineHeight:1.8}}>Tap a chord above to add it — or grab a preset and make it yours.<br/>Hit <Ic n="play" s={8} style={{margin:"0 2px"}}/>AUTO when you're ready to jam.</div>
+        </div>
+      )}
       {prog.length>0&&(
         <div style={{marginBottom:10}}>
-          <div style={{fontSize:9,color:"var(--label)",fontFamily:M,marginBottom:5}}>TAP NAME = SELECT &nbsp;·&nbsp; ◀ ▶ MOVE &nbsp;·&nbsp; ⎘ DUPLICATE</div>
+          <div style={{fontSize:9,color:"var(--label)",fontFamily:M,marginBottom:5}}>TAP A NAME TO FOCUS IT &nbsp;·&nbsp; <Ic n="chevL" s={9}/><Ic n="chevR" s={9}/> MOVE &nbsp;·&nbsp; <Ic n="copy" s={9}/> DUPLICATE</div>
           <div style={{display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
             {prog.map((ch,idx)=>{
               const isPlaying=on&&cur===idx&&!counting;
@@ -1554,39 +1619,39 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
               const chBeats=ch.beats||bpc;
               return(
                 <div key={idx} style={{
-                    background:isPlaying?`${ch.color}35`:`${ch.color}15`,
-                    border:`2px solid ${isFocused?ch.color:isPlaying?ch.color:isNext?ch.color+"88":ch.color+"44"}`,
+                    background:isPlaying?`${ax(ch.color)}35`:`${ax(ch.color)}15`,
+                    border:`2px solid ${isFocused?ax(ch.color):isPlaying?ax(ch.color):isNext?ax(ch.color)+"88":ax(ch.color)+"44"}`,
                     borderRadius:8,padding:"6px 10px",
                     display:"flex",flexDirection:"column",alignItems:"center",gap:3,
                     transition:"all .15s",
-                    boxShadow:isFocused?`0 0 16px ${ch.color}80`:isPlaying?`0 0 12px ${ch.color}60`:isNext?`0 0 8px ${ch.color}40`:"none",
-                    outline:isFocused?`2px solid ${ch.color}`:isNext?`1px dashed ${ch.color}aa`:"none",
+                    boxShadow:isFocused?`0 0 16px ${ax(ch.color)}80`:isPlaying?`0 0 12px ${ax(ch.color)}60`:isNext?`0 0 8px ${ax(ch.color)}40`:"none",
+                    outline:isFocused?`2px solid ${ax(ch.color)}`:isNext?`1px dashed ${ax(ch.color)}aa`:"none",
                     outlineOffset:2,
                   }}>
                   {/* Top row: move arrows + next indicator + duplicate */}
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",gap:4}} onClick={e=>e.stopPropagation()}>
                     <div style={{display:"flex",gap:2}}>
                       <span onClick={e=>{e.stopPropagation();if(idx>0)reorderChord(idx,idx-1);}}
-                        style={{fontFamily:M,fontSize:13,color:idx>0?"var(--link)":"var(--faint)",cursor:idx>0?"pointer":"default",userSelect:"none",padding:"2px 5px",borderRadius:3,background:idx>0?"rgba(96,184,240,0.08)":"transparent"}}>◀</span>
+                        style={{fontFamily:M,fontSize:13,color:idx>0?"var(--link)":"var(--faint)",cursor:idx>0?"pointer":"default",userSelect:"none",padding:"2px 5px",borderRadius:3,background:idx>0?"rgba(96,184,240,0.08)":"transparent"}}><Ic n="chevL" s={12}/></span>
                       <span onClick={e=>{e.stopPropagation();if(idx<prog.length-1)reorderChord(idx,idx+1);}}
-                        style={{fontFamily:M,fontSize:13,color:idx<prog.length-1?"var(--link)":"var(--faint)",cursor:idx<prog.length-1?"pointer":"default",userSelect:"none",padding:"2px 5px",borderRadius:3,background:idx<prog.length-1?"rgba(96,184,240,0.08)":"transparent"}}>▶</span>
+                        style={{fontFamily:M,fontSize:13,color:idx<prog.length-1?"var(--link)":"var(--faint)",cursor:idx<prog.length-1?"pointer":"default",userSelect:"none",padding:"2px 5px",borderRadius:3,background:idx<prog.length-1?"rgba(96,184,240,0.08)":"transparent"}}><Ic n="chevR" s={12}/></span>
                     </div>
-                    {isNext&&<span style={{fontFamily:M,fontSize:7,color:ch.color,fontWeight:700,letterSpacing:1}}>NEXT ↑</span>}
-                    <span onClick={e=>{e.stopPropagation();duplicateChord(idx);}} title="Duplicate" style={{fontFamily:M,fontSize:14,color:"var(--link)",cursor:"pointer",padding:"2px 6px",background:"rgba(96,184,240,0.08)",borderRadius:3}}>⎘</span>
+                    {isNext&&<span style={{fontFamily:M,fontSize:7,color:ax(ch.color),fontWeight:700,letterSpacing:1}}>NEXT ↑</span>}
+                    <span onClick={e=>{e.stopPropagation();duplicateChord(idx);}} title="Duplicate" style={{fontFamily:M,fontSize:14,color:"var(--link)",cursor:"pointer",padding:"2px 6px",background:"rgba(96,184,240,0.08)",borderRadius:3}}><Ic n="copy" s={12}/></span>
                   </div>
-                  {isPlaying&&<div style={{display:"flex",gap:2}}>{Array.from({length:chBeats},(_,i)=><div key={i} style={{width:5,height:5,borderRadius:"50%",background:beat===i?ch.color:"var(--inlay)",transition:"background .05s"}}/>)}</div>}
-                  <span onClick={e=>{e.stopPropagation();setFocusedIdx(idx);}} style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:19,color:ch.color,cursor:"pointer",padding:"2px 6px"}}>{chordExtName(ch)}</span>
+                  {isPlaying&&<div style={{display:"flex",gap:2}}>{Array.from({length:chBeats},(_,i)=><div key={i} style={{width:5,height:5,borderRadius:"50%",background:beat===i?ax(ch.color):"var(--inlay)",transition:"background .05s"}}/>)}</div>}
+                  <span onClick={e=>{e.stopPropagation();setFocusedIdx(idx);}} style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:19,color:ax(ch.color),cursor:"pointer",padding:"2px 6px"}}>{chordExtName(ch)}</span>
                   {/* Chord notes — shows the actual notes that make up this chord */}
                   <div style={{display:"flex",gap:3,flexWrap:"wrap",justifyContent:"center"}}>
-                    {ch.notes.map((n,i)=><span key={i} style={{fontFamily:M,fontWeight:700,fontSize:9,color:ch.color,background:`${ch.color}15`,border:`1px solid ${ch.color}55`,borderRadius:3,padding:"2px 5px",minWidth:18,textAlign:"center"}}>{n}</span>)}
+                    {ch.notes.map((n,i)=><span key={i} style={{fontFamily:M,fontWeight:700,fontSize:9,color:ax(ch.color),background:`${ax(ch.color)}15`,border:`1px solid ${ax(ch.color)}55`,borderRadius:3,padding:"2px 5px",minWidth:18,textAlign:"center"}}>{n}</span>)}
                   </div>
                   <div style={{display:"flex",gap:3,alignItems:"center"}} onClick={e=>e.stopPropagation()}>
                     <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>beats</span>
                     {[1,2,4,8].map(n=>(
                       <span key={n} onClick={e=>{e.stopPropagation();setChordBeats(idx,n);}}
                         style={{fontFamily:M,fontSize:10,fontWeight:700,padding:"3px 7px",borderRadius:4,cursor:"pointer",
-                          background:chBeats===n?`${ch.color}40`:"transparent",
-                          border:`1px solid ${chBeats===n?ch.color:ch.color+"33"}`,
+                          background:chBeats===n?`${ax(ch.color)}40`:"transparent",
+                          border:`1px solid ${chBeats===n?ax(ch.color):ax(ch.color)+"33"}`,
                           color:chBeats===n?"#fff":"var(--muted)",minWidth:22,textAlign:"center"}}>
                         {n}
                       </span>
@@ -1597,8 +1662,8 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
                     {["7","9"].map(x=>(
                       <span key={x} onClick={e=>{e.stopPropagation();setChordExt(idx,ch.ext===x?null:x);}}
                         style={{fontFamily:M,fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:4,cursor:"pointer",
-                          background:ch.ext===x?`${ch.color}40`:"transparent",
-                          border:`1px solid ${ch.ext===x?ch.color:ch.color+"33"}`,
+                          background:ch.ext===x?`${ax(ch.color)}40`:"transparent",
+                          border:`1px solid ${ch.ext===x?ax(ch.color):ax(ch.color)+"33"}`,
                           color:ch.ext===x?"#fff":"var(--muted)"}}>
                         {x}th
                       </span>
@@ -1608,8 +1673,8 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
                     <span onClick={e=>{e.stopPropagation();toggleChordQuality(idx);}} title="Toggle major/minor" style={{fontFamily:M,fontSize:10,fontWeight:700,color:"var(--link)",background:"rgba(96,184,240,0.1)",border:"1px solid #60b8f044",borderRadius:4,padding:"3px 8px",cursor:"pointer"}}>
                       {ch.label.endsWith("m")||ch.label.endsWith("°")?"→ maj":"→ min"}
                     </span>
-                    <span onClick={e=>{e.stopPropagation();playChord(ch.notes);}} style={{fontSize:14,color:"var(--muted)",cursor:"pointer",padding:"2px 6px"}}>♪</span>
-                    <span onClick={e=>{e.stopPropagation();if(confirmRemove===idx){setProg(p=>p.filter((_,i)=>i!==idx));setConfirmRemove(null);if(on)stop();}else{setConfirmRemove(idx);}}} style={{fontFamily:M,fontSize:confirmRemove===idx?10:13,fontWeight:confirmRemove===idx?700:400,color:confirmRemove===idx?"#f06060":"var(--muted)",cursor:"pointer",padding:"2px 6px",background:confirmRemove===idx?"#f0606022":"transparent",borderRadius:3}}>{confirmRemove===idx?"del?":"✕"}</span>
+                    <span onClick={e=>{e.stopPropagation();playChord(ch.notes);}} style={{fontSize:14,color:"var(--muted)",cursor:"pointer",padding:"2px 6px"}}><Ic n="note" s={13}/></span>
+                    <span onClick={e=>{e.stopPropagation();if(confirmRemove===idx){setProg(p=>p.filter((_,i)=>i!==idx));setConfirmRemove(null);if(on)stop();}else{setConfirmRemove(idx);}}} style={{fontFamily:M,fontSize:confirmRemove===idx?10:13,fontWeight:confirmRemove===idx?700:400,color:confirmRemove===idx?"#f06060":"var(--muted)",cursor:"pointer",padding:"2px 6px",background:confirmRemove===idx?"#f0606022":"transparent",borderRadius:3}}>{confirmRemove===idx?"del?":<Ic n="x" s={11}/>}</span>
                   </div>
                 </div>
               );
@@ -1623,7 +1688,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
         <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
           <button onClick={()=>step(-1)} style={{fontFamily:M,fontWeight:700,fontSize:14,color:"var(--muted)",background:"var(--btn)",border:"1px solid var(--btn-border)",borderRadius:6,padding:"7px 14px",cursor:"pointer",minHeight:38}}>◀</button>
           <button onClick={toggle} style={{fontFamily:M,fontWeight:700,fontSize:13,background:on?"linear-gradient(135deg,#f06060,#a03030)":"linear-gradient(135deg,#40a860,#207040)",color:"#fff",border:"none",borderRadius:7,padding:"9px 22px",cursor:"pointer",position:"relative",minHeight:42}}>
-            {counting>0?`${Math.ceil(counting/4)} bar${Math.ceil(counting/4)>1?"s":""}…`:on?"■ STOP":"▶ AUTO"}
+            {counting>0?`${Math.ceil(counting/4)} bar${Math.ceil(counting/4)>1?"s":""}…`:on?<><Ic n="stop" s={10} style={{marginRight:5}}/>STOP</>:<><Ic n="play" s={10} style={{marginRight:5}}/>AUTO</>}
           </button>
           <button onClick={()=>step(1)} style={{fontFamily:M,fontWeight:700,fontSize:14,color:"var(--muted)",background:"var(--btn)",border:"1px solid var(--btn-border)",borderRadius:6,padding:"7px 14px",cursor:"pointer",minHeight:38}}>▶</button>
           <div style={{display:"flex",alignItems:"center",gap:6}}>
@@ -1703,6 +1768,10 @@ function App() {
   // Theme: persisted; CSS vars switch via the data-theme attribute, and the
   // module-level T (used by SVG) is reassigned every render to stay in sync.
   const [theme,setTheme]=useState(()=>{try{const t=localStorage.getItem("pent-theme");return THEMES[t]?t:"dark";}catch(e){return "dark";}});
+  // One-time tour offer for first-time visitors
+  const [tourOffer,setTourOffer]=useState(()=>{try{return !localStorage.getItem("pt-tour-offered");}catch(e){return false;}});
+  const [posColors,setPosColors]=useState(false); // Neck: color dots by position
+  const dismissTour=()=>{setTourOffer(false);try{localStorage.setItem("pt-tour-offered","1");}catch(e){}};
   T=THEMES[theme]||THEMES.dark;
   useEffect(()=>{
     if(theme==="dark") document.documentElement.removeAttribute("data-theme");
@@ -1710,7 +1779,7 @@ function App() {
     try{localStorage.setItem("pent-theme",theme);}catch(e){}
     // keep the browser chrome / status bar color in sync
     const tc=document.querySelector('meta[name="theme-color"]');
-    if(tc) tc.setAttribute("content", theme==="light"?"#eef2f6":theme==="medium"?"#1c2533":"#0b1018");
+    if(tc) tc.setAttribute("content", theme==="light"?"#f5f2ec":theme==="medium"?"#1c2533":"#0b1018");
   },[theme]);
   const [family,setFamily]=useState("pentatonic"); // "pentatonic" | "modal"
   const [quality,setQuality]=useState("minor");    // "major" | "minor" (meaning differs per family)
@@ -1937,7 +2006,8 @@ function App() {
   const pl=maj?["R","2","3","5","6"]:isDor?["R","2","b3","5","6"]:isMix?["R","2","3","5","b7"]:["R","b3","4","5","b7"];
 
   const SCALE_COLORS={major:"#f0c040",minor:"#60b8f0",dorian:"#a0d080",mixolydian:"#f08040"};
-  const ac=SCALE_COLORS[mode]||"#f0c040";
+  const acRaw=SCALE_COLORS[mode]||"#f0c040"; // saturated — for dots & filled gradients
+  const ac=ax(acRaw);                        // contrast-adjusted — for text & thin borders
   const qualityGrads={
     major:"linear-gradient(135deg,#c8a030,#8a6010)",
     minor:"linear-gradient(135deg,#4090c0,#204880)",
@@ -2008,8 +2078,8 @@ function App() {
       `}</style>
 
       <div style={{textAlign:"center",marginBottom:12}}>
-        <h1 style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontSize:"clamp(22px,5vw,36px)",fontWeight:900,margin:0,background:`linear-gradient(130deg,${ac},${maj?"#60b8f0":"#f0c040"})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Pentatonic Triads</h1>
-        {played && <div style={{fontFamily:M,fontSize:10,color:ac,marginTop:3}}>♪ {played}</div>}
+        <h1 style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontSize:"clamp(22px,5vw,36px)",fontWeight:900,margin:0,background:`linear-gradient(130deg,${ac},${ax(maj?"#60b8f0":"#f0c040")})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Pentatonic Triads</h1>
+        {played && <div style={{fontFamily:M,fontSize:10,color:ac,marginTop:3}}><Ic n="note" s={11} style={{marginRight:4}}/>{played}</div>}
         {/* Scale family selector */}
         <div style={{display:"flex",justifyContent:"center",marginTop:10,gap:6}}>
           {[
@@ -2017,7 +2087,7 @@ function App() {
             {id:"modal",     label:"Modal"},
           ].map(({id,label})=>(
             <button key={id} onClick={()=>swMode(id,quality)} style={{
-              background:family===id?`linear-gradient(135deg,${ac},${ac}88)`:"var(--btn2)",
+              background:family===id?`linear-gradient(135deg,${acRaw},${acRaw}88)`:"var(--btn2)",
               color:family===id?"#fff":"var(--label)",fontFamily:M,fontWeight:700,fontSize:11,
               padding:"6px 22px",border:`1px solid ${family===id?ac+"66":"var(--border)"}`,
               letterSpacing:2,textTransform:"uppercase",borderRadius:7,cursor:"pointer",
@@ -2051,20 +2121,25 @@ function App() {
               {th==="dark"?"● dark":th==="medium"?"◐ med":"○ light"}
             </button>
           ))}
+          <a href="./pentatonic-triads-walkthrough.html" target="_blank" rel="noopener"
+            style={{fontFamily:M,fontSize:9,fontWeight:700,padding:"3px 10px",borderRadius:4,letterSpacing:1,textTransform:"uppercase",
+              textDecoration:"none",marginLeft:6,background:"var(--btn)",color:"var(--link3)",border:"1px solid var(--border)"}}>
+            <Ic n="book" s={11} style={{marginRight:5,verticalAlign:"-2px"}}/>tour
+          </a>
         </div>
       </div>
 
-      <div style={{background:"var(--panel)",border:"1px solid var(--divider)",borderRadius:12,padding:"10px 12px",maxWidth:660,margin:"0 auto 10px"}}>
+      <div style={{background:"var(--panel)",border:"1px solid var(--divider)",borderRadius:16,padding:"12px 14px",maxWidth:660,margin:"0 auto 16px",boxShadow:"var(--shadow-card)"}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8,flexWrap:"wrap",gap:4}}>
-          <div style={{fontSize:9,letterSpacing:3,color:"var(--heading)",fontFamily:M,textTransform:"uppercase"}}>
+          <div style={{fontSize:11,fontWeight:700,letterSpacing:2.5,color:"var(--heading)",fontFamily:M,textTransform:"uppercase"}}>
             {root} {mode.charAt(0).toUpperCase()+mode.slice(1)} · Fret {rf}
           </div>
-          <button onClick={swRel} style={{fontFamily:M,fontSize:9,color:"#60b8f0",background:"rgba(96,184,240,0.08)",border:"1px solid #60b8f030",borderRadius:6,padding:"3px 10px",cursor:"pointer",letterSpacing:1,textTransform:"uppercase"}}>
-            ⇄ {maj?"Rel. minor":isDor?"Rel. major":isMix?"Rel. minor":"Rel. major"}: {rk}
+          <button onClick={swRel} style={{fontFamily:M,fontSize:9,color:ax("#60b8f0"),background:"rgba(96,184,240,0.08)",border:"1px solid #60b8f030",borderRadius:6,padding:"3px 10px",cursor:"pointer",letterSpacing:1,textTransform:"uppercase"}}>
+            <Ic n="swap" s={11} style={{marginRight:5}}/>{maj?"Rel. minor":isDor?"Rel. major":isMix?"Rel. minor":"Rel. major"}: {rk}
           </button>
         </div>
         <div style={{display:"flex",flexWrap:"wrap",gap:4,justifyContent:"center",marginBottom:8}}>
-          {NOTES.map(k=><button key={k} onClick={()=>setRoot(k)} style={{background:root===k?`linear-gradient(135deg,${ac},${maj?"#b07800":isDor?"#205020":isMix?"#704010":"#2060a0"})`:"var(--btn)",color:root===k?"#fff":"var(--muted)",fontFamily:M,fontWeight:700,fontSize:13,borderRadius:6,padding:"7px 13px",border:root===k?"none":"1px solid var(--border-soft)",cursor:"pointer",minHeight:38,minWidth:38}}>{k}</button>)}
+          {NOTES.map(k=><button key={k} onClick={()=>setRoot(k)} style={{background:root===k?`linear-gradient(135deg,${acRaw},${maj?"#b07800":isDor?"#205020":isMix?"#704010":"#2060a0"})`:"var(--btn)",color:root===k?"#fff":"var(--muted)",fontFamily:M,fontWeight:700,fontSize:13,borderRadius:6,padding:"7px 13px",border:root===k?"none":"1px solid var(--border-soft)",cursor:"pointer",minHeight:38,minWidth:38}}>{k}</button>)}
         </div>
         <div style={{display:"flex",gap:4,flexWrap:"wrap",justifyContent:"center"}}>
           {ps.map((n,i)=><div key={i} onClick={()=>hear(n)} style={{textAlign:"center",background:i===0?`${ac}18`:"var(--card2)",border:`1px solid ${i===0?ac+"55":"var(--border)"}`,borderRadius:5,padding:"2px 8px",cursor:"pointer"}}><div style={{fontFamily:M,fontWeight:700,fontSize:12,color:i===0?ac:"var(--text-soft)"}}>{n}</div><div style={{fontSize:8,color:"var(--heading)"}}>{pl[i]}</div></div>)}
@@ -2073,33 +2148,33 @@ function App() {
       </div>
 
       <div style={{maxWidth:660,margin:"0 auto 10px",display:"flex",gap:5,flexWrap:"wrap",justifyContent:"center"}}>
-        {[{l:"🎵 Metro",a:metro,fn:()=>setMetro(v=>!v)},{l:"♭5 Blues",a:blues,fn:()=>setBlues(v=>!v)},{l:"7 Notes",a:fullScale,fn:()=>setFullScale(v=>!v)},{l:"🎼 Prog",a:showProg,fn:()=>setShowProg(v=>!v)},{l:"⬡ Shape",a:shapeOn,fn:()=>{setShapeOn(v=>!v);setShapeMap({"_global":[{color:SHAPE_COLORS[0],dots:[],quality:null}]});}},{l:"◉ Neck",a:neck,fn:()=>setNeck(v=>!v)}].map(b=><button key={b.l} onClick={b.fn} style={{fontFamily:M,fontWeight:700,fontSize:10,background:b.a?`${ac}22`:"var(--btn)",color:b.a?ac:"var(--muted2)",border:`1px solid ${b.a?ac+"55":"var(--border)"}`,borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>{b.l}</button>)}
-        <button onClick={()=>{getCtx();loadSamples();}} style={{fontFamily:M,fontWeight:700,fontSize:10,background:samplesReady?"rgba(64,168,96,0.2)":samplesLoading?"rgba(255,200,0,0.1)":"var(--btn)",color:samplesReady?"#40a860":samplesLoading?"#ffc800":"var(--muted2)",border:"1px solid "+(samplesReady?"#40a86055":samplesLoading?"#ffc80055":"var(--border)"),borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>{samplesReady?"🎸 Guitar On":samplesLoading?"🎸 Loading...":"🎸 Guitar"}</button>
+        {[{l:"Metro",ic:"metro",a:metro,fn:()=>setMetro(v=>!v)},{l:"♭5 Blues",ic:null,a:blues,fn:()=>setBlues(v=>!v)},{l:"7 Notes",ic:null,a:fullScale,fn:()=>setFullScale(v=>!v)},{l:"Prog",ic:"queue",a:showProg,fn:()=>setShowProg(v=>!v)},{l:"Shape",ic:"hex",a:shapeOn,fn:()=>{setShapeOn(v=>!v);setShapeMap({"_global":[{color:SHAPE_COLORS[0],dots:[],quality:null}]});}},{l:"Neck",ic:"neckIc",a:neck,fn:()=>setNeck(v=>!v)}].map(b=><button key={b.l} onClick={b.fn} style={{fontFamily:M,fontWeight:700,fontSize:10,background:b.a?`${ac}22`:"var(--btn)",color:b.a?ac:"var(--muted2)",border:`1px solid ${b.a?ac+"55":"var(--border)"}`,borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>{b.ic&&<Ic n={b.ic} s={11} style={{marginRight:5}}/>}{b.l}</button>)}
+        <button onClick={()=>{getCtx();loadSamples();}} style={{fontFamily:M,fontWeight:700,fontSize:10,background:samplesReady?"rgba(64,168,96,0.2)":samplesLoading?"rgba(255,200,0,0.1)":"var(--btn)",color:samplesReady?ax("#40a860"):samplesLoading?ax("#ffc800"):"var(--muted2)",border:"1px solid "+(samplesReady?"#40a86055":samplesLoading?"#ffc80055":"var(--border)"),borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}><Ic n="speaker" s={11} style={{marginRight:5}}/>{samplesReady?"Guitar On":samplesLoading?"Loading...":"Guitar"}</button>
       </div>
 
       {shapeOn&&(
-        <div style={{maxWidth:660,margin:"0 auto 10px",background:"var(--well4)",border:"1px solid "+ac+"33",borderRadius:10,padding:"10px 12px"}}>
+        <div style={{maxWidth:660,margin:"0 auto 16px",background:"var(--well4)",border:"1px solid "+ac+"33",borderRadius:14,padding:"12px 14px",boxShadow:"var(--shadow-card)"}}>
           <div style={{fontFamily:M,fontSize:9,color:"var(--heading)",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>
-            {focusedChord?"Shape for "+focusedChord.label+" — tap notes on fretboard":"Chord Shape — tap a chord name above to select it, then tap notes"}
+            {focusedChord?"Shape for "+focusedChord.label+" — tap the frets you'd play":"Chord Shape — pick a chord above, then tap the frets you'd play"}
           </div>
           <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"flex-start"}}>
             {shapeGroups.map((g,gi)=>(
-              <div key={gi} style={{background:g.color+"15",border:"1px solid "+g.color+"44",borderRadius:8,padding:"6px 8px",minWidth:80}}>
+              <div key={gi} style={{background:ax(g.color)+"15",border:"1px solid "+ax(g.color)+"44",borderRadius:8,padding:"6px 8px",minWidth:80}}>
                 <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:5}}>
-                  <div style={{width:8,height:8,borderRadius:"50%",background:g.color,flexShrink:0}}/>
-                  <span style={{fontFamily:M,fontSize:10,color:g.color,fontWeight:700,flex:1}}>
-                    {g.dots.length===0?"tap notes…":g.dots.map(d=>d.note).join("·")}
+                  <div style={{width:8,height:8,borderRadius:"50%",background:ax(g.color),flexShrink:0}}/>
+                  <span style={{fontFamily:M,fontSize:10,color:ax(g.color),fontWeight:700,flex:1}}>
+                    {g.dots.length===0?"tap frets…":g.dots.map(d=>d.note).join("·")}
                   </span>
-                  <span style={{fontFamily:M,fontSize:8,color:"var(--muted2)"}}>({g.dots.length}/4)</span>
-                  {g.dots.length>0&&<span onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,dots:[]}:x))} style={{fontSize:9,cursor:"pointer",color:"var(--label)",userSelect:"none"}}>✕</span>}
+                  <span style={{fontFamily:M,fontSize:8,color:"var(--muted2)"}}>{g.dots.length===0?"tap frets to mark it":`(${g.dots.length}/4)`}</span>
+                  {g.dots.length>0&&<span onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,dots:[]}:x))} style={{cursor:"pointer",color:"var(--label)",userSelect:"none",display:"inline-flex"}}><Ic n="x" s={9}/></span>}
                 </div>
                 <div style={{display:"flex",gap:2,flexWrap:"wrap"}}>
                   {["maj","min","dim","7","9"].map(q=>(
                     <span key={q} onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,quality:g.quality===q?null:q}:x))}
                       style={{fontFamily:M,fontSize:8,padding:"1px 5px",borderRadius:3,cursor:"pointer",
-                        background:g.quality===q?g.color+"30":"transparent",
-                        border:"1px solid "+(g.quality===q?g.color:g.color+"33"),
-                        color:g.quality===q?g.color:"var(--label)"}}>
+                        background:g.quality===q?ax(g.color)+"30":"transparent",
+                        border:"1px solid "+(g.quality===q?ax(g.color):ax(g.color)+"33"),
+                        color:g.quality===q?ax(g.color):"var(--label)"}}>
                       {q}
                     </span>
                   ))}
@@ -2120,14 +2195,18 @@ function App() {
         </div>
       )}
 
-      {metro && <div style={{maxWidth:660,margin:"0 auto 10px"}}><Metro pc={playClick}/></div>}
-      {showProg && <div style={{maxWidth:660,margin:"0 auto 10px"}}><ProgBuilder triads={TR} root={root} sc={SC} accent={ac} playChord={hearCh} onChordFocus={ch=>{setFocusedProgIdx(ch!=null?(ch._progIdx??null):null);}} family={family} quality={quality} playClick={playClick} prog={prog} setProg={setProg} savedProgs={savedProgs} setSavedProgs={setSavedProgs} startDrums={startDrums} stopDrums={stopDrums} drumOn={drumOn} setDrumOn={setDrumOn} drumPattern={drumPattern} setDrumPattern={setDrumPattern} drumVol={drumVol} setDrumVol={setDrumVol} shapeMap={shapeMap} setShapeMap={setShapeMap}/></div>}
+      {metro && <div style={{maxWidth:660,margin:"0 auto 16px"}}><Metro pc={playClick}/></div>}
+      {showProg && <div style={{maxWidth:660,margin:"0 auto 16px"}}><ProgBuilder triads={TR} root={root} sc={SC} accent={ac} playChord={hearCh} onChordFocus={ch=>{setFocusedProgIdx(ch!=null?(ch._progIdx??null):null);}} family={family} quality={quality} playClick={playClick} prog={prog} setProg={setProg} savedProgs={savedProgs} setSavedProgs={setSavedProgs} startDrums={startDrums} stopDrums={stopDrums} drumOn={drumOn} setDrumOn={setDrumOn} drumPattern={drumPattern} setDrumPattern={setDrumPattern} drumVol={drumVol} setDrumVol={setDrumVol} shapeMap={shapeMap} setShapeMap={setShapeMap}/></div>}
 
       {neck && (()=>{
         const neckContent = (
           <>
             <div style={{display:"flex",alignItems:"center",gap:6,padding:"8px 12px",borderBottom:"1px solid var(--divider)",flexWrap:"wrap"}}>
-              <div style={{display:"flex",gap:3}}>{POS.map(p=><button key={p.num} onClick={()=>togPos(p.num)} style={{background:openPos.has(p.num)?`${ac}25`:"var(--btn)",color:openPos.has(p.num)?ac:"var(--label)",fontFamily:M,fontWeight:700,fontSize:10,padding:"3px 8px",border:`1px solid ${openPos.has(p.num)?ac+"66":"var(--border)"}`,borderRadius:5,cursor:"pointer"}}>P{p.num}</button>)}</div>
+              <div style={{display:"flex",gap:3,alignItems:"center"}}>{POS.map(p=>{const pc=posColors?ax(POS_COLORS[(p.num-1)%POS_COLORS.length]):ac;return <button key={p.num} onClick={()=>togPos(p.num)} style={{background:openPos.has(p.num)?`${pc}25`:"var(--btn)",color:openPos.has(p.num)?pc:"var(--label)",fontFamily:M,fontWeight:700,fontSize:10,padding:"3px 8px",border:`1px solid ${openPos.has(p.num)?pc+"66":"var(--border)"}`,borderRadius:5,cursor:"pointer"}}>P{p.num}</button>;})}
+                <button onClick={()=>setPosColors(v=>!v)} title="Color notes by position" style={{display:"flex",alignItems:"center",gap:1,background:posColors?"var(--sel-bg)":"var(--btn)",border:`1px solid ${posColors?"var(--sel-border)":"var(--border)"}`,borderRadius:5,padding:"4px 7px",cursor:"pointer",marginLeft:4}}>
+                  {[0,1,2].map(i=><span key={i} style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:POS_COLORS[i],opacity:posColors?1:0.45}}/>)}
+                  <span style={{fontFamily:M,fontSize:8,fontWeight:700,letterSpacing:1,color:posColors?"#fff":"var(--muted2)",marginLeft:3}}>POS</span>
+                </button></div>
               <div style={{display:"flex",alignItems:"center",gap:4,marginLeft:"auto"}}>
                 <span onClick={()=>setZoom(z=>Math.max(0.5,+(z-0.15).toFixed(2)))} style={{fontSize:14,cursor:"pointer",color:"var(--muted2)",userSelect:"none"}}>−</span>
                 <input type="range" min={0.5} max={2} step={0.05} value={zoom} onChange={e=>setZoom(+e.target.value)} style={{width:60,accentColor:ac}}/>
@@ -2139,7 +2218,7 @@ function App() {
                 <span onClick={()=>setNcht(new Set())} style={{fontFamily:M,fontSize:9,color:"var(--faint)",cursor:"pointer"}}>none</span>
               </div>
               <button onClick={()=>setNeckFull(v=>!v)} style={{fontFamily:M,fontSize:11,color:"var(--muted)",background:"var(--btn2)",border:"1px solid var(--btn-border)",borderRadius:5,padding:"2px 8px",cursor:"pointer"}}>
-                {neckFull?"✕":"⤢"}
+                {neckFull?<Ic n="x" s={12}/>:<Ic n="expand" s={12}/>}
               </button>
             </div>
             <div style={{overflowX:"auto",overflowY:neckFull?"auto":"hidden",padding:"10px 8px 8px",flex:neckFull?1:undefined}}>
@@ -2163,12 +2242,13 @@ function App() {
                   <Neck positions={openList} root={root} bases={openBases}
                     checked={focusedChord ? new Set([focusedChord.ti]) : ncht}
                     triads={TR} pd={PD}
-                    accent={focusedChord ? focusedChord.color : ac}
+                    accent={focusedChord ? focusedChord.color : acRaw}
                     sc={SC} zoom={neckFull ? Math.max(1.2, (window.innerHeight-80) / (5*34+56)) : zoom}
                     blues={blues} exts={nexts}
                     shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot}
                     focusedNotes={neckFocusedNotes}
                     focusedColor={focusedChord ? focusedChord.color : null}
+                    posColors={posColors}
                     qualOver={qualOver}/>
                 );
               })()}
@@ -2177,26 +2257,26 @@ function App() {
               <div style={{padding:"10px 12px 12px",borderTop:"1px solid var(--divider)"}}>
                 {shapeOn&&<div style={{marginBottom:10,padding:"8px 10px",background:"var(--well5)",borderRadius:8,border:"1px solid "+ac+"33"}}>
                   <div style={{fontFamily:M,fontSize:9,color:"var(--heading)",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>
-                    {focusedChord?"Shape for "+focusedChord.label+" — tap notes":"Chord Shape — tap notes on fretboard"}
+                    {focusedChord?"Shape for "+focusedChord.label+" — tap the frets you'd play":"Chord Shape — pick a chord above, then tap the frets you'd play"}
                   </div>
                   <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"flex-start"}}>
                     {shapeGroups.map((g,gi)=>(
-                      <div key={gi} style={{background:g.color+"15",border:"1px solid "+g.color+"44",borderRadius:8,padding:"6px 8px",minWidth:80}}>
+                      <div key={gi} style={{background:ax(g.color)+"15",border:"1px solid "+ax(g.color)+"44",borderRadius:8,padding:"6px 8px",minWidth:80}}>
                         <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:5}}>
-                          <div style={{width:8,height:8,borderRadius:"50%",background:g.color,flexShrink:0}}/>
-                          <span style={{fontFamily:M,fontSize:10,color:g.color,fontWeight:700,flex:1}}>
-                            {g.dots.length===0?"tap notes…":g.dots.map(d=>d.note).join("·")}
+                          <div style={{width:8,height:8,borderRadius:"50%",background:ax(g.color),flexShrink:0}}/>
+                          <span style={{fontFamily:M,fontSize:10,color:ax(g.color),fontWeight:700,flex:1}}>
+                            {g.dots.length===0?"tap frets…":g.dots.map(d=>d.note).join("·")}
                           </span>
-                          <span style={{fontFamily:M,fontSize:8,color:"var(--muted2)"}}>({g.dots.length}/4)</span>
-                          {g.dots.length>0&&<span onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,dots:[]}:x))} style={{fontSize:9,cursor:"pointer",color:"var(--label)",userSelect:"none"}}>✕</span>}
+                          <span style={{fontFamily:M,fontSize:8,color:"var(--muted2)"}}>{g.dots.length===0?"tap frets to mark it":`(${g.dots.length}/4)`}</span>
+                          {g.dots.length>0&&<span onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,dots:[]}:x))} style={{cursor:"pointer",color:"var(--label)",userSelect:"none",display:"inline-flex"}}><Ic n="x" s={9}/></span>}
                         </div>
                         <div style={{display:"flex",gap:2,flexWrap:"wrap"}}>
                           {["maj","min","dim","7","9"].map(q=>(
                             <span key={q} onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,quality:g.quality===q?null:q}:x))}
                               style={{fontFamily:M,fontSize:8,padding:"1px 5px",borderRadius:3,cursor:"pointer",
-                                background:g.quality===q?g.color+"30":"transparent",
-                                border:"1px solid "+(g.quality===q?g.color:g.color+"33"),
-                                color:g.quality===q?g.color:"var(--label)"}}>
+                                background:g.quality===q?ax(g.color)+"30":"transparent",
+                                border:"1px solid "+(g.quality===q?ax(g.color):ax(g.color)+"33"),
+                                color:g.quality===q?ax(g.color):"var(--label)"}}>
                               {q}
                             </span>
                           ))}
@@ -2215,7 +2295,7 @@ function App() {
                     </button>
                   </div>
                 </div>}
-                <div style={{fontSize:9,letterSpacing:3,color:"var(--heading)",fontFamily:M,textTransform:"uppercase",marginBottom:6}}>Triads · {root} {mode}</div>
+                <div style={{fontSize:11,fontWeight:700,letterSpacing:2.5,color:"var(--heading)",fontFamily:M,textTransform:"uppercase",marginBottom:6}}>Triads · {root} {mode}</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
                   {TR.map((t,ti)=><TCard key={ti} t={t} root={root} on={ncht.has(ti)} onClick={()=>togN(ti)} sc={SC} pd={PD} onPlay={hearCh} ext={nexts[ti]||null} onExt={val=>setNextExt(ti,val)} qualityOverride={qualOver[ti]||null} onQualityToggle={q=>setQualOver(p=>({...p,[ti]:q}))}/>)}
                 </div>
@@ -2227,7 +2307,11 @@ function App() {
           <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,zIndex:999,background:"var(--bg-deep)",display:"flex",flexDirection:"column",overflow:"hidden"}}>
             {/* toolbar */}
             <div style={{display:"flex",alignItems:"center",gap:6,padding:"6px 10px",borderBottom:"1px solid var(--divider)",flexWrap:"nowrap",flexShrink:0,overflowX:"auto"}}>
-              <div style={{display:"flex",gap:3,flexShrink:0}}>{POS.map(p=><button key={p.num} onClick={()=>togPos(p.num)} style={{background:openPos.has(p.num)?`${ac}25`:"var(--btn)",color:openPos.has(p.num)?ac:"var(--label)",fontFamily:M,fontWeight:700,fontSize:10,padding:"3px 8px",border:`1px solid ${openPos.has(p.num)?ac+"66":"var(--border)"}`,borderRadius:5,cursor:"pointer"}}>P{p.num}</button>)}</div>
+              <div style={{display:"flex",gap:3,flexShrink:0,alignItems:"center",flexWrap:"wrap"}}>{POS.map(p=>{const pc=posColors?ax(POS_COLORS[(p.num-1)%POS_COLORS.length]):ac;return <button key={p.num} onClick={()=>togPos(p.num)} style={{background:openPos.has(p.num)?`${pc}25`:"var(--btn)",color:openPos.has(p.num)?pc:"var(--label)",fontFamily:M,fontWeight:700,fontSize:10,padding:"3px 8px",border:`1px solid ${openPos.has(p.num)?pc+"66":"var(--border)"}`,borderRadius:5,cursor:"pointer"}}>P{p.num}</button>;})}
+                <button onClick={()=>setPosColors(v=>!v)} title="Color notes by position" style={{display:"flex",alignItems:"center",gap:1,background:posColors?"var(--sel-bg)":"var(--btn)",border:`1px solid ${posColors?"var(--sel-border)":"var(--border)"}`,borderRadius:5,padding:"4px 7px",cursor:"pointer",marginLeft:4}}>
+                  {[0,1,2].map(i=><span key={i} style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:POS_COLORS[i],opacity:posColors?1:0.45}}/>)}
+                  <span style={{fontFamily:M,fontSize:8,fontWeight:700,letterSpacing:1,color:posColors?"#fff":"var(--muted2)",marginLeft:3}}>POS</span>
+                </button></div>
               <div style={{display:"flex",alignItems:"center",gap:4,marginLeft:"auto",flexShrink:0}}>
                 <span onClick={()=>setZoom(z=>Math.max(0.5,+(z-0.1).toFixed(2)))} style={{fontSize:14,cursor:"pointer",color:"var(--muted2)",userSelect:"none"}}>−</span>
                 <span style={{fontFamily:M,fontSize:9,color:"var(--label)",minWidth:28}}>{Math.round(zoom*100)}%</span>
@@ -2235,7 +2319,7 @@ function App() {
               </div>
               <span onClick={()=>setNcht(new Set([0,1,2,3,4,5,6]))} style={{fontFamily:M,fontSize:9,color:"var(--link3)",cursor:"pointer",flexShrink:0}}>all</span>
               <span onClick={()=>setNcht(new Set())} style={{fontFamily:M,fontSize:9,color:"var(--faint)",cursor:"pointer",flexShrink:0}}>none</span>
-              <button onClick={()=>setNeckFull(false)} style={{fontFamily:M,fontSize:11,color:"var(--text)",background:"var(--btn3)",border:"1px solid var(--btn-border)",borderRadius:5,padding:"3px 10px",cursor:"pointer",flexShrink:0}}>✕ close</button>
+              <button onClick={()=>setNeckFull(false)} style={{fontFamily:M,fontSize:11,color:"var(--text)",background:"var(--btn3)",border:"1px solid var(--btn-border)",borderRadius:5,padding:"3px 10px",cursor:"pointer",flexShrink:0}}><Ic n="x" s={10} style={{marginRight:4}}/>close</button>
             </div>
             {/* fretboard — fills remaining height, scrolls horizontally */}
             <div style={{flex:1,overflowX:"auto",overflowY:"hidden",display:"flex",alignItems:"center"}}>
@@ -2263,27 +2347,28 @@ function App() {
                   <Neck positions={openList} root={root} bases={openBases}
                     checked={focusedChord ? new Set([focusedChord.ti]) : ncht}
                     triads={TR} pd={PD}
-                    accent={focusedChord ? focusedChord.color : ac}
+                    accent={focusedChord ? focusedChord.color : acRaw}
                     sc={SC} zoom={fz} blues={blues} exts={nexts}
                     shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot}
                     focusedNotes={neckFocusedNotes2}
                     focusedColor={focusedChord ? focusedChord.color : null}
+                    posColors={posColors}
                     qualOver={qualOver}/>
                 );
               })()}
             </div>
             {/* chord banner at bottom */}
             {focusedChord && (
-              <div style={{padding:"5px 14px",background:`${focusedChord.color}22`,borderTop:`1px solid ${focusedChord.color}55`,display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
-                <span style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:20,color:focusedChord.color}}>{focusedChord.label}</span>
+              <div style={{padding:"5px 14px",background:`${ax(focusedChord.color)}22`,borderTop:`1px solid ${ax(focusedChord.color)}55`,display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
+                <span style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:20,color:ax(focusedChord.color)}}>{focusedChord.label}</span>
                 <div style={{display:"flex",gap:5}}>
-                  {focusedChord.notes.map((n,i)=><span key={i} style={{background:`${focusedChord.color}22`,border:`1px solid ${focusedChord.color}55`,borderRadius:4,padding:"1px 7px",fontSize:11,fontWeight:700,fontFamily:M,color:"var(--text)"}}>{n}</span>)}
+                  {focusedChord.notes.map((n,i)=><span key={i} style={{background:`${ax(focusedChord.color)}22`,border:`1px solid ${ax(focusedChord.color)}55`,borderRadius:4,padding:"1px 7px",fontSize:11,fontWeight:700,fontFamily:M,color:"var(--text)"}}>{n}</span>)}
                 </div>
               </div>
             )}
           </div>
         ) : (
-          <div style={{maxWidth:660,margin:"0 auto 10px",background:"var(--well3)",border:`1px solid ${ac}33`,borderRadius:12,overflow:"hidden"}}>
+          <div style={{maxWidth:660,margin:"0 auto 16px",background:"var(--well3)",border:`1px solid ${ac}33`,borderRadius:14,overflow:"hidden",boxShadow:"var(--shadow-card)"}}>
             {neckContent}
           </div>
         );
@@ -2306,16 +2391,16 @@ function App() {
             bannerLabel = ovr==="major" ? rootNote : rootNote+"m";
           }
           return (
-            <div style={{background:`${focusedChord.color}18`,border:`2px solid ${focusedChord.color}`,borderRadius:12,padding:"10px 16px",display:"flex",alignItems:"center",gap:12}}>
-              <div style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:32,color:focusedChord.color}}>{bannerLabel}</div>
+            <div style={{background:`${ax(focusedChord.color)}18`,border:`2px solid ${ax(focusedChord.color)}`,borderRadius:12,padding:"10px 16px",display:"flex",alignItems:"center",gap:12}}>
+              <div style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:32,color:ax(focusedChord.color)}}>{bannerLabel}</div>
               <div style={{flex:1}}>
                 <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-                  {bannerNotes.map((n,i)=><span key={i} style={{background:`${focusedChord.color}22`,border:`1px solid ${focusedChord.color}55`,borderRadius:4,padding:"2px 8px",fontSize:13,fontWeight:700,fontFamily:M,color:"var(--text)"}}>{n}</span>)}
+                  {bannerNotes.map((n,i)=><span key={i} style={{background:`${ax(focusedChord.color)}22`,border:`1px solid ${ax(focusedChord.color)}55`,borderRadius:4,padding:"2px 8px",fontSize:13,fontWeight:700,fontFamily:M,color:"var(--text)"}}>{n}</span>)}
                 </div>
                 {ovr && ovr !== (t&&t.q) && <div style={{fontFamily:M,fontSize:9,color:"#f0c040",marginTop:3}}>borrowed ({ovr})</div>}
                 <div style={{fontFamily:M,fontSize:9,color:"var(--label)",marginTop:2}}>Highlighted on all positions below</div>
               </div>
-              <span onClick={()=>setFocusedProgIdx(null)} style={{fontSize:18,cursor:"pointer",color:"var(--label)",userSelect:"none"}}>✕</span>
+              <span onClick={()=>setFocusedProgIdx(null)} style={{cursor:"pointer",color:"var(--label)",userSelect:"none",display:"inline-flex",padding:2}}><Ic n="x" s={15}/></span>
             </div>
           );
         })()}
@@ -2364,15 +2449,15 @@ function App() {
           const base=getBase(pos);
           const labels = focusedChord ? focusedChord.label : [...(cht[pos.num]||new Set())].map(ti=>TR[ti].n).join(" + ");
           return (
-            <div key={pos.num} style={{background:"var(--panel2)",border:`1px solid ${isExp?"var(--border-lit)":"var(--border-dim)"}`,borderRadius:12,overflow:"hidden",boxShadow:isExp?"var(--shadow)":"none"}}>
+            <div key={pos.num} style={{background:"var(--panel2)",border:`1px solid ${isExp?"var(--border-lit)":"var(--border-dim)"}`,borderRadius:14,overflow:"hidden",boxShadow:isExp?"var(--shadow)":"var(--shadow-card)"}}>
               <div onClick={()=>togPos(pos.num)} style={{padding:"10px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:10,background:isExp?`${ac}08`:"transparent",borderBottom:isExp?"1px solid var(--divider)":"none"}}>
-                <div style={{width:28,height:28,borderRadius:"50%",flexShrink:0,background:isExp?`linear-gradient(135deg,${ac},${maj?"#b07800":isDor?"#205020":isMix?"#704010":"#2060a0"})`:"var(--btn2)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:13,color:isExp?"#fff":"var(--muted2)"}}>{pos.num}</div>
+                <div style={{width:28,height:28,borderRadius:"50%",flexShrink:0,background:isExp?`linear-gradient(135deg,${acRaw},${maj?"#b07800":isDor?"#205020":isMix?"#704010":"#2060a0"})`:"var(--btn2)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:13,color:isExp?"#fff":"var(--muted2)"}}>{pos.num}</div>
                 <div style={{flex:1}}>
                   <div style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:700,fontSize:13,color:"var(--text-soft)"}}>Position {pos.num}</div>
                   <div style={{fontFamily:M,fontSize:9,color:"var(--label2)",marginTop:1}}>{pos.sd} · fret {base}{ch.size>0&&<span style={{color:ac,marginLeft:6}}>{labels}</span>}</div>
                 </div>
                 <div style={{display:"flex",gap:2,flexWrap:"wrap",justifyContent:"flex-end",maxWidth:150}}>
-                  {TR.map((t,ti)=><span key={ti} style={{fontFamily:M,fontWeight:700,fontSize:8,color:t.c,background:ch.has(ti)?`${t.c}30`:`${t.c}0e`,border:`1px solid ${ch.has(ti)?t.c:t.c+"28"}`,borderRadius:3,padding:"1px 4px",opacity:ch.has(ti)||ch.size===0?1:0.3}}>{t.n}</span>)}
+                  {TR.map((t,ti)=><span key={ti} style={{fontFamily:M,fontWeight:700,fontSize:8,color:ax(t.c),background:ch.has(ti)?`${ax(t.c)}30`:`${ax(t.c)}0e`,border:`1px solid ${ch.has(ti)?ax(t.c):ax(t.c)+"28"}`,borderRadius:3,padding:"1px 4px",opacity:ch.has(ti)||ch.size===0?1:0.3}}>{t.n}</span>)}
                 </div>
                 <div style={{color:"var(--faint)",fontSize:14,transition:"transform .2s",transform:isExp?"rotate(180deg)":"none",flexShrink:0}}>▾</div>
               </div>
@@ -2386,30 +2471,30 @@ function App() {
                     </div>
                   </div>
                   <div style={{background:"var(--well2)",borderRadius:10,padding:"8px",border:"1px solid var(--border-dim)",overflowX:"auto",marginBottom:showProg?6:12}}>
-                    <Fretboard pos={pos} root={root} base={base} checked={ch} triads={TR} pd={PD} accent={focusedChord?focusedChord.color:ac} sc={SC} zoom={1} blues={blues} exts={exts[pos.num]||{}} fullScale={fullScale} shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot} qualOver={qualOver} focusedNotes={effectiveFocusedNotes} focusedColor={focusedChord?focusedChord.color:null}/>
+                    <Fretboard pos={pos} root={root} base={base} checked={ch} triads={TR} pd={PD} accent={focusedChord?focusedChord.color:acRaw} sc={SC} zoom={1} blues={blues} exts={exts[pos.num]||{}} fullScale={fullScale} shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot} qualOver={qualOver} focusedNotes={effectiveFocusedNotes} focusedColor={focusedChord?focusedChord.color:null}/>
                   </div>
                   {shapeOn&&<div style={{marginBottom:10,padding:"8px 10px",background:"var(--well5)",borderRadius:8,border:"1px solid "+ac+"33"}}>
                     <div style={{fontFamily:M,fontSize:9,color:"var(--heading)",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>
-                      {focusedChord?"Shape for "+focusedChord.label+" — tap notes":"Chord Shape — tap notes on fretboard"}
+                      {focusedChord?"Shape for "+focusedChord.label+" — tap the frets you'd play":"Chord Shape — pick a chord above, then tap the frets you'd play"}
                     </div>
                     <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"flex-start"}}>
                       {shapeGroups.map((g,gi)=>(
-                        <div key={gi} style={{background:g.color+"15",border:"1px solid "+g.color+"44",borderRadius:8,padding:"6px 8px",minWidth:80}}>
+                        <div key={gi} style={{background:ax(g.color)+"15",border:"1px solid "+ax(g.color)+"44",borderRadius:8,padding:"6px 8px",minWidth:80}}>
                           <div style={{display:"flex",alignItems:"center",gap:4,marginBottom:5}}>
-                            <div style={{width:8,height:8,borderRadius:"50%",background:g.color,flexShrink:0}}/>
-                            <span style={{fontFamily:M,fontSize:10,color:g.color,fontWeight:700,flex:1}}>
-                              {g.dots.length===0?"tap notes…":g.dots.map(d=>d.note).join("·")}
+                            <div style={{width:8,height:8,borderRadius:"50%",background:ax(g.color),flexShrink:0}}/>
+                            <span style={{fontFamily:M,fontSize:10,color:ax(g.color),fontWeight:700,flex:1}}>
+                              {g.dots.length===0?"tap frets…":g.dots.map(d=>d.note).join("·")}
                             </span>
-                            <span style={{fontFamily:M,fontSize:8,color:"var(--muted2)"}}>({g.dots.length}/4)</span>
-                            {g.dots.length>0&&<span onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,dots:[]}:x))} style={{fontSize:9,cursor:"pointer",color:"var(--label)",userSelect:"none"}}>✕</span>}
+                            <span style={{fontFamily:M,fontSize:8,color:"var(--muted2)"}}>{g.dots.length===0?"tap frets to mark it":`(${g.dots.length}/4)`}</span>
+                            {g.dots.length>0&&<span onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,dots:[]}:x))} style={{cursor:"pointer",color:"var(--label)",userSelect:"none",display:"inline-flex"}}><Ic n="x" s={9}/></span>}
                           </div>
                           <div style={{display:"flex",gap:2,flexWrap:"wrap"}}>
                             {["maj","min","dim","7","9"].map(q=>(
                               <span key={q} onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,quality:g.quality===q?null:q}:x))}
                                 style={{fontFamily:M,fontSize:8,padding:"1px 5px",borderRadius:3,cursor:"pointer",
-                                  background:g.quality===q?g.color+"30":"transparent",
-                                  border:"1px solid "+(g.quality===q?g.color:g.color+"33"),
-                                  color:g.quality===q?g.color:"var(--label)"}}>
+                                  background:g.quality===q?ax(g.color)+"30":"transparent",
+                                  border:"1px solid "+(g.quality===q?ax(g.color):ax(g.color)+"33"),
+                                  color:g.quality===q?ax(g.color):"var(--label)"}}>
                                 {q}
                               </span>
                             ))}
@@ -2428,7 +2513,7 @@ function App() {
                       </button>
                     </div>
                   </div>}
-                  <div style={{fontSize:9,letterSpacing:2,color:"var(--heading)",fontFamily:M,textTransform:"uppercase",marginBottom:6}}>Tap triads to highlight · tap notes to hear</div>
+                  <div style={{fontSize:9,letterSpacing:2,color:"var(--heading)",fontFamily:M,textTransform:"uppercase",marginBottom:6}}>Tap a triad to light it up · tap any note to hear it</div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
                     {TR.map((t,ti)=><TCard key={ti} t={t} root={root} on={ch.has(ti)} onClick={e=>{e.stopPropagation();togCht(pos.num,ti);}} sc={SC} pd={PD} onPlay={hearCh} ext={(exts[pos.num]||{})[ti]||(exts[pos.num]||{})[String(ti)]||null} onExt={val=>setExt(pos.num,ti,val)} qualityOverride={qualOver[ti]||null} onQualityToggle={q=>setQualOver(p=>({...p,[ti]:q}))}/>)}
                   </div>
@@ -2438,6 +2523,19 @@ function App() {
           );
         })}
       </div>
+
+      {/* First-visit tour offer */}
+      {tourOffer && (
+        <div style={{position:"fixed",bottom:14,left:"50%",transform:"translateX(-50%)",zIndex:90,
+          display:"flex",gap:10,alignItems:"center",background:"var(--sel-bg)",
+          border:"1px solid var(--sel-border)",borderRadius:10,padding:"9px 14px",boxShadow:"var(--shadow)",maxWidth:"92vw"}}>
+          <span style={{fontFamily:M,fontSize:10,color:"#fff",whiteSpace:"nowrap"}}>New here?</span>
+          <a href="./pentatonic-triads-walkthrough.html" target="_blank" rel="noopener" onClick={dismissTour}
+            style={{fontFamily:M,fontSize:10,fontWeight:700,color:"#111",background:"#f0c040",
+              borderRadius:5,padding:"5px 12px",textDecoration:"none",whiteSpace:"nowrap"}}><Ic n="play" s={9} style={{marginRight:5}}/>2-min tour</a>
+          <span onClick={dismissTour} style={{color:"#ffffff99",cursor:"pointer",padding:"2px 4px",display:"inline-flex"}}><Ic n="x" s={12}/></span>
+        </div>
+      )}
     </div>
   );
 }

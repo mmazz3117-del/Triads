@@ -1,202 +1,17 @@
-<!--
-  ╔════════════════════════════════════════════════════════════════════╗
-  ║ index.dev.html — EDITABLE SOURCE (JSX compiled in-browser by Babel) ║
-  ║ Make changes here, test at /Triads/index.dev.html, then rebuild     ║
-  ║ index.html with:                                                    ║
-  ║   npx babel --presets @babel/preset-react app.jsx -o app.js         ║
-  ║ (or just ask Claude to recompile). index.html is the fast,          ║
-  ║ precompiled production file that GitHub Pages serves by default.    ║
-  ╚════════════════════════════════════════════════════════════════════╝
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script>/* apply saved theme before first paint */try{var __t=localStorage.getItem("pent-theme");if(__t==="medium"||__t==="light")document.documentElement.setAttribute("data-theme",__t);}catch(e){}</script>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pentatonic Triads</title>
-  <meta name="description" content="Free guitar practice tool — pentatonic &amp; modal scales, triads, chord progressions, drums and real guitar audio. 4 modes, 5 positions, all 12 keys. No install.">
-  <meta property="og:title" content="Pentatonic Triads — Guitar Practice Tool">
-  <meta property="og:description" content="Explore scales, triads and chord progressions on an interactive fretboard. 4 modes &middot; 5 positions &middot; all 12 keys &middot; drums &amp; audio.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://mmazz3117-del.github.io/Triads/">
-  <meta property="og:image" content="https://mmazz3117-del.github.io/Triads/pentatonic_triads_splash.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <link rel="manifest" href="./manifest.webmanifest">
-  <meta name="theme-color" content="#0b1018">
-  <link rel="apple-touch-icon" href="./icon-192.png">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-  <!-- Fonts load async (media swap trick) so they never block first paint -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet"></noscript>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
   <style>
-    /* Metric-matched local fallbacks — text renders in these until the web
-       fonts arrive, sized so the swap doesn't shift layout (CLS fix). */
-    @font-face { font-family: "Plex Mono Fallback"; src: local("Courier New"), local("Courier");
-      size-adjust: 100%; ascent-override: 102.5%; descent-override: 27.5%; line-gap-override: 0%; }
-    @font-face { font-family: "Playfair Fallback"; src: local("Georgia"), local("Times New Roman");
-      size-adjust: 106%; ascent-override: 108.2%; descent-override: 26.6%; line-gap-override: 0%; }
-  </style>
-  <style>
-    :root {
-      --bg: #0b1018;
-      --bg-glow1: #131f30;
-      --bg-glow2: #0e1820;
-      --bg-deep: #080f18;
-      --panel: rgba(255,255,255,0.022);
-      --panel2: rgba(255,255,255,0.018);
-      --card: rgba(255,255,255,0.02);
-      --card2: #ffffff07;
-      --btn: rgba(255,255,255,0.04);
-      --btn2: rgba(255,255,255,0.05);
-      --btn3: rgba(255,255,255,0.08);
-      --well: rgba(0,0,0,0.4);
-      --well2: rgba(0,0,0,0.45);
-      --well3: rgba(0,0,0,0.5);
-      --well4: rgba(0,0,0,0.3);
-      --well5: rgba(0,0,0,0.25);
-      --border: #1e2e3e;
-      --border-soft: #1a2a38;
-      --border-dim: #182030;
-      --divider: #182535;
-      --border-lit: #253545;
-      --btn-border: #2a3a4a;
-      --sel-bg: #2a4a6a;
-      --sel-border: #3a6a9a;
-      --text: #eee;
-      --text-soft: #ccc;
-      --muted: #778;
-      --muted2: #556;
-      --label: #445;
-      --faint: #334;
-      --label2: #3a5060;
-      --heading: #3a6a8a;
-      --link: #9ac;
-      --link2: #7ac;
-      --link3: #4a8aaa;
-      --nut: #889;
-      --string: #243040;
-      --inlay: #1e3040;
-      --dot: #3d6080;
-      --dot-dim: #2a4055;
-      --dot-text-dim: #5a7a8a;
-      --ghost-bg: #1e3a5a;
-      --ghost-border: #3a6080;
-      --ghost-text: #7aaaca;
-      --root-stroke: #ffffffaa;
-      --split-stroke: #ffffff20;
-      --bluenote-bg: #2a1a3a;
-      --shadow: 0 4px 20px rgba(0,0,0,0.4);
-    }
-    html[data-theme="medium"] {
-      --bg: #1c2533;
-      --bg-glow1: #263246;
-      --bg-glow2: #1f2937;
-      --bg-deep: #161e2a;
-      --panel: rgba(255,255,255,0.035);
-      --panel2: rgba(255,255,255,0.03);
-      --card: rgba(255,255,255,0.035);
-      --card2: #ffffff0d;
-      --btn: rgba(255,255,255,0.07);
-      --btn2: rgba(255,255,255,0.09);
-      --btn3: rgba(255,255,255,0.12);
-      --well: rgba(0,0,0,0.28);
-      --well2: rgba(0,0,0,0.32);
-      --well3: rgba(0,0,0,0.35);
-      --well4: rgba(0,0,0,0.22);
-      --well5: rgba(0,0,0,0.18);
-      --border: #34465c;
-      --border-soft: #2e4053;
-      --border-dim: #2b3a4d;
-      --divider: #2f3f53;
-      --border-lit: #41566e;
-      --btn-border: #3e5168;
-      --sel-bg: #2f5377;
-      --sel-border: #4a7aa6;
-      --text: #eef3f8;
-      --text-soft: #cfd9e4;
-      --muted: #9fb0c0;
-      --muted2: #8295a8;
-      --label: #6e8296;
-      --faint: #5a6c7e;
-      --label2: #7c93a8;
-      --heading: #6f93b0;
-      --link: #8fb8d8;
-      --link2: #7fb0d8;
-      --link3: #6fa3c4;
-      --nut: #aab8c6;
-      --string: #3c4f64;
-      --inlay: #33445a;
-      --dot: #5b7e9c;
-      --dot-dim: #46607a;
-      --dot-text-dim: #8aa2b6;
-      --ghost-bg: #2e4866;
-      --ghost-border: #547698;
-      --ghost-text: #a9c4dc;
-      --root-stroke: #ffffffcc;
-      --split-stroke: #ffffff30;
-      --bluenote-bg: #3a2750;
-      --shadow: 0 4px 20px rgba(0,0,0,0.35);
-    }
-    html[data-theme="light"] {
-      --bg: #eef2f6;
-      --bg-glow1: #ffffff;
-      --bg-glow2: #e2e9f0;
-      --bg-deep: #e6ebf1;
-      --panel: rgba(13,32,52,0.04);
-      --panel2: rgba(13,32,52,0.035);
-      --card: rgba(13,32,52,0.03);
-      --card2: #0d203408;
-      --btn: rgba(13,32,52,0.06);
-      --btn2: rgba(13,32,52,0.08);
-      --btn3: rgba(13,32,52,0.12);
-      --well: rgba(13,32,52,0.06);
-      --well2: #ffffff;
-      --well3: rgba(13,32,52,0.05);
-      --well4: rgba(13,32,52,0.05);
-      --well5: rgba(13,32,52,0.04);
-      --border: #c4d0dc;
-      --border-soft: #cdd8e2;
-      --border-dim: #d3dde6;
-      --divider: #d9e2ea;
-      --border-lit: #aebfcf;
-      --btn-border: #b9c8d6;
-      --sel-bg: #2f5377;
-      --sel-border: #4a7aa6;
-      --text: #16222e;
-      --text-soft: #2c3c4c;
-      --muted: #5e7186;
-      --muted2: #7b8da2;
-      --label: #8a9bae;
-      --faint: #a3b2c2;
-      --label2: #6c8094;
-      --heading: #4a7396;
-      --link: #2f6ea8;
-      --link2: #3a7cb8;
-      --link3: #2f6e96;
-      --nut: #5a6a7a;
-      --string: #b9c6d2;
-      --inlay: #d4dde6;
-      --dot: #7d9ab4;
-      --dot-dim: #b6c6d4;
-      --dot-text-dim: #7c8ea0;
-      --ghost-bg: #dde7f0;
-      --ghost-border: #9fb4c8;
-      --ghost-text: #54718c;
-      --root-stroke: #00000066;
-      --split-stroke: #00000022;
-      --bluenote-bg: #f0e2fa;
-      --shadow: 0 4px 18px rgba(30,50,70,0.16);
-    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { background: var(--bg); }
-    #root { min-height: 100vh; background: var(--bg); }
+    html, body { background: #0b1018; }
+    #root { min-height: 100vh; background: #0b1018; }
 
     #splash {
       position: fixed; inset: 0; z-index: 999;
@@ -253,7 +68,7 @@
       position: absolute; top: 50%; transform: translateY(-50%);
       width: 17px; height: 17px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-family: 'IBM Plex Mono', 'Plex Mono Fallback', monospace; font-size: 7px; font-weight: 700; z-index: 2;
+      font-family: 'IBM Plex Mono', monospace; font-size: 7px; font-weight: 700; z-index: 2;
     }
     .nd-root   { background: #f0c040; color: #111; border: 1.5px solid #fff4; }
     .nd-blue   { background: #60b8f0; color: #111; }
@@ -264,20 +79,20 @@
 
     /* ── typography ── */
     .sp-h1 {
-      font-family: 'Playfair Display', 'Playfair Fallback', serif;
+      font-family: 'Playfair Display', serif;
       font-size: clamp(28px, 8vw, 50px); font-weight: 900; line-height: 1.1;
       background: linear-gradient(130deg, #f0c040, #60b8f0);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
       margin-bottom: 6px;
     }
     .sub {
-      font-family: 'IBM Plex Mono', 'Plex Mono Fallback', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: clamp(13px, 3.5vw, 18px); letter-spacing: 4px;
       color: #5a9ab8; text-transform: uppercase; font-weight: 600; margin-bottom: 24px;
     }
     .divider { width: 50px; height: 1px; background: linear-gradient(to right, transparent, #3a6a8a, transparent); margin: 0 auto 24px; }
     .desc {
-      font-family: 'IBM Plex Mono', 'Plex Mono Fallback', monospace; font-size: clamp(11px, 3vw, 13px);
+      font-family: 'IBM Plex Mono', monospace; font-size: clamp(11px, 3vw, 13px);
       line-height: 1.85; color: #7a9ab0; max-width: 440px; margin: 0 auto 28px;
     }
     .desc strong { color: #a0c8e0; font-weight: 600; }
@@ -285,7 +100,7 @@
     /* ── pills ── */
     .pills { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; margin-bottom: 32px; }
     .pill {
-      font-family: 'IBM Plex Mono', 'Plex Mono Fallback', monospace; font-size: clamp(8px, 2vw, 9px);
+      font-family: 'IBM Plex Mono', monospace; font-size: clamp(8px, 2vw, 9px);
       letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; border: 1px solid;
     }
     .py { color:#f0c040; border-color:#f0c04044; background:#f0c04010; }
@@ -296,7 +111,7 @@
 
     /* ── CTA button ── */
     .splash-cta {
-      font-family: 'IBM Plex Mono', 'Plex Mono Fallback', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: clamp(13px, 3.5vw, 16px); font-weight: 700;
       letter-spacing: 2px; text-transform: uppercase;
       padding: 18px 52px; border-radius: 10px; border: none;
@@ -315,7 +130,7 @@
     .dot-pip { width: 5px; height: 5px; border-radius: 50%; }
 
     .readme-link {
-      font-family: 'IBM Plex Mono', 'Plex Mono Fallback', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: clamp(10px, 2.5vw, 12px);
       letter-spacing: 1.5px; text-transform: uppercase;
       color: #5a9ab8; text-decoration: none;
@@ -428,9 +243,6 @@
 
 
 <!-- React app -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
 <script type="text/babel">
 const { useState, useRef, useEffect, useCallback } = React;
 
@@ -466,33 +278,47 @@ const INLAYS=[3,5,7,9,12,15,17,19,21,24], DINLAY=new Set([12,24]);
 function dorP(root){ return [0,2,3,7,9].map(s=>NOTES[(NOTES.indexOf(root)+s)%12]); }  // 1 2 b3 5 6
 function mixP(root){ return [0,2,4,7,10].map(s=>NOTES[(NOTES.indexOf(root)+s)%12]); }  // 1 2 3 5 b7
 
-// Diatonic extensions: the 7th is the next third stacked above the triad,
-// so it always stays in key — I/IV get maj7, ii/iii/vi get m7, V and the
-// modal VII get a true dom7, and diminished triads get a ø7 (half-dim).
+// Extension semitones above root for each chord quality
+// 7th interval: major7=11, minor7=10, dom7=10, dim7=9
+// 9th interval: always 14 (major 2nd up an octave = 2 semitones mod12 = 2)
+const EXT7 = { major:11, minor:10, dom:10, dim:9 };  // semitones above root
+const EXT9 = 2; // semitone above root (= 9th = 2nd)
+
+// Get extension note names for a triad given extension mode ("7" or "9")
 function getExtNotes(t, root, sc, ext) {
   if (!ext) return [];
-  const sd = ((t.d[2] + 2 - 1) % 7) + 1;   // scale degree a diatonic third above the 5th
-  const seventh = dn(sd, root, sc);
+  const rootNote = dn(t.d[0], root, sc);
+  const rootIdx = NOTES.indexOf(rootNote);
+  // Determine 7th quality
+  const seventh = t.q === "major"
+    ? NOTES[(rootIdx + 11) % 12]  // maj7
+    : t.q === "dim"
+    ? NOTES[(rootIdx + 9) % 12]   // dim7
+    : NOTES[(rootIdx + 10) % 12]; // min7 / dom7
   if (ext === "7") return [seventh];
-  const ninth = NOTES[(NOTES.indexOf(dn(t.d[0], root, sc)) + 2) % 12];
+  // 9th = seventh + 9th
+  const ninth = NOTES[(rootIdx + 2) % 12];
   return [seventh, ninth];
 }
 
-function extLabel(t, root, sc, ext) {
+function extLabel(t, ext) {
   if (!ext) return "";
-  if (t.q === "dim") return ext === "7" ? "ø7" : "ø9"; // diatonic 7th over ° = half-diminished
-  const rootIdx = NOTES.indexOf(dn(t.d[0], root, sc));
-  const sd = ((t.d[2] + 2 - 1) % 7) + 1;
-  const isMaj7 = (NOTES.indexOf(dn(sd, root, sc)) - rootIdx + 12) % 12 === 11;
-  if (ext === "7") return isMaj7 ? "maj7" : "7";
-  return isMaj7 ? "maj9" : "9";
+  if (ext === "7") {
+    if (t.q === "major") return "maj7";
+    if (t.q === "dim") return "dim7";
+    return "7";
+  }
+  if (ext === "9") {
+    if (t.q === "major") return "maj9";
+    if (t.q === "dim") return "dim9";
+    return "9";
+  }
+  return "";
 }
 
 function cnameExt(t, root, sc, ext) {
-  const rootNote = dn(t.d[0],root,sc);
-  if (t.q === "dim" && ext) return rootNote + extLabel(t, root, sc, ext); // "Bø7", not "B°ø7"
-  const base = rootNote + (t.q==="minor"?"m":t.q==="dim"?"°":"");
-  return base + extLabel(t, root, sc, ext);
+  const base = dn(t.d[0],root,sc) + (t.q==="minor"?"m":t.q==="dim"?"°":"");
+  return base + extLabel(t, ext);
 }
 
 // Dorian triads: i ii III IV v vi° VII
@@ -520,27 +346,23 @@ const XT=[
 ];
 
 // Dorian pentatonic positions — 1 2 b3 5 6 (A B C E F# for A Dorian)
-// Anchor offsets on low-E: 0,2,3,7,9 — each box advances one scale tone per
-// string, so the 5 boxes are distinct and tile the whole neck (verified
-// programmatically across all 12 keys). Some boxes span wider frets because
-// of the b3→5 and 6→1 interval gaps in this pentatonic.
+// Position offsets from root fret on low-E: 0,2,3,7,4
 const DP=[
-  {num:1,sd:"Root", off:0, dots:[{s:0,f:0,d:1},{s:0,f:2,d:2},{s:1,f:2,d:5},{s:1,f:4,d:6},{s:2,f:-1,d:6},{s:2,f:2,d:1},{s:3,f:-1,d:2},{s:3,f:0,d:3},{s:4,f:0,d:5},{s:4,f:2,d:6},{s:5,f:0,d:1},{s:5,f:2,d:2}]},
-  {num:2,sd:"2nd",  off:2, dots:[{s:0,f:0,d:2},{s:0,f:1,d:3},{s:1,f:2,d:6},{s:1,f:5,d:1},{s:2,f:0,d:1},{s:2,f:2,d:2},{s:3,f:-2,d:3},{s:3,f:2,d:5},{s:4,f:0,d:6},{s:4,f:3,d:1},{s:5,f:0,d:2},{s:5,f:1,d:3}]},
-  {num:3,sd:"b3rd", off:3, dots:[{s:0,f:0,d:3},{s:0,f:4,d:5},{s:1,f:4,d:1},{s:1,f:6,d:2},{s:2,f:1,d:2},{s:2,f:2,d:3},{s:3,f:1,d:5},{s:3,f:3,d:6},{s:4,f:2,d:1},{s:4,f:4,d:2},{s:5,f:0,d:3},{s:5,f:4,d:5}]},
-  {num:4,sd:"5th",  off:7, dots:[{s:0,f:0,d:5},{s:0,f:2,d:6},{s:1,f:2,d:2},{s:1,f:3,d:3},{s:2,f:-2,d:3},{s:2,f:2,d:5},{s:3,f:-1,d:6},{s:3,f:2,d:1},{s:4,f:0,d:2},{s:4,f:1,d:3},{s:5,f:0,d:5},{s:5,f:2,d:6}]},
-  {num:5,sd:"6th",  off:9, dots:[{s:0,f:0,d:6},{s:0,f:3,d:1},{s:1,f:1,d:3},{s:1,f:5,d:5},{s:2,f:0,d:5},{s:2,f:2,d:6},{s:3,f:0,d:1},{s:3,f:2,d:2},{s:4,f:-1,d:3},{s:4,f:3,d:5},{s:5,f:0,d:6},{s:5,f:3,d:1}]},
+  {num:1,sd:"Root",off:0, dots:[{s:0,f:0,d:1},{s:0,f:2,d:2},{s:1,f:2,d:5},{s:1,f:4,d:6},{s:2,f:-1,d:6},{s:2,f:2,d:1},{s:3,f:-1,d:2},{s:3,f:0,d:3},{s:4,f:0,d:5},{s:4,f:2,d:6},{s:5,f:0,d:1},{s:5,f:2,d:2}]},
+  {num:2,sd:"2nd", off:2, dots:[{s:0,f:0,d:2},{s:0,f:1,d:3},{s:1,f:0,d:5},{s:1,f:2,d:6},{s:2,f:0,d:1},{s:2,f:2,d:2},{s:3,f:2,d:5},{s:3,f:4,d:6},{s:4,f:0,d:6},{s:4,f:3,d:1},{s:5,f:0,d:2},{s:5,f:1,d:3}]},
+  {num:3,sd:"b3rd",off:3, dots:[{s:0,f:-1,d:2},{s:0,f:0,d:3},{s:1,f:-1,d:5},{s:1,f:1,d:6},{s:2,f:-1,d:1},{s:2,f:1,d:2},{s:3,f:1,d:5},{s:3,f:3,d:6},{s:4,f:-1,d:6},{s:4,f:2,d:1},{s:5,f:-1,d:2},{s:5,f:0,d:3}]},
+  {num:4,sd:"5th", off:7, dots:[{s:0,f:0,d:5},{s:0,f:2,d:6},{s:1,f:0,d:1},{s:1,f:2,d:2},{s:2,f:2,d:5},{s:2,f:4,d:6},{s:3,f:-1,d:6},{s:3,f:2,d:1},{s:4,f:0,d:2},{s:4,f:1,d:3},{s:5,f:0,d:5},{s:5,f:2,d:6}]},
+  {num:5,sd:"6th", off:4, dots:[{s:0,f:-1,d:3},{s:0,f:3,d:5},{s:1,f:0,d:6},{s:1,f:3,d:1},{s:2,f:0,d:2},{s:2,f:1,d:3},{s:3,f:0,d:5},{s:3,f:2,d:6},{s:4,f:1,d:1},{s:4,f:3,d:2},{s:5,f:-1,d:3},{s:5,f:3,d:5}]},
 ];
 
 // Mixolydian pentatonic positions — 1 2 3 5 b7 (A B C# E G for A Mixolydian)
-// Anchor offsets on low-E: 0,2,4,7,10 — verified across all 12 keys; boxes
-// are distinct and tile the neck.
+// Position offsets from root fret on low-E: 0,2,4,7,5
 const XP=[
-  {num:1,sd:"Root", off:0, dots:[{s:0,f:0,d:1},{s:0,f:2,d:2},{s:1,f:-1,d:3},{s:1,f:2,d:5},{s:2,f:0,d:7},{s:2,f:2,d:1},{s:3,f:-1,d:2},{s:3,f:1,d:3},{s:4,f:0,d:5},{s:4,f:3,d:7},{s:5,f:0,d:1},{s:5,f:2,d:2}]},
-  {num:2,sd:"2nd",  off:2, dots:[{s:0,f:0,d:2},{s:0,f:2,d:3},{s:1,f:0,d:5},{s:1,f:3,d:7},{s:2,f:0,d:1},{s:2,f:2,d:2},{s:3,f:-1,d:3},{s:3,f:2,d:5},{s:4,f:1,d:7},{s:4,f:3,d:1},{s:5,f:0,d:2},{s:5,f:2,d:3}]},
-  {num:3,sd:"3rd",  off:4, dots:[{s:0,f:0,d:3},{s:0,f:3,d:5},{s:1,f:1,d:7},{s:1,f:3,d:1},{s:2,f:0,d:2},{s:2,f:2,d:3},{s:3,f:0,d:5},{s:3,f:3,d:7},{s:4,f:1,d:1},{s:4,f:3,d:2},{s:5,f:0,d:3},{s:5,f:3,d:5}]},
-  {num:4,sd:"5th",  off:7, dots:[{s:0,f:0,d:5},{s:0,f:3,d:7},{s:1,f:0,d:1},{s:1,f:2,d:2},{s:2,f:-1,d:3},{s:2,f:2,d:5},{s:3,f:0,d:7},{s:3,f:2,d:1},{s:4,f:0,d:2},{s:4,f:2,d:3},{s:5,f:0,d:5},{s:5,f:3,d:7}]},
-  {num:5,sd:"b7th", off:10, dots:[{s:0,f:0,d:7},{s:0,f:2,d:1},{s:1,f:-1,d:2},{s:1,f:1,d:3},{s:2,f:-1,d:5},{s:2,f:2,d:7},{s:3,f:-1,d:1},{s:3,f:1,d:2},{s:4,f:-1,d:3},{s:4,f:2,d:5},{s:5,f:0,d:7},{s:5,f:2,d:1}]},
+  {num:1,sd:"Root",off:0, dots:[{s:0,f:0,d:1},{s:0,f:2,d:2},{s:1,f:-1,d:3},{s:1,f:2,d:5},{s:2,f:0,d:7},{s:2,f:2,d:1},{s:3,f:-1,d:2},{s:3,f:1,d:3},{s:4,f:0,d:5},{s:4,f:3,d:7},{s:5,f:0,d:1},{s:5,f:2,d:2}]},
+  {num:2,sd:"2nd", off:2, dots:[{s:0,f:0,d:2},{s:0,f:2,d:3},{s:1,f:0,d:5},{s:1,f:3,d:7},{s:2,f:0,d:1},{s:2,f:2,d:2},{s:3,f:-1,d:3},{s:3,f:2,d:5},{s:4,f:1,d:7},{s:4,f:3,d:1},{s:5,f:0,d:2},{s:5,f:2,d:3}]},
+  {num:3,sd:"3rd", off:4, dots:[{s:0,f:0,d:3},{s:0,f:3,d:5},{s:1,f:1,d:7},{s:1,f:3,d:1},{s:2,f:0,d:2},{s:2,f:2,d:3},{s:3,f:0,d:5},{s:3,f:3,d:7},{s:4,f:-1,d:7},{s:4,f:1,d:1},{s:5,f:0,d:3},{s:5,f:3,d:5}]},
+  {num:4,sd:"5th", off:7, dots:[{s:0,f:0,d:5},{s:0,f:3,d:7},{s:1,f:0,d:1},{s:1,f:2,d:2},{s:2,f:-1,d:3},{s:2,f:2,d:5},{s:3,f:0,d:7},{s:3,f:2,d:1},{s:4,f:0,d:2},{s:4,f:2,d:3},{s:5,f:0,d:5},{s:5,f:3,d:7}]},
+  {num:5,sd:"b7th",off:5, dots:[{s:0,f:-1,d:3},{s:0,f:2,d:5},{s:1,f:0,d:7},{s:1,f:2,d:1},{s:2,f:-1,d:2},{s:2,f:1,d:3},{s:3,f:-1,d:5},{s:3,f:2,d:7},{s:4,f:0,d:1},{s:4,f:2,d:2},{s:5,f:-1,d:3},{s:5,f:2,d:5}]},
 ];
 const MT=[
   {n:"I",  q:"major",d:[1,3,5],c:"#f0c040"},{n:"ii", q:"minor",d:[2,4,6],c:"#c080f0"},
@@ -565,23 +387,28 @@ const NT=[
 //   Pos4 base=12: E:12,14 A:12,14 D:11,14 G:11,14 B:12,14 e:12,14 (A-shape)
 //   Pos5 base=14: E:14,17 A:14,16 D:14,16 G:14,16 B:14,17 e:14,17 (G-shape)
 const MP=[
-  {num:1,sd:"Root", off:0, dots:[{s:0,f:0,d:1},{s:0,f:2,d:2},{s:1,f:-1,d:3},{s:1,f:2,d:5},{s:2,f:-1,d:6},{s:2,f:2,d:1},{s:3,f:-1,d:2},{s:3,f:1,d:3},{s:4,f:0,d:5},{s:4,f:2,d:6},{s:5,f:0,d:1},{s:5,f:2,d:2}]},
-  {num:2,sd:"2nd",  off:2, dots:[{s:0,f:0,d:2},{s:0,f:2,d:3},{s:1,f:0,d:5},{s:1,f:2,d:6},{s:2,f:0,d:1},{s:2,f:2,d:2},{s:3,f:-1,d:3},{s:3,f:2,d:5},{s:4,f:0,d:6},{s:4,f:3,d:1},{s:5,f:0,d:2},{s:5,f:2,d:3}]},
-  {num:3,sd:"3rd",  off:4, dots:[{s:0,f:0,d:3},{s:0,f:3,d:5},{s:1,f:0,d:6},{s:1,f:3,d:1},{s:2,f:0,d:2},{s:2,f:2,d:3},{s:3,f:0,d:5},{s:3,f:2,d:6},{s:4,f:1,d:1},{s:4,f:3,d:2},{s:5,f:0,d:3},{s:5,f:3,d:5}]},
-  {num:4,sd:"5th",  off:7, dots:[{s:0,f:0,d:5},{s:0,f:2,d:6},{s:1,f:0,d:1},{s:1,f:2,d:2},{s:2,f:-1,d:3},{s:2,f:2,d:5},{s:3,f:-1,d:6},{s:3,f:2,d:1},{s:4,f:0,d:2},{s:4,f:2,d:3},{s:5,f:0,d:5},{s:5,f:2,d:6}]},
-  {num:5,sd:"6th",  off:9, dots:[{s:0,f:0,d:6},{s:0,f:3,d:1},{s:1,f:0,d:2},{s:1,f:2,d:3},{s:2,f:0,d:5},{s:2,f:2,d:6},{s:3,f:0,d:1},{s:3,f:2,d:2},{s:4,f:0,d:3},{s:4,f:3,d:5},{s:5,f:0,d:6},{s:5,f:3,d:1}]},
+  {num:1,sd:"Root",off:0, dots:[{s:0,f:0,d:1},{s:0,f:2,d:2},{s:1,f:-1,d:3},{s:1,f:2,d:5},{s:2,f:-1,d:6},{s:2,f:2,d:1},{s:3,f:-1,d:2},{s:3,f:1,d:3},{s:4,f:0,d:5},{s:4,f:2,d:6},{s:5,f:0,d:1},{s:5,f:2,d:2}]},
+  {num:2,sd:"2nd", off:2, dots:[{s:0,f:0,d:2},{s:0,f:2,d:3},{s:1,f:0,d:5},{s:1,f:2,d:6},{s:2,f:0,d:1},{s:2,f:2,d:2},{s:3,f:-1,d:3},{s:3,f:2,d:5},{s:4,f:0,d:6},{s:4,f:3,d:1},{s:5,f:0,d:2},{s:5,f:2,d:3}]},
+  {num:3,sd:"3rd", off:4, dots:[{s:0,f:0,d:3},{s:0,f:3,d:5},{s:1,f:0,d:6},{s:1,f:3,d:1},{s:2,f:0,d:2},{s:2,f:2,d:3},{s:3,f:0,d:5},{s:3,f:2,d:6},{s:4,f:1,d:1},{s:4,f:3,d:2},{s:5,f:0,d:3},{s:5,f:3,d:5}]},
+  {num:4,sd:"5th", off:7, dots:[{s:0,f:0,d:5},{s:0,f:2,d:6},{s:1,f:0,d:1},{s:1,f:2,d:2},{s:2,f:-1,d:3},{s:2,f:2,d:5},{s:3,f:-1,d:6},{s:3,f:2,d:1},{s:4,f:0,d:2},{s:4,f:2,d:3},{s:5,f:0,d:5},{s:5,f:2,d:6}]},
+  {num:5,sd:"6th", off:9, dots:[{s:0,f:0,d:6},{s:0,f:3,d:1},{s:1,f:0,d:2},{s:1,f:2,d:3},{s:2,f:0,d:5},{s:2,f:2,d:6},{s:3,f:0,d:1},{s:3,f:2,d:2},{s:4,f:0,d:3},{s:4,f:3,d:5},{s:5,f:0,d:6},{s:5,f:3,d:1}]},
 ];
 // Minor pentatonic positions — 1 b3 4 5 b7 (A C D E G for A minor)
 // String mapping: s=0=E(low) s=1=A s=2=D s=3=G s=4=B s=5=e(high)
-// Anchor offsets on low-E: 0,3,5,7,10 — verified across all 12 keys.
-// Box 5 is the true b7 box (e.g. frets 14-17 in A minor); the previous data
-// duplicated box 4.
+// OPEN_IDX=[4,9,2,7,11,4]; NS=[0,2,3,5,7,8,10]; NPD=d1,d3,d4,d5,d7
+// Offsets (f) are relative to base = rf + pos.off where rf = fretE(root)
+// Verified against standard A minor pentatonic diagrams (A minor rf=5):
+//   Pos1 base=5:  E:5,8  A:5,7  D:5,7  G:5,7  B:5,8  e:5,8
+//   Pos2 base=8:  E:8,10 A:7,10 D:7,10 G:7,9  B:8,10 e:8,10
+//   Pos3 base=10: E:10,12 A:10,13 D:10,12 G:9,12 B:10,13 e:10,12
+//   Pos4 base=12: E:12,15 A:12,15 D:12,14 G:12,14 B:13,15 e:12,15
+//   Pos5 base=15: E:12,15 A:12,15 D:12,14 G:12,14 B:13,15 e:12,15
 const NP=[
-  {num:1,sd:"Root", off:0, dots:[{s:0,f:0,d:1},{s:0,f:3,d:3},{s:1,f:0,d:4},{s:1,f:2,d:5},{s:2,f:0,d:7},{s:2,f:2,d:1},{s:3,f:0,d:3},{s:3,f:2,d:4},{s:4,f:0,d:5},{s:4,f:3,d:7},{s:5,f:0,d:1},{s:5,f:3,d:3}]},
-  {num:2,sd:"b3rd", off:3, dots:[{s:0,f:0,d:3},{s:0,f:2,d:4},{s:1,f:-1,d:5},{s:1,f:2,d:7},{s:2,f:-1,d:1},{s:2,f:2,d:3},{s:3,f:-1,d:4},{s:3,f:1,d:5},{s:4,f:0,d:7},{s:4,f:2,d:1},{s:5,f:0,d:3},{s:5,f:2,d:4}]},
-  {num:3,sd:"4th",  off:5, dots:[{s:0,f:0,d:4},{s:0,f:2,d:5},{s:1,f:0,d:7},{s:1,f:2,d:1},{s:2,f:0,d:3},{s:2,f:2,d:4},{s:3,f:-1,d:5},{s:3,f:2,d:7},{s:4,f:0,d:1},{s:4,f:3,d:3},{s:5,f:0,d:4},{s:5,f:2,d:5}]},
-  {num:4,sd:"5th",  off:7, dots:[{s:0,f:0,d:5},{s:0,f:3,d:7},{s:1,f:0,d:1},{s:1,f:3,d:3},{s:2,f:0,d:4},{s:2,f:2,d:5},{s:3,f:0,d:7},{s:3,f:2,d:1},{s:4,f:1,d:3},{s:4,f:3,d:4},{s:5,f:0,d:5},{s:5,f:3,d:7}]},
-  {num:5,sd:"b7th", off:10, dots:[{s:0,f:0,d:7},{s:0,f:2,d:1},{s:1,f:0,d:3},{s:1,f:2,d:4},{s:2,f:-1,d:5},{s:2,f:2,d:7},{s:3,f:-1,d:1},{s:3,f:2,d:3},{s:4,f:0,d:4},{s:4,f:2,d:5},{s:5,f:0,d:7},{s:5,f:2,d:1}]},
+  {num:1,sd:"Root",off:0, dots:[{s:0,f:0,d:1},{s:0,f:3,d:3},{s:1,f:0,d:4},{s:1,f:2,d:5},{s:2,f:0,d:7},{s:2,f:2,d:1},{s:3,f:0,d:3},{s:3,f:2,d:4},{s:4,f:0,d:5},{s:4,f:3,d:7},{s:5,f:0,d:1},{s:5,f:3,d:3}]},
+  {num:2,sd:"b3rd",off:3, dots:[{s:0,f:0,d:3},{s:0,f:2,d:4},{s:1,f:-1,d:5},{s:1,f:2,d:7},{s:2,f:-1,d:1},{s:2,f:2,d:3},{s:3,f:-1,d:4},{s:3,f:1,d:5},{s:4,f:0,d:7},{s:4,f:2,d:1},{s:5,f:0,d:3},{s:5,f:2,d:4}]},
+  {num:3,sd:"4th", off:5, dots:[{s:0,f:0,d:4},{s:0,f:2,d:5},{s:1,f:0,d:7},{s:1,f:2,d:1},{s:2,f:0,d:3},{s:2,f:2,d:4},{s:3,f:-1,d:5},{s:3,f:2,d:7},{s:4,f:0,d:1},{s:4,f:3,d:3},{s:5,f:0,d:4},{s:5,f:2,d:5}]},
+  {num:4,sd:"5th", off:7, dots:[{s:0,f:0,d:5},{s:0,f:3,d:7},{s:1,f:0,d:1},{s:1,f:3,d:3},{s:2,f:0,d:4},{s:2,f:2,d:5},{s:3,f:0,d:7},{s:3,f:2,d:1},{s:4,f:1,d:3},{s:4,f:3,d:4},{s:5,f:0,d:5},{s:5,f:3,d:7}]},
+  {num:5,sd:"b7th",off:10,dots:[{s:0,f:-3,d:5},{s:0,f:0,d:7},{s:1,f:-3,d:1},{s:1,f:0,d:3},{s:2,f:-3,d:4},{s:2,f:-1,d:5},{s:3,f:-3,d:7},{s:3,f:-1,d:1},{s:4,f:-2,d:3},{s:4,f:0,d:4},{s:5,f:-3,d:5},{s:5,f:0,d:7}]},
 ];
 
 // Build dot data for a fretboard
@@ -671,30 +498,18 @@ function buildDots(pos, base, checked, triads, pd, root, sc, blues, exts, fullSc
 }
 
 // Single dot SVG group — no conditional returns, everything rendered via opacity/visibility
-// ── Themes ──────────────────────────────────────────────────────
-// CSS variables (in <head>) theme all HTML styling; this object mirrors the
-// tokens SVG needs, since var() doesn't resolve in SVG presentation attributes.
-const THEMES = {
-  dark:   {inlay:"#1e3040",muted:"#778",nut:"#889",string:"#243040",label2:"#3a5060",dot:"#3d6080",dotDim:"#2a4055",dotTextDim:"#5a7a8a",ghostBg:"#1e3a5a",ghostBorder:"#3a6080",ghostText:"#7aaaca",rootStroke:"#ffffffaa",splitStroke:"#ffffff20",bluenoteBg:"#2a1a3a",wire:"#1e2e3e"},
-  medium: {inlay:"#33445a",muted:"#9fb0c0",nut:"#aab8c6",string:"#3c4f64",label2:"#7c93a8",dot:"#5b7e9c",dotDim:"#46607a",dotTextDim:"#8aa2b6",ghostBg:"#2e4866",ghostBorder:"#547698",ghostText:"#a9c4dc",rootStroke:"#ffffffcc",splitStroke:"#ffffff30",bluenoteBg:"#3a2750",wire:"#34465c"},
-  light:  {inlay:"#d4dde6",muted:"#5e7186",nut:"#5a6a7a",string:"#b9c6d2",label2:"#6c8094",dot:"#7d9ab4",dotDim:"#b6c6d4",dotTextDim:"#7c8ea0",ghostBg:"#dde7f0",ghostBorder:"#9fb4c8",ghostText:"#54718c",rootStroke:"#00000066",splitStroke:"#00000022",bluenoteBg:"#f0e2fa",wire:"#c4d0dc"},
-};
-const THEME_ORDER = ["dark","medium","light"];
-let T = THEMES.dark;
-
-let __dotUid = 0;
 function SvgDot({cx, cy, r, colors, note, isRoot, dim, accent}) {
   const fs = Math.max(7, r * 0.72);
-  const id = React.useRef(`dclip${++__dotUid}`).current; // unique per dot instance
+  const id = `c${Math.round(cx)}y${Math.round(cy)}`;
   const single = colors.length <= 1;
-  const fill = colors.length > 0 ? colors[0] : (isRoot ? accent : T.dot);
+  const fill = colors.length > 0 ? colors[0] : (isRoot ? accent : "#3d6080");
   const step = colors.length > 1 ? (2*Math.PI)/colors.length : 1;
   return (
     <g opacity={dim ? 0.45 : 1}>
       {/* Root ring */}
       {isRoot && !dim && <circle cx={cx} cy={cy} r={r+5} fill="none" stroke={fill} strokeWidth={2} opacity={0.35}/>}
       {/* Single color circle */}
-      {single && <circle cx={cx} cy={cy} r={r} fill={fill} stroke={isRoot?T.rootStroke:`${fill}80`} strokeWidth={isRoot?2.5:1}/>}
+      {single && <circle cx={cx} cy={cy} r={r} fill={fill} stroke={isRoot?"#ffffffaa":`${fill}80`} strokeWidth={isRoot?2.5:1}/>}
       {/* Multi-color pie slices */}
       {!single && (
         <g>
@@ -705,13 +520,13 @@ function SvgDot({cx, cy, r, colors, note, isRoot, dim, accent}) {
               return <path key={i} d={`M${cx},${cy} L${cx+r*Math.cos(a0)},${cy+r*Math.sin(a0)} A${r},${r},0,${la},1,${cx+r*Math.cos(a1)},${cy+r*Math.sin(a1)} Z`} fill={c}/>;
             })}
           </g>
-          <circle cx={cx} cy={cy} r={r} fill="none" stroke={T.splitStroke} strokeWidth={1}/>
+          <circle cx={cx} cy={cy} r={r} fill="none" stroke="#ffffff20" strokeWidth={1}/>
         </g>
       )}
       {/* Label */}
       <text x={cx} y={cy+fs*0.4} textAnchor="middle" fontSize={fs} fontWeight="700"
-        fill={dim ? T.dotTextDim : (single && isRoot ? "#111" : "#fff")}
-        fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{note}</text>
+        fill={dim ? "#5a7a8a" : (single && isRoot ? "#111" : "#fff")}
+        fontFamily="IBM Plex Mono,monospace">{note}</text>
     </g>
   );
 }
@@ -805,17 +620,17 @@ function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blue
       {INLAYS.filter(f=>f>=mn&&f<=mx+1).map(f => {
         const x=fx(f)-FW/2+FW/4, my=TP+2.5*SH;
         return DINLAY.has(f)
-          ? <g key={f}><circle cx={x} cy={my-SH} r={Math.max(3,FW*0.08)} fill={T.inlay} opacity={0.5}/><circle cx={x} cy={my+SH} r={Math.max(3,FW*0.08)} fill={T.inlay} opacity={0.5}/></g>
-          : <circle key={f} cx={x} cy={my} r={Math.max(3,FW*0.08)} fill={T.inlay} opacity={0.5}/>;
+          ? <g key={f}><circle cx={x} cy={my-SH} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/><circle cx={x} cy={my+SH} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/></g>
+          : <circle key={f} cx={x} cy={my} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/>;
       })}
-      {Array.from({length:nc},(_,i) => <text key={i} x={LP+(i+1)*FW-FW/2} y={17} textAnchor="middle" fontSize={Math.max(8,10*zoom)} fill={T.muted} fontWeight="600" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{mn+i+1}</text>)}
-      {wires.map((x,i) => <line key={i} x1={x} y1={TP-6} x2={x} y2={TP+5*SH+6} stroke={i===0&&mn===0?T.nut:T.wire} strokeWidth={i===0&&mn===0?4:1.5}/>)}
-      {Array.from({length:6},(_,row) => <line key={row} x1={wires[0]} y1={TP+row*SH} x2={wires[nc]} y2={TP+row*SH} stroke={T.string} strokeWidth={row===5?2:1}/>)}
-      {SL.map((nm,row) => <text key={row} x={wires[0]-10} y={TP+row*SH+4} textAnchor="middle" fontSize={Math.max(7,9*zoom)} fill={T.label2} fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{nm}</text>)}
+      {Array.from({length:nc},(_,i) => <text key={i} x={LP+(i+1)*FW-FW/2} y={17} textAnchor="middle" fontSize={Math.max(8,10*zoom)} fill="#778" fontWeight="600" fontFamily="IBM Plex Mono,monospace">{mn+i+1}</text>)}
+      {wires.map((x,i) => <line key={i} x1={x} y1={TP-6} x2={x} y2={TP+5*SH+6} stroke={i===0&&mn===0?"#889":"#1e2e3e"} strokeWidth={i===0&&mn===0?4:1.5}/>)}
+      {Array.from({length:6},(_,row) => <line key={row} x1={wires[0]} y1={TP+row*SH} x2={wires[nc]} y2={TP+row*SH} stroke="#243040" strokeWidth={row===5?2:1}/>)}
+      {SL.map((nm,row) => <text key={row} x={wires[0]-10} y={TP+row*SH+4} textAnchor="middle" fontSize={Math.max(7,9*zoom)} fill="#3a5060" fontFamily="IBM Plex Mono,monospace">{nm}</text>)}
       {blDots.map((d,i) => (
         <g key={`b${i}`}>
-          <circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill={T.bluenoteBg} stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/>
-          <text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{blNote}</text>
+          <circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill="#2a1a3a" stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/>
+          <text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,monospace">{blNote}</text>
         </g>
       ))}
       {dots.map((dot,i) => {
@@ -832,18 +647,18 @@ function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blue
             cols = [borrowedColor];
             dim = false;
           } else {
-            cols = none ? [dot.isRoot ? accent : T.dot] : getColors(dot.degs, checked, triads);
+            cols = none ? [dot.isRoot ? accent : "#3d6080"] : getColors(dot.degs, checked, triads);
             dim = !none && cols.length === 0;
           }
         }
-        const finalCols = cols.length > 0 ? cols : (dot.isRoot ? [accent] : [T.dotDim]);
+        const finalCols = cols.length > 0 ? cols : (dot.isRoot ? [accent] : ["#2a4055"]);
         const opacity = dim ? 0.5 : 1;
         // Non-pentatonic scale tones (fullScale mode) — show as small ghost dots
         if (dot.isFullOnly && cols.length === 0) {
           return (
             <g key={i} opacity={0.4}>
-              <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR*0.65} fill={T.ghostBg} stroke={T.ghostBorder} strokeWidth={1}/>
-              <text x={fx(dot.af)} y={sy(dot.s)+Math.max(5,DR*0.5)} textAnchor="middle" fontSize={Math.max(6,DR*0.55)} fontWeight="700" fill={T.ghostText} fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{dot.note}</text>
+              <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR*0.65} fill="#1e3a5a" stroke="#3a6080" strokeWidth={1}/>
+              <text x={fx(dot.af)} y={sy(dot.s)+Math.max(5,DR*0.5)} textAnchor="middle" fontSize={Math.max(6,DR*0.55)} fontWeight="700" fill="#7aaaca" fontFamily="IBM Plex Mono,monospace">{dot.note}</text>
             </g>
           );
         }
@@ -851,7 +666,7 @@ function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blue
           <g key={i} opacity={opacity}>
             {dot.isExt && cols.length > 0 && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+4} fill="none" stroke={cols[0]} strokeWidth={1.5} strokeDasharray="3 2" opacity={0.7}/>}
             <SvgDot cx={fx(dot.af)} cy={sy(dot.s)} r={DR} colors={finalCols} note={dot.note} isRoot={dot.isRoot} dim={false} accent={accent}/>
-            {onDotClick && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+2} fill="transparent" stroke="transparent" strokeWidth={8} style={{cursor:"pointer"}} onClick={()=>onDotClick(dot.s,dot.af,dot.note)}/>}
+            {shapeOn && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+2} fill="transparent" stroke="transparent" strokeWidth={8} style={{cursor:"pointer"}} onClick={()=>onDotClick&&onDotClick(dot.s,dot.af,dot.note)}/>}
           </g>
         );
       })}
@@ -893,7 +708,7 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
   }
 
   const allD = [...dm.values()];
-  if (!allD.length) return <div style={{padding:20,textAlign:"center",color:"var(--faint)",fontFamily:"IBM Plex Mono,Plex Mono Fallback,monospace",fontSize:10}}>Select positions above</div>;
+  if (!allD.length) return <div style={{padding:20,textAlign:"center",color:"#334",fontFamily:"IBM Plex Mono,monospace",fontSize:10}}>Select positions above</div>;
 
   // Add borrowed-chord notes that aren't in the scale
   const borrowedMap = getBorrowedNoteMap(checked, triads, qualOver, root, sc);
@@ -950,18 +765,18 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
       {INLAYS.filter(f=>f>=mn&&f<=mx+1).map(f => {
         const x=fx(f)-FW/2+FW/4, my=TP+2.5*SH;
         return DINLAY.has(f)
-          ? <g key={f}><circle cx={x} cy={my-SH} r={Math.max(3,FW*0.08)} fill={T.inlay} opacity={0.5}/><circle cx={x} cy={my+SH} r={Math.max(3,FW*0.08)} fill={T.inlay} opacity={0.5}/></g>
-          : <circle key={f} cx={x} cy={my} r={Math.max(3,FW*0.08)} fill={T.inlay} opacity={0.5}/>;
+          ? <g key={f}><circle cx={x} cy={my-SH} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/><circle cx={x} cy={my+SH} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/></g>
+          : <circle key={f} cx={x} cy={my} r={Math.max(3,FW*0.08)} fill="#1e3040" opacity={0.5}/>;
       })}
-      {Array.from({length:nc},(_,i) => <text key={i} x={LP+(i+1)*FW-FW/2} y={17} textAnchor="middle" fontSize={Math.max(8,10*zoom)} fill={T.muted} fontWeight="600" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{mn+i+1}</text>)}
-      {wires.map((x,i) => <line key={i} x1={x} y1={TP-6} x2={x} y2={TP+5*SH+6} stroke={i===0&&mn===0?T.nut:T.wire} strokeWidth={i===0&&mn===0?4:1.5}/>)}
-      {Array.from({length:6},(_,row) => <line key={row} x1={wires[0]} y1={TP+row*SH} x2={wires[nc]} y2={TP+row*SH} stroke={T.string} strokeWidth={row===5?2:1}/>)}
-      {SL.map((nm,row) => <text key={row} x={wires[0]-10} y={TP+row*SH+4} textAnchor="middle" fontSize={Math.max(7,9*zoom)} fill={T.label2} fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{nm}</text>)}
+      {Array.from({length:nc},(_,i) => <text key={i} x={LP+(i+1)*FW-FW/2} y={17} textAnchor="middle" fontSize={Math.max(8,10*zoom)} fill="#778" fontWeight="600" fontFamily="IBM Plex Mono,monospace">{mn+i+1}</text>)}
+      {wires.map((x,i) => <line key={i} x1={x} y1={TP-6} x2={x} y2={TP+5*SH+6} stroke={i===0&&mn===0?"#889":"#1e2e3e"} strokeWidth={i===0&&mn===0?4:1.5}/>)}
+      {Array.from({length:6},(_,row) => <line key={row} x1={wires[0]} y1={TP+row*SH} x2={wires[nc]} y2={TP+row*SH} stroke="#243040" strokeWidth={row===5?2:1}/>)}
+      {SL.map((nm,row) => <text key={row} x={wires[0]-10} y={TP+row*SH+4} textAnchor="middle" fontSize={Math.max(7,9*zoom)} fill="#3a5060" fontFamily="IBM Plex Mono,monospace">{nm}</text>)}
       {posLabels.map(({num,lo,hi}) => {
         const x1=fx(lo)-FW*0.4, x2=fx(hi)+FW*0.4, y=TP+5*SH+DR+10;
-        return <g key={num}><line x1={x1} y1={y} x2={x2} y2={y} stroke={accent} strokeWidth={1.5} opacity={0.5}/><line x1={x1} y1={y-4} x2={x1} y2={y+4} stroke={accent} strokeWidth={1.5} opacity={0.5}/><line x1={x2} y1={y-4} x2={x2} y2={y+4} stroke={accent} strokeWidth={1.5} opacity={0.5}/><text x={(x1+x2)/2} y={y+14} textAnchor="middle" fontSize={10} fill={accent} fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace" fontWeight="700">Pos {num}</text></g>;
+        return <g key={num}><line x1={x1} y1={y} x2={x2} y2={y} stroke={accent} strokeWidth={1.5} opacity={0.5}/><line x1={x1} y1={y-4} x2={x1} y2={y+4} stroke={accent} strokeWidth={1.5} opacity={0.5}/><line x1={x2} y1={y-4} x2={x2} y2={y+4} stroke={accent} strokeWidth={1.5} opacity={0.5}/><text x={(x1+x2)/2} y={y+14} textAnchor="middle" fontSize={10} fill={accent} fontFamily="IBM Plex Mono,monospace" fontWeight="700">Pos {num}</text></g>;
       })}
-      {blDots.map((d,i) => <g key={`b${i}`}><circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill={T.bluenoteBg} stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/><text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{blNote}</text></g>)}
+      {blDots.map((d,i) => <g key={`b${i}`}><circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill="#2a1a3a" stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/><text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,monospace">{blNote}</text></g>)}
       {allD.map((dot,i) => {
         let cols, dim;
         if (focusedNotes) {
@@ -974,16 +789,16 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
             cols = [borrowedColor];
             dim = false;
           } else {
-            cols = none ? [dot.isRoot ? accent : T.dot] : getColors(dot.degs, checked, triads);
+            cols = none ? [dot.isRoot ? accent : "#3d6080"] : getColors(dot.degs, checked, triads);
             dim = !none && cols.length === 0;
           }
         }
-        const finalCols = cols.length > 0 ? cols : (dot.isRoot ? [accent] : [T.dotDim]);
+        const finalCols = cols.length > 0 ? cols : (dot.isRoot ? [accent] : ["#2a4055"]);
         return (
           <g key={i} opacity={dim ? 0.5 : 1}>
             {dot.isExt && cols.length > 0 && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+4} fill="none" stroke={cols[0]} strokeWidth={1.5} strokeDasharray="3 2" opacity={0.7}/>}
             <SvgDot cx={fx(dot.af)} cy={sy(dot.s)} r={DR} colors={finalCols} note={dot.note} isRoot={dot.isRoot} dim={false} accent={accent}/>
-            {onDotClick && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+2} fill="transparent" stroke="transparent" strokeWidth={8} style={{cursor:"pointer"}} onClick={()=>onDotClick(dot.s,dot.af,dot.note)}/>}
+            {shapeOn && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+2} fill="transparent" stroke="transparent" strokeWidth={8} style={{cursor:"pointer"}} onClick={()=>onDotClick&&onDotClick(dot.s,dot.af,dot.note)}/>}
           </g>
         );
       })}
@@ -1025,30 +840,30 @@ function TCard({t, root, on, onClick, sc, pd, onPlay, ext, onExt, qualityOverrid
   } else {
     nm = cnameExt(t, root, sc, ext);
   }
-  const M = "'IBM Plex Mono','Plex Mono Fallback',monospace";
+  const M = "'IBM Plex Mono',monospace";
   const isFlipped = qualityOverride && qualityOverride !== origQuality;
   return (
-    <div onClick={onClick} style={{background:on?`${t.c}18`:"var(--card)",border:`2px solid ${on?t.c:t.c+"22"}`,borderRadius:9,padding:"8px 10px",cursor:"pointer",opacity:on?1:0.5,transition:"all .13s",boxShadow:on?`0 0 12px ${t.c}30`:"none"}}>
+    <div onClick={onClick} style={{background:on?`${t.c}18`:"rgba(255,255,255,0.02)",border:`2px solid ${on?t.c:t.c+"22"}`,borderRadius:9,padding:"8px 10px",cursor:"pointer",opacity:on?1:0.5,transition:"all .13s",boxShadow:on?`0 0 12px ${t.c}30`:"none"}}>
       <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:4}}>
         <div style={{width:13,height:13,borderRadius:3,border:`2px solid ${t.c}`,background:on?t.c:"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
           {on && <span style={{fontSize:8,color:"#111",fontWeight:900}}>✓</span>}
         </div>
-        <span style={{fontSize:12,fontWeight:900,fontFamily:"'Playfair Display','Playfair Fallback',serif",color:t.c}}>{t.n}</span>
-        <span style={{fontSize:17,fontWeight:900,fontFamily:"'Playfair Display','Playfair Fallback',serif",color:"var(--text)"}}>{nm}</span>
+        <span style={{fontSize:12,fontWeight:900,fontFamily:"'Playfair Display',serif",color:t.c}}>{t.n}</span>
+        <span style={{fontSize:17,fontWeight:900,fontFamily:"'Playfair Display',serif",color:"#eee"}}>{nm}</span>
         {isFlipped && <span style={{fontSize:7,color:"#f0c040",fontFamily:M,padding:"1px 4px",background:"rgba(240,192,64,0.15)",border:"1px solid #f0c04044",borderRadius:3}}>borrowed</span>}
-        <span style={{fontSize:8,color:"var(--label)",fontFamily:M,textTransform:"uppercase",letterSpacing:1,marginLeft:"auto"}}>{effQuality}</span>
+        <span style={{fontSize:8,color:"#445",fontFamily:M,textTransform:"uppercase",letterSpacing:1,marginLeft:"auto"}}>{effQuality}</span>
         <span onClick={e=>{e.stopPropagation();onPlay(allNotes);}} style={{fontSize:13,cursor:"pointer",color:t.c,userSelect:"none"}}>♪</span>
       </div>
       {/* Notes row */}
       <div style={{display:"flex",gap:3,flexWrap:"wrap",paddingLeft:18,marginBottom:4}}>
-        {notes.map((n,i) => <span key={i} onClick={e=>{e.stopPropagation();onPlay([n]);}} style={{background:`${t.c}22`,border:`1px solid ${t.c}44`,borderRadius:4,padding:"1px 6px",fontSize:11,fontWeight:700,fontFamily:M,color:"var(--text)",cursor:"pointer"}}>{n}</span>)}
+        {notes.map((n,i) => <span key={i} onClick={e=>{e.stopPropagation();onPlay([n]);}} style={{background:`${t.c}22`,border:`1px solid ${t.c}44`,borderRadius:4,padding:"1px 6px",fontSize:11,fontWeight:700,fontFamily:M,color:"#ddd",cursor:"pointer"}}>{n}</span>)}
         {extNotes.map((n,i) => <span key={`e${i}`} onClick={e=>{e.stopPropagation();onPlay([n]);}} style={{background:`${t.c}40`,border:`2px solid ${t.c}`,borderRadius:4,padding:"1px 6px",fontSize:11,fontWeight:700,fontFamily:M,color:"#fff",cursor:"pointer"}}>{n}</span>)}
       </div>
       {/* 7 / 9 extension toggles + quality flip */}
       <div style={{display:"flex",gap:3,paddingLeft:18,marginBottom:3,alignItems:"center"}} onClick={e=>e.stopPropagation()}>
         {["7","9"].map(x => (
-          <button key={x} onClick={()=>onExt(x===ext?null:x)} style={{fontFamily:M,fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:4,cursor:"pointer",border:`1px solid ${ext===x?t.c:t.c+"44"}`,background:ext===x?`${t.c}30`:"transparent",color:ext===x?t.c:"var(--muted2)",letterSpacing:1}}>
-            {extLabel(t,root,sc,x)}
+          <button key={x} onClick={()=>onExt(x===ext?null:x)} style={{fontFamily:M,fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:4,cursor:"pointer",border:`1px solid ${ext===x?t.c:t.c+"44"}`,background:ext===x?`${t.c}30`:"transparent",color:ext===x?t.c:"#556",letterSpacing:1}}>
+            {extLabel(t,x)}
           </button>
         ))}
         {(origQuality==="major"||origQuality==="minor") && onQualityToggle && (
@@ -1056,13 +871,13 @@ function TCard({t, root, on, onClick, sc, pd, onPlay, ext, onExt, qualityOverrid
             style={{fontFamily:M,fontSize:9,fontWeight:700,padding:"2px 8px",borderRadius:4,cursor:"pointer",
               border:`1px solid ${isFlipped?"#f0c040":t.c+"44"}`,
               background:isFlipped?"rgba(240,192,64,0.15)":"transparent",
-              color:isFlipped?"#f0c040":"var(--muted2)",letterSpacing:1}}>
+              color:isFlipped?"#f0c040":"#556",letterSpacing:1}}>
             → {origQuality==="major"?"min":"maj"}
           </button>
         )}
-        {ext && <span style={{fontFamily:M,fontSize:9,color:"var(--muted2)",paddingLeft:4,lineHeight:"22px"}}>extended</span>}
+        {ext && <span style={{fontFamily:M,fontSize:9,color:"#556",paddingLeft:4,lineHeight:"22px"}}>extended</span>}
       </div>
-      <div style={{paddingLeft:18,fontSize:9,color:"var(--label)",fontFamily:M}}>
+      <div style={{paddingLeft:18,fontSize:9,color:"#445",fontFamily:M}}>
         {t.d.map(d=>DG[d]).join(" – ")}
         {out && <span style={{color:"#c07828",marginLeft:4}}>{out} outside pent</span>}
       </div>
@@ -1085,27 +900,27 @@ function Metro({pc}) {
   };
   useEffect(() => { if(on){stop();start();} }, [bpm,sig]);
   useEffect(() => () => clearInterval(ref.current), []);
-  const M = "'IBM Plex Mono','Plex Mono Fallback',monospace";
+  const M = "'IBM Plex Mono',monospace";
   return (
-    <div style={{background:"var(--well)",border:"1px solid var(--border)",borderRadius:10,padding:"10px 14px",marginBottom:10}}>
-      <div style={{fontSize:9,letterSpacing:3,color:"var(--heading)",fontFamily:M,textTransform:"uppercase",marginBottom:8}}>Metronome</div>
+    <div style={{background:"rgba(0,0,0,0.4)",border:"1px solid #1e2e3e",borderRadius:10,padding:"10px 14px",marginBottom:10}}>
+      <div style={{fontSize:9,letterSpacing:3,color:"#3a6a8a",fontFamily:M,textTransform:"uppercase",marginBottom:8}}>Metronome</div>
       <div style={{display:"flex",gap:5,justifyContent:"center",marginBottom:8}}>
-        {Array.from({length:sig},(_,i) => <div key={i} style={{width:11,height:11,borderRadius:"50%",background:on&&beat===i+1?(i===0?"#f0c040":"#60b8f0"):"var(--inlay)",transition:"background 0.05s"}}/>)}
+        {Array.from({length:sig},(_,i) => <div key={i} style={{width:11,height:11,borderRadius:"50%",background:on&&beat===i+1?(i===0?"#f0c040":"#60b8f0"):"#1e3040",transition:"background 0.05s"}}/>)}
       </div>
       <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",justifyContent:"center"}}>
-        <span onClick={()=>setBpm(b=>Math.max(30,b-5))} style={{fontSize:14,cursor:"pointer",color:"var(--muted2)",userSelect:"none",fontFamily:M}}>−5</span>
-        <span onClick={()=>setBpm(b=>Math.max(30,b-1))} style={{fontSize:14,cursor:"pointer",color:"var(--link2)",userSelect:"none",fontFamily:M}}>−1</span>
+        <span onClick={()=>setBpm(b=>Math.max(30,b-5))} style={{fontSize:14,cursor:"pointer",color:"#556",userSelect:"none",fontFamily:M}}>−5</span>
+        <span onClick={()=>setBpm(b=>Math.max(30,b-1))} style={{fontSize:14,cursor:"pointer",color:"#7ac",userSelect:"none",fontFamily:M}}>−1</span>
         <div style={{textAlign:"center",minWidth:44}}>
-          <div style={{fontFamily:M,fontWeight:700,fontSize:18,color:"var(--text)"}}>{bpm}</div>
-          <div style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>BPM</div>
+          <div style={{fontFamily:M,fontWeight:700,fontSize:18,color:"#eee"}}>{bpm}</div>
+          <div style={{fontFamily:M,fontSize:8,color:"#445"}}>BPM</div>
         </div>
-        <span onClick={()=>setBpm(b=>Math.min(240,b+1))} style={{fontSize:14,cursor:"pointer",color:"var(--link2)",userSelect:"none",fontFamily:M}}>+1</span>
-        <span onClick={()=>setBpm(b=>Math.min(240,b+5))} style={{fontSize:14,cursor:"pointer",color:"var(--muted2)",userSelect:"none",fontFamily:M}}>+5</span>
+        <span onClick={()=>setBpm(b=>Math.min(240,b+1))} style={{fontSize:14,cursor:"pointer",color:"#7ac",userSelect:"none",fontFamily:M}}>+1</span>
+        <span onClick={()=>setBpm(b=>Math.min(240,b+5))} style={{fontSize:14,cursor:"pointer",color:"#556",userSelect:"none",fontFamily:M}}>+5</span>
         <input type="range" min={30} max={240} value={bpm} onChange={e=>setBpm(+e.target.value)} style={{width:80,accentColor:"#60b8f0"}}/>
         <div style={{display:"flex",gap:3}}>
-          {[3,4,6].map(n => <span key={n} onClick={()=>setSig(n)} style={{fontFamily:M,fontSize:9,color:sig===n?"#fff":"var(--label)",background:sig===n?"var(--sel-bg)":"transparent",border:`1px solid ${sig===n?"var(--sel-border)":"var(--border)"}`,borderRadius:4,padding:"2px 5px",cursor:"pointer"}}>{n}/4</span>)}
+          {[3,4,6].map(n => <span key={n} onClick={()=>setSig(n)} style={{fontFamily:M,fontSize:9,color:sig===n?"#fff":"#445",background:sig===n?"#2a4a6a":"transparent",border:`1px solid ${sig===n?"#3a6a9a":"#1e2e3a"}`,borderRadius:4,padding:"2px 5px",cursor:"pointer"}}>{n}/4</span>)}
         </div>
-        <button onClick={tap} style={{fontFamily:M,fontSize:9,color:"var(--muted)",background:"var(--btn)",border:"1px solid var(--btn-border)",borderRadius:5,padding:"4px 8px",cursor:"pointer"}}>TAP</button>
+        <button onClick={tap} style={{fontFamily:M,fontSize:9,color:"#778",background:"rgba(255,255,255,0.04)",border:"1px solid #2a3a4a",borderRadius:5,padding:"4px 8px",cursor:"pointer"}}>TAP</button>
         <button onClick={()=>on?stop():start()} style={{fontFamily:M,fontSize:10,fontWeight:700,background:on?"linear-gradient(135deg,#f06060,#a03030)":"linear-gradient(135deg,#40a860,#207040)",color:"#fff",border:"none",borderRadius:6,padding:"5px 12px",cursor:"pointer"}}>{on?"■ STOP":"▶ START"}</button>
       </div>
     </div>
@@ -1146,7 +961,7 @@ function renderManualShape(groups,fx,sy){
       const lbl=quality==="major"?"maj":quality==="minor"?"min":quality==="dim"?"dim°":quality;
       out.push(<text key={`sq-${gi}`} x={cx} y={cy-R-8} textAnchor="middle"
         fontSize={9} fontWeight="700" fill={color} opacity={0.95}
-        fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace" style={{pointerEvents:"none"}}>{lbl}</text>);
+        fontFamily="IBM Plex Mono,monospace" style={{pointerEvents:"none"}}>{lbl}</text>);
     }
   });
   return out;
@@ -1195,7 +1010,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
   const ref=useRef(null);
   const countRef=useRef(null);
   const sr=useRef({prog,bpm,bpc,cur,beat,loopCount,loopsDone});
-  const M="'IBM Plex Mono','Plex Mono Fallback',monospace";
+  const M="'IBM Plex Mono',monospace";
 
   useEffect(()=>{sr.current={prog,bpm,bpc,cur,beat,loopCount,loopsDone,drumOn,drumPattern,drumVol};});
   const [focusedIdx,setFocusedIdx]=useState(null);
@@ -1211,29 +1026,20 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
   const [presetDegrees,setPresetDegrees]=useState(null); // [degIdx,...] or null
 
   const stop=()=>{
-    clearInterval(ref.current); clearTimeout(ref.current); clearInterval(countRef.current);
+    clearInterval(ref.current); clearInterval(countRef.current);
     setOn(false);setCur(0);setBeat(0);setCounting(0);setLoopsDone(0);setFocusedIdx(null);
     if(onChordFocus)onChordFocus(null);
     if(stopDrums) stopDrums();
   };
 
-  const startInterval=(resumeAt)=>{
-    let ci=resumeAt!=null?Math.min(resumeAt,sr.current.prog.length-1):0,b=0;
-    setCur(ci);setBeat(0);
-    if(resumeAt==null){
-      setLoopsDone(0);setFocusedIdx(0);
-      playChord(sr.current.prog[0].notes);
-      if(onChordFocus)onChordFocus({...sr.current.prog[0],_progIdx:0});
-    }
-    // (Re)sync drums to the current tempo in both cases
+  const startInterval=()=>{
+    let ci=0,b=0;setCur(0);setBeat(0);setLoopsDone(0);
+    setFocusedIdx(0);
+    playChord(sr.current.prog[0].notes);
+    if(onChordFocus)onChordFocus({...sr.current.prog[0],_progIdx:0});
     if(sr.current.drumOn && startDrums) startDrums(sr.current.bpm, sr.current.drumPattern);
-    // Self-correcting clock: each beat is scheduled against a fixed timeline,
-    // so late timer ticks don't accumulate drift the way setInterval does.
-    let nextAt=performance.now()+(60/sr.current.bpm)*1000;
-    const tick=()=>{
-      const {prog,bpc,loopCount,loopsDone,bpm}=sr.current;
-      if(!prog.length){stop();return;}
-      if(ci>=prog.length)ci=0;
+    ref.current=setInterval(()=>{
+      const {prog,bpc,loopCount,loopsDone}=sr.current;if(!prog.length)return;
       const curBeats=prog[ci].beats||bpc;
       b=(b+1)%curBeats;setBeat(b);
       if(b===0){
@@ -1248,10 +1054,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
         playChord(prog[ci].notes);
         if(onChordFocus)onChordFocus({...prog[ci],_progIdx:ci});
       }
-      nextAt+=(60/bpm)*1000;
-      ref.current=setTimeout(tick,Math.max(0,nextAt-performance.now()));
-    };
-    ref.current=setTimeout(tick,Math.max(0,nextAt-performance.now()));
+    },(60/bpm)*1000);
   };
 
   const start=()=>{
@@ -1279,7 +1082,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
   };
 
   const toggle=()=>on?stop():start();
-  useEffect(()=>{if(on&&!counting){clearInterval(ref.current);clearTimeout(ref.current);startInterval(sr.current.cur);}},[bpm,bpc]);
+  useEffect(()=>{if(on&&!counting){clearInterval(ref.current);startInterval();}},[bpm,bpc]);
   useEffect(()=>()=>{clearInterval(ref.current);clearInterval(countRef.current);},[]);
 
   const add=ti=>{
@@ -1311,49 +1114,23 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
   };
   const setChordBeats=(idx,beats)=>setProg(p=>p.map((c,i)=>i===idx?{...c,beats}:c));
   const buildExtChord=(c,ext)=>{
-    // Keep the chord's actual third & fifth (preserves the b5 of ° chords —
-    // the old code rebuilt a perfect 5th and silently turned B° into Bm).
     const rootNote=c.notes[0];
     const rootIdx=NOTES.indexOf(rootNote);
-    const third=c.notes[1];
-    const fifth=c.notes[2]!==undefined?c.notes[2]:NOTES[(rootIdx+7)%12];
+    const secondNote=c.notes[1];
+    const interval=(NOTES.indexOf(secondNote)-rootIdx+12)%12;
+    const isMinor=interval===3, isDim=interval===6;
+    const fifth=NOTES[(rootIdx+7)%12];
+    const third=isMinor||isDim?NOTES[(rootIdx+3)%12]:NOTES[(rootIdx+4)%12];
     const baseNotes=[rootNote,third,fifth];
     let extNotes=[];
     if(ext){
-      let seventh=null;
-      // Diatonic 7th when the chord still matches its source triad (V→dom7, I→maj7, °→ø7)
-      const t=triads[c.ti];
-      if(t){
-        const dia=t.d.map(d=>dn(d,root,sc));
-        if(dia[0]===rootNote&&dia[1]===third&&dia[2]===fifth){
-          const sdg=((t.d[2]+2-1)%7)+1;
-          seventh=dn(sdg,root,sc);
-        }
-      }
-      if(!seventh){
-        // Quality-toggled / borrowed chord — derive from its own intervals
-        const thirdInt=(NOTES.indexOf(third)-rootIdx+12)%12;
-        const fifthInt=(NOTES.indexOf(fifth)-rootIdx+12)%12;
-        const isMin=thirdInt===3, isDim=isMin&&fifthInt===6;
-        seventh=NOTES[(rootIdx+(isDim?9:isMin?10:11))%12];
-      }
+      const seventh=isDim?NOTES[(rootIdx+9)%12]:isMinor?NOTES[(rootIdx+10)%12]:NOTES[(rootIdx+11)%12];
       const ninth=NOTES[(rootIdx+2)%12];
       extNotes=ext==="9"?[seventh,ninth]:[seventh];
     }
     return {...c, ext, notes:[...baseNotes,...extNotes]};
   };
 
-  // Display name for an extended chip — derived from its actual notes
-  const chordExtName=ch=>{
-    if(!ch.ext) return ch.label;
-    const r=ch.notes[0], rootIdx=NOTES.indexOf(r);
-    const thirdInt=(NOTES.indexOf(ch.notes[1])-rootIdx+12)%12;
-    const fifthInt=(NOTES.indexOf(ch.notes[2])-rootIdx+12)%12;
-    const sevInt=ch.notes[3]!==undefined?(NOTES.indexOf(ch.notes[3])-rootIdx+12)%12:null;
-    const nine=ch.ext==="9";
-    if(thirdInt===3&&fifthInt===6) return r+(sevInt===9?"°":"ø")+(nine?"9":"7");
-    return r+(thirdInt===3?"m":"")+(sevInt===11?"maj":"")+(nine?"9":"7");
-  };
   const setChordExt=(idx,ext)=>{
     setProg(p=>{
       const c=p[idx]; if(!c) return p;
@@ -1433,8 +1210,6 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
     if(data.shapeMap) setShapeMap(data.shapeMap);
   };
   const [confirmDelete, setConfirmDelete] = useState(null); // name of prog pending confirm
-  const [confirmRemove, setConfirmRemove] = useState(null); // chip idx pending remove confirm
-  useEffect(()=>{ if(confirmRemove==null) return; const t=setTimeout(()=>setConfirmRemove(null),2500); return ()=>clearTimeout(t); },[confirmRemove]);
   const deleteSaved=async(nm)=>{
     const newSaved={...savedProgs};delete newSaved[nm];
     setSavedProgs(newSaved);
@@ -1471,15 +1246,15 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
 
   return(
     <div style={{
-      background:"var(--well)",border:`1px solid ${accent}33`,borderRadius:fullscreen?0:12,
+      background:"rgba(0,0,0,0.4)",border:`1px solid ${accent}33`,borderRadius:fullscreen?0:12,
       padding:"12px 14px",marginBottom:fullscreen?0:10,
       ...(fullscreen?{position:"fixed",top:0,left:0,right:0,bottom:0,zIndex:999,overflowY:"auto",borderRadius:0}:{})
     }}>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10}}>
-        <div style={{fontSize:9,letterSpacing:3,color:"var(--heading)",fontFamily:M,textTransform:"uppercase"}}>🎼 Chord Progression</div>
+        <div style={{fontSize:9,letterSpacing:3,color:"#3a6a8a",fontFamily:M,textTransform:"uppercase"}}>🎼 Chord Progression</div>
         <div style={{display:"flex",gap:6,alignItems:"center"}}>
           {prog.length>0&&<button onClick={()=>setShowSave(v=>!v)} style={{fontFamily:M,fontSize:9,color:accent,background:`${accent}15`,border:`1px solid ${accent}44`,borderRadius:5,padding:"3px 8px",cursor:"pointer"}}>💾 Save</button>}
-          <button onClick={()=>setFullscreen(v=>!v)} style={{fontFamily:M,fontSize:12,color:"var(--muted)",background:"var(--btn2)",border:"1px solid var(--btn-border)",borderRadius:5,padding:"2px 8px",cursor:"pointer"}} title="Toggle fullscreen">
+          <button onClick={()=>setFullscreen(v=>!v)} style={{fontFamily:M,fontSize:12,color:"#778",background:"rgba(255,255,255,0.05)",border:"1px solid #2a3a4a",borderRadius:5,padding:"2px 8px",cursor:"pointer"}} title="Toggle fullscreen">
             {fullscreen?"✕ close":"⤢"}
           </button>
         </div>
@@ -1491,29 +1266,29 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
           <input value={saveName} onChange={e=>setSaveName(e.target.value)}
             onKeyDown={e=>{if(e.key==="Enter"&&saveName.trim())saveProgression(saveName.trim());}}
             placeholder="name your progression"
-            style={{flex:1,fontFamily:M,fontSize:11,padding:"6px 8px",background:"var(--well4)",border:"1px solid "+accent+"44",borderRadius:5,color:"var(--text)",outline:"none"}}/>
+            style={{flex:1,fontFamily:M,fontSize:11,padding:"6px 8px",background:"rgba(0,0,0,0.3)",border:"1px solid "+accent+"44",borderRadius:5,color:"#eee",outline:"none"}}/>
           <button
             onPointerUp={()=>{if(saveName.trim())saveProgression(saveName.trim());}}
             style={{fontFamily:M,fontSize:11,fontWeight:700,color:"#fff",background:accent,border:"none",borderRadius:5,padding:"8px 14px",cursor:"pointer",minHeight:36,minWidth:52,touchAction:"manipulation"}}>Save</button>
-          <span onPointerUp={()=>setShowSave(false)} style={{fontSize:16,color:"var(--muted2)",cursor:"pointer",userSelect:"none",padding:"4px 6px"}}>✕</span>
+          <span onPointerUp={()=>setShowSave(false)} style={{fontSize:16,color:"#556",cursor:"pointer",userSelect:"none",padding:"4px 6px"}}>✕</span>
         </div>
       )}
 
       {/* Saved progressions */}
       {Object.keys(savedProgs).length>0&&(
         <div style={{marginBottom:10}}>
-          <div style={{fontSize:9,color:"var(--label)",fontFamily:M,marginBottom:5}}>SAVED ↓</div>
+          <div style={{fontSize:9,color:"#445",fontFamily:M,marginBottom:5}}>SAVED ↓</div>
           <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
             {Object.keys(savedProgs).map(nm=>(
-              <div key={nm} style={{display:"flex",alignItems:"center",gap:6,background:"var(--btn)",border:`1px solid ${confirmDelete===nm?"#f0604066":"var(--btn-border)"}`,borderRadius:5,padding:"5px 10px",transition:"border-color .15s"}}>
-                <span onPointerUp={()=>{if(confirmDelete===nm)setConfirmDelete(null);else loadProgression(nm);}} style={{fontFamily:M,fontSize:12,color:"var(--text-soft)",cursor:"pointer"}}>{nm}</span>
+              <div key={nm} style={{display:"flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.04)",border:`1px solid ${confirmDelete===nm?"#f0604066":"#2a3a4a"}`,borderRadius:5,padding:"5px 10px",transition:"border-color .15s"}}>
+                <span onPointerUp={()=>{if(confirmDelete===nm)setConfirmDelete(null);else loadProgression(nm);}} style={{fontFamily:M,fontSize:12,color:"#aac",cursor:"pointer"}}>{nm}</span>
                 {confirmDelete===nm ? (
                   <span style={{display:"flex",alignItems:"center",gap:3}}>
                     <span onPointerUp={()=>deleteSaved(nm)} style={{fontFamily:M,fontSize:9,color:"#f06060",cursor:"pointer",fontWeight:700,padding:"1px 4px",background:"#f0606022",borderRadius:3}}>del?</span>
-                    <span onPointerUp={()=>setConfirmDelete(null)} style={{fontSize:9,color:"var(--muted2)",cursor:"pointer",padding:"1px 3px"}}>✕</span>
+                    <span onPointerUp={()=>setConfirmDelete(null)} style={{fontSize:9,color:"#556",cursor:"pointer",padding:"1px 3px"}}>✕</span>
                   </span>
                 ) : (
-                  <span onPointerUp={()=>setConfirmDelete(nm)} style={{fontSize:11,color:"var(--label)",cursor:"pointer",padding:"0 2px",lineHeight:1}}>✕</span>
+                  <span onPointerUp={()=>setConfirmDelete(nm)} style={{fontSize:11,color:"#445",cursor:"pointer",padding:"0 2px",lineHeight:1}}>✕</span>
                 )}
               </div>
             ))}
@@ -1524,10 +1299,10 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
       {/* Presets */}
       {presets.length>0&&(
         <div style={{marginBottom:10}}>
-          <div style={{fontSize:9,color:"var(--label)",fontFamily:M,marginBottom:5}}>PRESETS ↓</div>
+          <div style={{fontSize:9,color:"#445",fontFamily:M,marginBottom:5}}>PRESETS ↓</div>
           <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
             {presets.map((p,i)=>(
-              <button key={i} onClick={()=>loadPreset(p)} style={{fontFamily:M,fontSize:9,color:"var(--link)",background:"rgba(96,184,240,0.08)",border:"1px solid #60b8f033",borderRadius:5,padding:"3px 8px",cursor:"pointer"}}>
+              <button key={i} onClick={()=>loadPreset(p)} style={{fontFamily:M,fontSize:9,color:"#9ac",background:"rgba(96,184,240,0.08)",border:"1px solid #60b8f033",borderRadius:5,padding:"3px 8px",cursor:"pointer"}}>
                 {p.name}
               </button>
             ))}
@@ -1536,15 +1311,15 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
       )}
 
       <div style={{marginBottom:10}}>
-        <div style={{fontSize:9,color:"var(--label)",fontFamily:M,marginBottom:6}}>TAP TO ADD ↓</div>
+        <div style={{fontSize:9,color:"#445",fontFamily:M,marginBottom:6}}>TAP TO ADD ↓</div>
         <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-          {triads.map((t,ti)=><button key={ti} onClick={()=>add(ti)} style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:15,color:t.c,background:`${t.c}18`,border:`1px solid ${t.c}55`,borderRadius:7,padding:"7px 13px",cursor:"pointer",minHeight:38}}>{cname(t,root,sc)}<span style={{fontSize:9,fontFamily:M,marginLeft:3}}>+</span></button>)}
+          {triads.map((t,ti)=><button key={ti} onClick={()=>add(ti)} style={{fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:15,color:t.c,background:`${t.c}18`,border:`1px solid ${t.c}55`,borderRadius:7,padding:"7px 13px",cursor:"pointer",minHeight:38}}>{cname(t,root,sc)}<span style={{fontSize:9,fontFamily:M,marginLeft:3}}>+</span></button>)}
         </div>
       </div>
 
       {prog.length>0&&(
         <div style={{marginBottom:10}}>
-          <div style={{fontSize:9,color:"var(--label)",fontFamily:M,marginBottom:5}}>TAP NAME = SELECT &nbsp;·&nbsp; ◀ ▶ MOVE &nbsp;·&nbsp; ⎘ DUPLICATE</div>
+          <div style={{fontSize:9,color:"#445",fontFamily:M,marginBottom:5}}>TAP NAME = SELECT &nbsp;·&nbsp; ◀ ▶ MOVE &nbsp;·&nbsp; ⎘ DUPLICATE</div>
           <div style={{display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
             {prog.map((ch,idx)=>{
               const isPlaying=on&&cur===idx&&!counting;
@@ -1567,79 +1342,79 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
                   <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",gap:4}} onClick={e=>e.stopPropagation()}>
                     <div style={{display:"flex",gap:2}}>
                       <span onClick={e=>{e.stopPropagation();if(idx>0)reorderChord(idx,idx-1);}}
-                        style={{fontFamily:M,fontSize:13,color:idx>0?"var(--link)":"var(--faint)",cursor:idx>0?"pointer":"default",userSelect:"none",padding:"2px 5px",borderRadius:3,background:idx>0?"rgba(96,184,240,0.08)":"transparent"}}>◀</span>
+                        style={{fontFamily:M,fontSize:13,color:idx>0?"#9ac":"#334",cursor:idx>0?"pointer":"default",userSelect:"none",padding:"2px 5px",borderRadius:3,background:idx>0?"rgba(96,184,240,0.08)":"transparent"}}>◀</span>
                       <span onClick={e=>{e.stopPropagation();if(idx<prog.length-1)reorderChord(idx,idx+1);}}
-                        style={{fontFamily:M,fontSize:13,color:idx<prog.length-1?"var(--link)":"var(--faint)",cursor:idx<prog.length-1?"pointer":"default",userSelect:"none",padding:"2px 5px",borderRadius:3,background:idx<prog.length-1?"rgba(96,184,240,0.08)":"transparent"}}>▶</span>
+                        style={{fontFamily:M,fontSize:13,color:idx<prog.length-1?"#9ac":"#334",cursor:idx<prog.length-1?"pointer":"default",userSelect:"none",padding:"2px 5px",borderRadius:3,background:idx<prog.length-1?"rgba(96,184,240,0.08)":"transparent"}}>▶</span>
                     </div>
                     {isNext&&<span style={{fontFamily:M,fontSize:7,color:ch.color,fontWeight:700,letterSpacing:1}}>NEXT ↑</span>}
-                    <span onClick={e=>{e.stopPropagation();duplicateChord(idx);}} title="Duplicate" style={{fontFamily:M,fontSize:14,color:"var(--link)",cursor:"pointer",padding:"2px 6px",background:"rgba(96,184,240,0.08)",borderRadius:3}}>⎘</span>
+                    <span onClick={e=>{e.stopPropagation();duplicateChord(idx);}} title="Duplicate" style={{fontFamily:M,fontSize:14,color:"#9ac",cursor:"pointer",padding:"2px 6px",background:"rgba(96,184,240,0.08)",borderRadius:3}}>⎘</span>
                   </div>
-                  {isPlaying&&<div style={{display:"flex",gap:2}}>{Array.from({length:chBeats},(_,i)=><div key={i} style={{width:5,height:5,borderRadius:"50%",background:beat===i?ch.color:"var(--inlay)",transition:"background .05s"}}/>)}</div>}
-                  <span onClick={e=>{e.stopPropagation();setFocusedIdx(idx);}} style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:19,color:ch.color,cursor:"pointer",padding:"2px 6px"}}>{chordExtName(ch)}</span>
+                  {isPlaying&&<div style={{display:"flex",gap:2}}>{Array.from({length:chBeats},(_,i)=><div key={i} style={{width:5,height:5,borderRadius:"50%",background:beat===i?ch.color:"#1e3040",transition:"background .05s"}}/>)}</div>}
+                  <span onClick={e=>{e.stopPropagation();setFocusedIdx(idx);}} style={{fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:19,color:ch.color,cursor:"pointer",padding:"2px 6px"}}>{ch.label}{ch.ext||""}</span>
                   {/* Chord notes — shows the actual notes that make up this chord */}
                   <div style={{display:"flex",gap:3,flexWrap:"wrap",justifyContent:"center"}}>
                     {ch.notes.map((n,i)=><span key={i} style={{fontFamily:M,fontWeight:700,fontSize:9,color:ch.color,background:`${ch.color}15`,border:`1px solid ${ch.color}55`,borderRadius:3,padding:"2px 5px",minWidth:18,textAlign:"center"}}>{n}</span>)}
                   </div>
                   <div style={{display:"flex",gap:3,alignItems:"center"}} onClick={e=>e.stopPropagation()}>
-                    <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>beats</span>
+                    <span style={{fontFamily:M,fontSize:8,color:"#445"}}>beats</span>
                     {[1,2,4,8].map(n=>(
                       <span key={n} onClick={e=>{e.stopPropagation();setChordBeats(idx,n);}}
                         style={{fontFamily:M,fontSize:10,fontWeight:700,padding:"3px 7px",borderRadius:4,cursor:"pointer",
                           background:chBeats===n?`${ch.color}40`:"transparent",
                           border:`1px solid ${chBeats===n?ch.color:ch.color+"33"}`,
-                          color:chBeats===n?"#fff":"var(--muted)",minWidth:22,textAlign:"center"}}>
+                          color:chBeats===n?"#fff":"#778",minWidth:22,textAlign:"center"}}>
                         {n}
                       </span>
                     ))}
                   </div>
                   <div style={{display:"flex",gap:3,alignItems:"center"}} onClick={e=>e.stopPropagation()}>
-                    <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>ext</span>
+                    <span style={{fontFamily:M,fontSize:8,color:"#445"}}>ext</span>
                     {["7","9"].map(x=>(
                       <span key={x} onClick={e=>{e.stopPropagation();setChordExt(idx,ch.ext===x?null:x);}}
                         style={{fontFamily:M,fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:4,cursor:"pointer",
                           background:ch.ext===x?`${ch.color}40`:"transparent",
                           border:`1px solid ${ch.ext===x?ch.color:ch.color+"33"}`,
-                          color:ch.ext===x?"#fff":"var(--muted)"}}>
+                          color:ch.ext===x?"#fff":"#778"}}>
                         {x}th
                       </span>
                     ))}
                   </div>
                   <div style={{display:"flex",gap:8,alignItems:"center",marginTop:2}} onClick={e=>e.stopPropagation()}>
-                    <span onClick={e=>{e.stopPropagation();toggleChordQuality(idx);}} title="Toggle major/minor" style={{fontFamily:M,fontSize:10,fontWeight:700,color:"var(--link)",background:"rgba(96,184,240,0.1)",border:"1px solid #60b8f044",borderRadius:4,padding:"3px 8px",cursor:"pointer"}}>
+                    <span onClick={e=>{e.stopPropagation();toggleChordQuality(idx);}} title="Toggle major/minor" style={{fontFamily:M,fontSize:10,fontWeight:700,color:"#9ac",background:"rgba(96,184,240,0.1)",border:"1px solid #60b8f044",borderRadius:4,padding:"3px 8px",cursor:"pointer"}}>
                       {ch.label.endsWith("m")||ch.label.endsWith("°")?"→ maj":"→ min"}
                     </span>
-                    <span onClick={e=>{e.stopPropagation();playChord(ch.notes);}} style={{fontSize:14,color:"var(--muted)",cursor:"pointer",padding:"2px 6px"}}>♪</span>
-                    <span onClick={e=>{e.stopPropagation();if(confirmRemove===idx){setProg(p=>p.filter((_,i)=>i!==idx));setConfirmRemove(null);if(on)stop();}else{setConfirmRemove(idx);}}} style={{fontFamily:M,fontSize:confirmRemove===idx?10:13,fontWeight:confirmRemove===idx?700:400,color:confirmRemove===idx?"#f06060":"var(--muted)",cursor:"pointer",padding:"2px 6px",background:confirmRemove===idx?"#f0606022":"transparent",borderRadius:3}}>{confirmRemove===idx?"del?":"✕"}</span>
+                    <span onClick={e=>{e.stopPropagation();playChord(ch.notes);}} style={{fontSize:14,color:"#778",cursor:"pointer",padding:"2px 6px"}}>♪</span>
+                    <span onClick={e=>{e.stopPropagation();setProg(p=>p.filter((_,i)=>i!==idx));if(on)stop();}} style={{fontSize:13,color:"#778",cursor:"pointer",padding:"2px 6px"}}>✕</span>
                   </div>
                 </div>
               );
             })}
-            <button onClick={()=>{setProg([]);stop();}} style={{fontFamily:M,fontSize:9,color:"var(--faint)",background:"transparent",border:"1px solid var(--border)",borderRadius:5,padding:"3px 8px",cursor:"pointer"}}>clear</button>
+            <button onClick={()=>{setProg([]);stop();}} style={{fontFamily:M,fontSize:9,color:"#334",background:"transparent",border:"1px solid #1e2e3a",borderRadius:5,padding:"3px 8px",cursor:"pointer"}}>clear</button>
           </div>
         </div>
       )}
 
       {prog.length>0&&(
         <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-          <button onClick={()=>step(-1)} style={{fontFamily:M,fontWeight:700,fontSize:14,color:"var(--muted)",background:"var(--btn)",border:"1px solid var(--btn-border)",borderRadius:6,padding:"7px 14px",cursor:"pointer",minHeight:38}}>◀</button>
+          <button onClick={()=>step(-1)} style={{fontFamily:M,fontWeight:700,fontSize:14,color:"#778",background:"rgba(255,255,255,0.04)",border:"1px solid #2a3a4a",borderRadius:6,padding:"7px 14px",cursor:"pointer",minHeight:38}}>◀</button>
           <button onClick={toggle} style={{fontFamily:M,fontWeight:700,fontSize:13,background:on?"linear-gradient(135deg,#f06060,#a03030)":"linear-gradient(135deg,#40a860,#207040)",color:"#fff",border:"none",borderRadius:7,padding:"9px 22px",cursor:"pointer",position:"relative",minHeight:42}}>
             {counting>0?`${Math.ceil(counting/4)} bar${Math.ceil(counting/4)>1?"s":""}…`:on?"■ STOP":"▶ AUTO"}
           </button>
-          <button onClick={()=>step(1)} style={{fontFamily:M,fontWeight:700,fontSize:14,color:"var(--muted)",background:"var(--btn)",border:"1px solid var(--btn-border)",borderRadius:6,padding:"7px 14px",cursor:"pointer",minHeight:38}}>▶</button>
+          <button onClick={()=>step(1)} style={{fontFamily:M,fontWeight:700,fontSize:14,color:"#778",background:"rgba(255,255,255,0.04)",border:"1px solid #2a3a4a",borderRadius:6,padding:"7px 14px",cursor:"pointer",minHeight:38}}>▶</button>
           <div style={{display:"flex",alignItems:"center",gap:6}}>
-            <span onClick={()=>setBpm(b=>Math.max(30,b-5))} style={{fontSize:12,cursor:"pointer",color:"var(--muted2)",userSelect:"none",fontFamily:M,padding:"6px 8px",fontWeight:700}}>−5</span>
-            <span onClick={()=>setBpm(b=>Math.max(30,b-1))} style={{fontSize:12,cursor:"pointer",color:"var(--link2)",userSelect:"none",fontFamily:M,padding:"6px 8px",fontWeight:700}}>−1</span>
-            <div style={{textAlign:"center",minWidth:42}}><div style={{fontFamily:M,fontWeight:700,fontSize:17,color:"var(--text)"}}>{bpm}</div><div style={{fontFamily:M,fontSize:7,color:"var(--label)"}}>BPM</div></div>
-            <span onClick={()=>setBpm(b=>Math.min(240,b+1))} style={{fontSize:12,cursor:"pointer",color:"var(--link2)",userSelect:"none",fontFamily:M,padding:"6px 8px",fontWeight:700}}>+1</span>
-            <span onClick={()=>setBpm(b=>Math.min(240,b+5))} style={{fontSize:12,cursor:"pointer",color:"var(--muted2)",userSelect:"none",fontFamily:M,padding:"6px 8px",fontWeight:700}}>+5</span>
+            <span onClick={()=>setBpm(b=>Math.max(30,b-5))} style={{fontSize:12,cursor:"pointer",color:"#556",userSelect:"none",fontFamily:M,padding:"6px 8px",fontWeight:700}}>−5</span>
+            <span onClick={()=>setBpm(b=>Math.max(30,b-1))} style={{fontSize:12,cursor:"pointer",color:"#7ac",userSelect:"none",fontFamily:M,padding:"6px 8px",fontWeight:700}}>−1</span>
+            <div style={{textAlign:"center",minWidth:42}}><div style={{fontFamily:M,fontWeight:700,fontSize:17,color:"#eee"}}>{bpm}</div><div style={{fontFamily:M,fontSize:7,color:"#445"}}>BPM</div></div>
+            <span onClick={()=>setBpm(b=>Math.min(240,b+1))} style={{fontSize:12,cursor:"pointer",color:"#7ac",userSelect:"none",fontFamily:M,padding:"6px 8px",fontWeight:700}}>+1</span>
+            <span onClick={()=>setBpm(b=>Math.min(240,b+5))} style={{fontSize:12,cursor:"pointer",color:"#556",userSelect:"none",fontFamily:M,padding:"6px 8px",fontWeight:700}}>+5</span>
           </div>
           {/* Tap tempo */}
-          <button onClick={tapTempo} style={{fontFamily:M,fontWeight:700,fontSize:9,color:tapTimes.length>0?accent:"var(--muted2)",background:tapTimes.length>0?`${accent}15`:"var(--btn)",border:`1px solid ${tapTimes.length>0?accent+"44":"var(--btn-border)"}`,borderRadius:5,padding:"4px 8px",cursor:"pointer",letterSpacing:1}}>
+          <button onClick={tapTempo} style={{fontFamily:M,fontWeight:700,fontSize:9,color:tapTimes.length>0?accent:"#556",background:tapTimes.length>0?`${accent}15`:"rgba(255,255,255,0.04)",border:`1px solid ${tapTimes.length>0?accent+"44":"#2a3a4a"}`,borderRadius:5,padding:"4px 8px",cursor:"pointer",letterSpacing:1}}>
             TAP {tapTimes.length>0&&<span style={{opacity:0.6}}>({tapTimes.length})</span>}
           </button>
           <div style={{display:"flex",gap:3,alignItems:"center"}}>
-            <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>default beats:</span>
-            {[1,2,4,8].map(n=><span key={n} onClick={()=>setBpc(n)} style={{fontFamily:M,fontSize:9,color:bpc===n?"#fff":"var(--label)",background:bpc===n?"var(--sel-bg)":"transparent",border:`1px solid ${bpc===n?"var(--sel-border)":"var(--border)"}`,borderRadius:4,padding:"2px 6px",cursor:"pointer"}}>{n}</span>)}
+            <span style={{fontFamily:M,fontSize:8,color:"#445"}}>default beats:</span>
+            {[1,2,4,8].map(n=><span key={n} onClick={()=>setBpc(n)} style={{fontFamily:M,fontSize:9,color:bpc===n?"#fff":"#445",background:bpc===n?"#2a4a6a":"transparent",border:`1px solid ${bpc===n?"#3a6a9a":"#1e2e3a"}`,borderRadius:4,padding:"2px 6px",cursor:"pointer"}}>{n}</span>)}
           </div>
         </div>
       )}
@@ -1647,36 +1422,36 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
       {/* Count-in + Loop count */}
       {prog.length>0&&(
         <React.Fragment>
-        <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginTop:8,paddingTop:8,borderTop:"1px solid var(--border)"}}>
+        <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginTop:8,paddingTop:8,borderTop:"1px solid #1e2e3a"}}>
           <div style={{display:"flex",gap:3,alignItems:"center"}}>
-            <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>count-in:</span>
-            {[0,1,2].map(n=><span key={n} onClick={()=>setCountIn(n)} style={{fontFamily:M,fontSize:9,color:countIn===n?"#fff":"var(--label)",background:countIn===n?"var(--sel-bg)":"transparent",border:`1px solid ${countIn===n?"var(--sel-border)":"var(--border)"}`,borderRadius:4,padding:"2px 6px",cursor:"pointer"}}>{n===0?"off":`${n} bar${n>1?"s":""}`}</span>)}
+            <span style={{fontFamily:M,fontSize:8,color:"#445"}}>count-in:</span>
+            {[0,1,2].map(n=><span key={n} onClick={()=>setCountIn(n)} style={{fontFamily:M,fontSize:9,color:countIn===n?"#fff":"#445",background:countIn===n?"#2a4a6a":"transparent",border:`1px solid ${countIn===n?"#3a6a9a":"#1e2e3a"}`,borderRadius:4,padding:"2px 6px",cursor:"pointer"}}>{n===0?"off":`${n} bar${n>1?"s":""}`}</span>)}
           </div>
           <div style={{display:"flex",gap:3,alignItems:"center"}}>
-            <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>loop:</span>
-            {[0,2,4,8].map(n=><span key={n} onClick={()=>setLoopCount(n)} style={{fontFamily:M,fontSize:9,color:loopCount===n?"#fff":"var(--label)",background:loopCount===n?"var(--sel-bg)":"transparent",border:`1px solid ${loopCount===n?"var(--sel-border)":"var(--border)"}`,borderRadius:4,padding:"2px 6px",cursor:"pointer"}}>{n===0?"∞":`${n}x`}</span>)}
+            <span style={{fontFamily:M,fontSize:8,color:"#445"}}>loop:</span>
+            {[0,2,4,8].map(n=><span key={n} onClick={()=>setLoopCount(n)} style={{fontFamily:M,fontSize:9,color:loopCount===n?"#fff":"#445",background:loopCount===n?"#2a4a6a":"transparent",border:`1px solid ${loopCount===n?"#3a6a9a":"#1e2e3a"}`,borderRadius:4,padding:"2px 6px",cursor:"pointer"}}>{n===0?"∞":`${n}x`}</span>)}
             {on&&loopCount>0&&<span style={{fontFamily:M,fontSize:9,color:accent}}>{loopsDone}/{loopCount}</span>}
           </div>
         </div>
-        <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginTop:8,paddingTop:8,borderTop:"1px solid var(--border)"}}>
+        <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginTop:8,paddingTop:8,borderTop:"1px solid #1e2e3a"}}>
           <div style={{display:"flex",gap:3,alignItems:"center"}}>
-            <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>drums:</span>
+            <span style={{fontFamily:M,fontSize:8,color:"#445"}}>drums:</span>
             <span onClick={()=>{
               const next=!drumOn;
               setDrumOn(next);
               if(next&&on&&startDrums) startDrums(sr.current.bpm, drumPattern);
               if(!next&&stopDrums) stopDrums();
-            }} style={{fontFamily:M,fontSize:9,padding:"2px 8px",borderRadius:4,cursor:"pointer",color:drumOn?"#fff":"var(--label)",background:drumOn?"var(--sel-bg)":"transparent",border:"1px solid "+(drumOn?"var(--sel-border)":"var(--border)")}}>{drumOn?"on":"off"}</span>
+            }} style={{fontFamily:M,fontSize:9,padding:"2px 8px",borderRadius:4,cursor:"pointer",color:drumOn?"#fff":"#445",background:drumOn?"#2a4a6a":"transparent",border:"1px solid "+(drumOn?"#3a6a9a":"#1e2e3a")}}>{drumOn?"on":"off"}</span>
           </div>
           {drumOn&&<div style={{display:"flex",gap:4,alignItems:"center"}}>
-            <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>vol:</span>
+            <span style={{fontFamily:M,fontSize:8,color:"#445"}}>vol:</span>
             <input type="range" min="0" max="1" step="0.05" value={drumVol} onChange={e=>setDrumVol(parseFloat(e.target.value))}
-              style={{width:70,accentColor:"var(--sel-border)",cursor:"pointer"}}/>
-            <span style={{fontFamily:M,fontSize:9,color:"var(--muted2)",minWidth:24}}>{Math.round(drumVol*100)}%</span>
+              style={{width:70,accentColor:"#3a6a9a",cursor:"pointer"}}/>
+            <span style={{fontFamily:M,fontSize:9,color:"#556",minWidth:24}}>{Math.round(drumVol*100)}%</span>
           </div>}
           {drumOn&&<div style={{display:"flex",gap:3,alignItems:"center",flexWrap:"wrap"}}>
-            <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>pattern:</span>
-            {["Shuffle","Blues","SlowBlues","BluesRock","Boogie","Jazz","SwingJazz","Bossa","Rock","Funk"].map(p=><span key={p} onClick={()=>{setDrumPattern(p);if(on&&startDrums)startDrums(sr.current.bpm,p);}} style={{fontFamily:M,fontSize:9,padding:"2px 6px",borderRadius:4,cursor:"pointer",color:drumPattern===p?"#fff":"var(--label)",background:drumPattern===p?"var(--sel-bg)":"transparent",border:"1px solid "+(drumPattern===p?"var(--sel-border)":"var(--border)")}}>{p}</span>)}
+            <span style={{fontFamily:M,fontSize:8,color:"#445"}}>pattern:</span>
+            {["Shuffle","Blues","SlowBlues","BluesRock","Boogie","Jazz","SwingJazz","Bossa","Rock","Funk"].map(p=><span key={p} onClick={()=>{setDrumPattern(p);if(on&&startDrums)startDrums(sr.current.bpm,p);}} style={{fontFamily:M,fontSize:9,padding:"2px 6px",borderRadius:4,cursor:"pointer",color:drumPattern===p?"#fff":"#445",background:drumPattern===p?"#2a4a6a":"transparent",border:"1px solid "+(drumPattern===p?"#3a6a9a":"#1e2e3a")}}>{p}</span>)}
           </div>}
         </div>
         </React.Fragment>
@@ -1700,18 +1475,6 @@ const DRUM_PATTERNS = {
 
 function App() {
   const [root,setRoot]=useState("A");
-  // Theme: persisted; CSS vars switch via the data-theme attribute, and the
-  // module-level T (used by SVG) is reassigned every render to stay in sync.
-  const [theme,setTheme]=useState(()=>{try{const t=localStorage.getItem("pent-theme");return THEMES[t]?t:"dark";}catch(e){return "dark";}});
-  T=THEMES[theme]||THEMES.dark;
-  useEffect(()=>{
-    if(theme==="dark") document.documentElement.removeAttribute("data-theme");
-    else document.documentElement.setAttribute("data-theme",theme);
-    try{localStorage.setItem("pent-theme",theme);}catch(e){}
-    // keep the browser chrome / status bar color in sync
-    const tc=document.querySelector('meta[name="theme-color"]');
-    if(tc) tc.setAttribute("content", theme==="light"?"#eef2f6":theme==="medium"?"#1c2533":"#0b1018");
-  },[theme]);
   const [family,setFamily]=useState("pentatonic"); // "pentatonic" | "modal"
   const [quality,setQuality]=useState("minor");    // "major" | "minor" (meaning differs per family)
   const [openPos,setOpenPos]=useState(new Set([1]));
@@ -1730,6 +1493,7 @@ function App() {
   const [savedProgs,setSavedProgs]=useState({});
   const [focusedProgIdx,setFocusedProgIdx]=useState(null);
   const [prog,setProg]=useState([]);
+  const progRef=useRef([]);
 
   // Load saved progressions on App mount — tries window.storage first, then localStorage
   useEffect(()=>{
@@ -1896,27 +1660,19 @@ function App() {
   const drumVolRef = useRef(0.7);
   useEffect(()=>{ drumVolRef.current = drumVol; }, [drumVol]);
 
-  // Lookahead scheduler ("A Tale of Two Clocks"): hits are scheduled on the
-  // Web Audio clock slightly ahead of time, so drum timing stays sample-
-  // accurate even when the JS timer jitters or the tab is deprioritized.
   const startDrums = useCallback((bpm, pattern) => {
     if(drumRef.current) clearInterval(drumRef.current);
-    const ctx=getCtx();
     const pat=DRUM_PATTERNS[pattern]||DRUM_PATTERNS["Shuffle"];
-    const stepDur=(60/bpm)/4;
-    let step=0, nextTime=ctx.currentTime+0.05;
-    const LOOKAHEAD=0.12;
+    const stepMs=(60/bpm)/4*1000;
+    let step=0;
     const tick=()=>{
-      while(nextTime<ctx.currentTime+LOOKAHEAD){
-        const v=drumVolRef.current;
-        if(pat.kick[step]) playKick(nextTime, v);
-        if(pat.snare[step]) playSnare(nextTime, v*0.8);
-        if(pat.hihat[step]) playHihat(nextTime, step%4===2, v*0.5);
-        step=(step+1)%16;
-        nextTime+=stepDur;
-      }
+      const c=getCtx(), t=c.currentTime+0.02, v=drumVolRef.current;
+      if(pat.kick[step]) playKick(t, v);
+      if(pat.snare[step]) playSnare(t, v*0.8);
+      if(pat.hihat[step]) playHihat(t, step%4===2, v*0.5);
+      step=(step+1)%16;
     };
-    tick(); drumRef.current=setInterval(tick,25);
+    tick(); drumRef.current=setInterval(tick,stepMs);
   }, [playKick, playSnare, playHihat]);
 
   const stopDrums = useCallback(() => { if(drumRef.current){clearInterval(drumRef.current);drumRef.current=null;} }, []);
@@ -1943,9 +1699,9 @@ function App() {
     minor:"linear-gradient(135deg,#4090c0,#204880)",
   };
   const rf=fretE(root), rk=maj?relMin(root):isDor?relMaj(root):isMix?relMin(root):relMaj(root);
-  const M="'IBM Plex Mono','Plex Mono Fallback',monospace";
+  const M="'IBM Plex Mono',monospace";
 
-  const getBase=pos=>{let f=rf+pos.off;const minF=Math.min(...pos.dots.map(d=>d.f));while(f+minF<0)f+=12;return f;};
+  const getBase=pos=>{let f=rf+pos.off;if(f<0)f+=12;return f;};
   const togPos=n=>setOpenPos(p=>{const s=new Set(p);s.has(n)?s.delete(n):s.add(n);return s;});
   const togCht=(pn,ti)=>setCht(p=>{const c=new Set(p[pn]||[]);c.has(ti)?c.delete(ti):c.add(ti);return{...p,[pn]:c};});
   const clr=pn=>setCht(p=>({...p,[pn]:new Set()}));
@@ -1962,13 +1718,6 @@ function App() {
   const swRel=()=>{ swQuality(quality==="major"?"minor":"major"); setRoot(rk); };
   const hear=n=>{setPlayed(n);playNote(n,0.6,4);};
   const hearCh=notes=>{setPlayed(notes.join(" "));playChord(notes);};
-  // Tap a dot: Shape mode marks fingerings, otherwise hear the note at its true pitch
-  const STRING_MIDI=[40,45,50,55,59,64]; // E2 A2 D3 G3 B3 E4
-  const onDot=(s,af,note)=>{
-    if(shapeOn){ toggleDot(s,af,note); return; }
-    const midi=STRING_MIDI[s]+af, oct=Math.floor(midi/12)-1;
-    setPlayed(note); playNote(note,0.8,oct);
-  };
   const toggleDot=(s,af,note)=>{
     if(!shapeOn) return;
     setShapeGroups(prev=>{
@@ -1991,13 +1740,14 @@ function App() {
   const openBases=openList.map(p=>getBase(p));
 
   return (
-    <div style={{minHeight:"100vh",background:"var(--bg)",backgroundImage:"radial-gradient(ellipse at 15% 15%,var(--bg-glow1) 0%,transparent 55%),radial-gradient(ellipse at 85% 85%,var(--bg-glow2) 0%,transparent 55%)",color:"var(--text)",padding:"12px 8px 48px"}}>
+    <div style={{minHeight:"100vh",background:"#0b1018",backgroundImage:"radial-gradient(ellipse at 15% 15%,#131f30 0%,transparent 55%),radial-gradient(ellipse at 85% 85%,#0e1820 0%,transparent 55%)",color:"#ddd",padding:"12px 8px 48px"}}>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;600&display=swap');
         *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
         html,body{overscroll-behavior-y:none;}
         button,span[onclick]{touch-action:manipulation;}
         .sc::-webkit-scrollbar{height:4px;}
-        .sc::-webkit-scrollbar-thumb{background:var(--sel-bg);border-radius:2px;}
+        .sc::-webkit-scrollbar-thumb{background:#2a4a6a;border-radius:2px;}
         @media (max-width: 480px) {
           .mob-tight{gap:3px !important;}
           .mob-stack{flex-direction:column !important;align-items:stretch !important;}
@@ -2008,7 +1758,7 @@ function App() {
       `}</style>
 
       <div style={{textAlign:"center",marginBottom:12}}>
-        <h1 style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontSize:"clamp(22px,5vw,36px)",fontWeight:900,margin:0,background:`linear-gradient(130deg,${ac},${maj?"#60b8f0":"#f0c040"})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Pentatonic Triads</h1>
+        <h1 style={{fontFamily:"'Playfair Display',serif",fontSize:"clamp(22px,5vw,36px)",fontWeight:900,margin:0,background:`linear-gradient(130deg,${ac},${maj?"#60b8f0":"#f0c040"})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Pentatonic Triads</h1>
         {played && <div style={{fontFamily:M,fontSize:10,color:ac,marginTop:3}}>♪ {played}</div>}
         {/* Scale family selector */}
         <div style={{display:"flex",justifyContent:"center",marginTop:10,gap:6}}>
@@ -2017,9 +1767,9 @@ function App() {
             {id:"modal",     label:"Modal"},
           ].map(({id,label})=>(
             <button key={id} onClick={()=>swMode(id,quality)} style={{
-              background:family===id?`linear-gradient(135deg,${ac},${ac}88)`:"var(--btn2)",
-              color:family===id?"#fff":"var(--label)",fontFamily:M,fontWeight:700,fontSize:11,
-              padding:"6px 22px",border:`1px solid ${family===id?ac+"66":"var(--border)"}`,
+              background:family===id?`linear-gradient(135deg,${ac},${ac}88)`:"rgba(255,255,255,0.05)",
+              color:family===id?"#fff":"#445",fontFamily:M,fontWeight:700,fontSize:11,
+              padding:"6px 22px",border:`1px solid ${family===id?ac+"66":"#1e2e3e"}`,
               letterSpacing:2,textTransform:"uppercase",borderRadius:7,cursor:"pointer",
               boxShadow:family===id?`0 2px 12px ${ac}40`:"none",
             }}>{label}</button>
@@ -2032,31 +1782,19 @@ function App() {
             {q:"minor", label: family==="modal"?"Dorian":"Minor"},
           ].map(({q,label})=>(
             <button key={q} onClick={()=>swQuality(q)} style={{
-              background:quality===q?qualityGrads[q]:"var(--btn)",
-              color:quality===q?"#fff":"var(--label)",fontFamily:M,fontWeight:700,fontSize:10,
-              padding:"5px 18px",border:"1px solid var(--border)",letterSpacing:1,
+              background:quality===q?qualityGrads[q]:"rgba(255,255,255,0.04)",
+              color:quality===q?"#fff":"#445",fontFamily:M,fontWeight:700,fontSize:10,
+              padding:"5px 18px",border:"1px solid #1e2e3e",letterSpacing:1,
               textTransform:"uppercase",cursor:"pointer",
               borderRadius:q==="major"?"6px 0 0 6px":"0 6px 6px 0",
             }}>{label}</button>
           ))}
         </div>
-        {/* Theme switcher */}
-        <div style={{display:"flex",justifyContent:"center",alignItems:"center",marginTop:8,gap:4}}>
-          <span style={{fontFamily:M,fontSize:8,color:"var(--label)",letterSpacing:2}}>THEME</span>
-          {THEME_ORDER.map(th=>(
-            <button key={th} onClick={()=>setTheme(th)} style={{fontFamily:M,fontSize:9,fontWeight:700,padding:"3px 10px",borderRadius:4,cursor:"pointer",letterSpacing:1,textTransform:"uppercase",
-              background:theme===th?"var(--sel-bg)":"var(--btn)",
-              color:theme===th?"#fff":"var(--muted2)",
-              border:`1px solid ${theme===th?"var(--sel-border)":"var(--border)"}`}}>
-              {th==="dark"?"● dark":th==="medium"?"◐ med":"○ light"}
-            </button>
-          ))}
-        </div>
       </div>
 
-      <div style={{background:"var(--panel)",border:"1px solid var(--divider)",borderRadius:12,padding:"10px 12px",maxWidth:660,margin:"0 auto 10px"}}>
+      <div style={{background:"rgba(255,255,255,0.022)",border:"1px solid #182535",borderRadius:12,padding:"10px 12px",maxWidth:660,margin:"0 auto 10px"}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8,flexWrap:"wrap",gap:4}}>
-          <div style={{fontSize:9,letterSpacing:3,color:"var(--heading)",fontFamily:M,textTransform:"uppercase"}}>
+          <div style={{fontSize:9,letterSpacing:3,color:"#3a6a8a",fontFamily:M,textTransform:"uppercase"}}>
             {root} {mode.charAt(0).toUpperCase()+mode.slice(1)} · Fret {rf}
           </div>
           <button onClick={swRel} style={{fontFamily:M,fontSize:9,color:"#60b8f0",background:"rgba(96,184,240,0.08)",border:"1px solid #60b8f030",borderRadius:6,padding:"3px 10px",cursor:"pointer",letterSpacing:1,textTransform:"uppercase"}}>
@@ -2064,22 +1802,22 @@ function App() {
           </button>
         </div>
         <div style={{display:"flex",flexWrap:"wrap",gap:4,justifyContent:"center",marginBottom:8}}>
-          {NOTES.map(k=><button key={k} onClick={()=>setRoot(k)} style={{background:root===k?`linear-gradient(135deg,${ac},${maj?"#b07800":isDor?"#205020":isMix?"#704010":"#2060a0"})`:"var(--btn)",color:root===k?"#fff":"var(--muted)",fontFamily:M,fontWeight:700,fontSize:13,borderRadius:6,padding:"7px 13px",border:root===k?"none":"1px solid var(--border-soft)",cursor:"pointer",minHeight:38,minWidth:38}}>{k}</button>)}
+          {NOTES.map(k=><button key={k} onClick={()=>setRoot(k)} style={{background:root===k?`linear-gradient(135deg,${ac},${maj?"#b07800":isDor?"#205020":isMix?"#704010":"#2060a0"})`:"rgba(255,255,255,0.04)",color:root===k?"#fff":"#778",fontFamily:M,fontWeight:700,fontSize:13,borderRadius:6,padding:"7px 13px",border:root===k?"none":"1px solid #1a2a38",cursor:"pointer",minHeight:38,minWidth:38}}>{k}</button>)}
         </div>
         <div style={{display:"flex",gap:4,flexWrap:"wrap",justifyContent:"center"}}>
-          {ps.map((n,i)=><div key={i} onClick={()=>hear(n)} style={{textAlign:"center",background:i===0?`${ac}18`:"var(--card2)",border:`1px solid ${i===0?ac+"55":"var(--border)"}`,borderRadius:5,padding:"2px 8px",cursor:"pointer"}}><div style={{fontFamily:M,fontWeight:700,fontSize:12,color:i===0?ac:"var(--text-soft)"}}>{n}</div><div style={{fontSize:8,color:"var(--heading)"}}>{pl[i]}</div></div>)}
-          {blues && <div onClick={()=>hear(NOTES[(NOTES.indexOf(root)+6)%12])} style={{textAlign:"center",background:"var(--bluenote-bg)",border:"1px solid #e040e050",borderRadius:5,padding:"2px 8px",cursor:"pointer"}}><div style={{fontFamily:M,fontWeight:700,fontSize:12,color:"#e040e0"}}>{NOTES[(NOTES.indexOf(root)+6)%12]}</div><div style={{fontSize:8,color:"#e040e0"}}>b5</div></div>}
+          {ps.map((n,i)=><div key={i} onClick={()=>hear(n)} style={{textAlign:"center",background:i===0?`${ac}18`:"#ffffff07",border:`1px solid ${i===0?ac+"55":"#1e2e3a"}`,borderRadius:5,padding:"2px 8px",cursor:"pointer"}}><div style={{fontFamily:M,fontWeight:700,fontSize:12,color:i===0?ac:"#bbb"}}>{n}</div><div style={{fontSize:8,color:"#3a6a8a"}}>{pl[i]}</div></div>)}
+          {blues && <div onClick={()=>hear(NOTES[(NOTES.indexOf(root)+6)%12])} style={{textAlign:"center",background:"#2a1a3a",border:"1px solid #e040e050",borderRadius:5,padding:"2px 8px",cursor:"pointer"}}><div style={{fontFamily:M,fontWeight:700,fontSize:12,color:"#e040e0"}}>{NOTES[(NOTES.indexOf(root)+6)%12]}</div><div style={{fontSize:8,color:"#e040e0"}}>b5</div></div>}
         </div>
       </div>
 
       <div style={{maxWidth:660,margin:"0 auto 10px",display:"flex",gap:5,flexWrap:"wrap",justifyContent:"center"}}>
-        {[{l:"🎵 Metro",a:metro,fn:()=>setMetro(v=>!v)},{l:"♭5 Blues",a:blues,fn:()=>setBlues(v=>!v)},{l:"7 Notes",a:fullScale,fn:()=>setFullScale(v=>!v)},{l:"🎼 Prog",a:showProg,fn:()=>setShowProg(v=>!v)},{l:"⬡ Shape",a:shapeOn,fn:()=>{setShapeOn(v=>!v);setShapeMap({"_global":[{color:SHAPE_COLORS[0],dots:[],quality:null}]});}},{l:"◉ Neck",a:neck,fn:()=>setNeck(v=>!v)}].map(b=><button key={b.l} onClick={b.fn} style={{fontFamily:M,fontWeight:700,fontSize:10,background:b.a?`${ac}22`:"var(--btn)",color:b.a?ac:"var(--muted2)",border:`1px solid ${b.a?ac+"55":"var(--border)"}`,borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>{b.l}</button>)}
-        <button onClick={()=>{getCtx();loadSamples();}} style={{fontFamily:M,fontWeight:700,fontSize:10,background:samplesReady?"rgba(64,168,96,0.2)":samplesLoading?"rgba(255,200,0,0.1)":"var(--btn)",color:samplesReady?"#40a860":samplesLoading?"#ffc800":"var(--muted2)",border:"1px solid "+(samplesReady?"#40a86055":samplesLoading?"#ffc80055":"var(--border)"),borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>{samplesReady?"🎸 Guitar On":samplesLoading?"🎸 Loading...":"🎸 Guitar"}</button>
+        {[{l:"🎵 Metro",a:metro,fn:()=>setMetro(v=>!v)},{l:"♭5 Blues",a:blues,fn:()=>setBlues(v=>!v)},{l:"7 Notes",a:fullScale,fn:()=>setFullScale(v=>!v)},{l:"🎼 Prog",a:showProg,fn:()=>setShowProg(v=>!v)},{l:"⬡ Shape",a:shapeOn,fn:()=>{setShapeOn(v=>!v);setShapeMap({"_global":[{color:SHAPE_COLORS[0],dots:[],quality:null}]});}},{l:"◉ Neck",a:neck,fn:()=>setNeck(v=>!v)}].map(b=><button key={b.l} onClick={b.fn} style={{fontFamily:M,fontWeight:700,fontSize:10,background:b.a?`${ac}22`:"rgba(255,255,255,0.04)",color:b.a?ac:"#556",border:`1px solid ${b.a?ac+"55":"#1e2e3a"}`,borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>{b.l}</button>)}
+        <button onClick={()=>{getCtx();loadSamples();}} style={{fontFamily:M,fontWeight:700,fontSize:10,background:samplesReady?"rgba(64,168,96,0.2)":samplesLoading?"rgba(255,200,0,0.1)":"rgba(255,255,255,0.04)",color:samplesReady?"#40a860":samplesLoading?"#ffc800":"#556",border:"1px solid "+(samplesReady?"#40a86055":samplesLoading?"#ffc80055":"#1e2e3a"),borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>{samplesReady?"🎸 Guitar On":samplesLoading?"🎸 Loading...":"🎸 Guitar"}</button>
       </div>
 
       {shapeOn&&(
-        <div style={{maxWidth:660,margin:"0 auto 10px",background:"var(--well4)",border:"1px solid "+ac+"33",borderRadius:10,padding:"10px 12px"}}>
-          <div style={{fontFamily:M,fontSize:9,color:"var(--heading)",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>
+        <div style={{maxWidth:660,margin:"0 auto 10px",background:"rgba(0,0,0,0.3)",border:"1px solid "+ac+"33",borderRadius:10,padding:"10px 12px"}}>
+          <div style={{fontFamily:M,fontSize:9,color:"#3a6a8a",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>
             {focusedChord?"Shape for "+focusedChord.label+" — tap notes on fretboard":"Chord Shape — tap a chord name above to select it, then tap notes"}
           </div>
           <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"flex-start"}}>
@@ -2090,8 +1828,8 @@ function App() {
                   <span style={{fontFamily:M,fontSize:10,color:g.color,fontWeight:700,flex:1}}>
                     {g.dots.length===0?"tap notes…":g.dots.map(d=>d.note).join("·")}
                   </span>
-                  <span style={{fontFamily:M,fontSize:8,color:"var(--muted2)"}}>({g.dots.length}/4)</span>
-                  {g.dots.length>0&&<span onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,dots:[]}:x))} style={{fontSize:9,cursor:"pointer",color:"var(--label)",userSelect:"none"}}>✕</span>}
+                  <span style={{fontFamily:M,fontSize:8,color:"#556"}}>({g.dots.length}/4)</span>
+                  {g.dots.length>0&&<span onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,dots:[]}:x))} style={{fontSize:9,cursor:"pointer",color:"#445",userSelect:"none"}}>✕</span>}
                 </div>
                 <div style={{display:"flex",gap:2,flexWrap:"wrap"}}>
                   {["maj","min","dim","7","9"].map(q=>(
@@ -2099,7 +1837,7 @@ function App() {
                       style={{fontFamily:M,fontSize:8,padding:"1px 5px",borderRadius:3,cursor:"pointer",
                         background:g.quality===q?g.color+"30":"transparent",
                         border:"1px solid "+(g.quality===q?g.color:g.color+"33"),
-                        color:g.quality===q?g.color:"var(--label)"}}>
+                        color:g.quality===q?g.color:"#445"}}>
                       {q}
                     </span>
                   ))}
@@ -2113,7 +1851,7 @@ function App() {
               </button>
             )}
             <button onClick={()=>setShapeGroups([{color:SHAPE_COLORS[0],dots:[],quality:null}])}
-              style={{fontFamily:M,fontSize:9,color:"var(--faint)",background:"transparent",border:"1px solid var(--border)",borderRadius:6,padding:"5px 8px",cursor:"pointer",alignSelf:"center",marginLeft:"auto"}}>
+              style={{fontFamily:M,fontSize:9,color:"#334",background:"transparent",border:"1px solid #1e2e3a",borderRadius:6,padding:"5px 8px",cursor:"pointer",alignSelf:"center",marginLeft:"auto"}}>
               clear all
             </button>
           </div>
@@ -2126,19 +1864,19 @@ function App() {
       {neck && (()=>{
         const neckContent = (
           <>
-            <div style={{display:"flex",alignItems:"center",gap:6,padding:"8px 12px",borderBottom:"1px solid var(--divider)",flexWrap:"wrap"}}>
-              <div style={{display:"flex",gap:3}}>{POS.map(p=><button key={p.num} onClick={()=>togPos(p.num)} style={{background:openPos.has(p.num)?`${ac}25`:"var(--btn)",color:openPos.has(p.num)?ac:"var(--label)",fontFamily:M,fontWeight:700,fontSize:10,padding:"3px 8px",border:`1px solid ${openPos.has(p.num)?ac+"66":"var(--border)"}`,borderRadius:5,cursor:"pointer"}}>P{p.num}</button>)}</div>
+            <div style={{display:"flex",alignItems:"center",gap:6,padding:"8px 12px",borderBottom:"1px solid #182535",flexWrap:"wrap"}}>
+              <div style={{display:"flex",gap:3}}>{POS.map(p=><button key={p.num} onClick={()=>togPos(p.num)} style={{background:openPos.has(p.num)?`${ac}25`:"rgba(255,255,255,0.04)",color:openPos.has(p.num)?ac:"#445",fontFamily:M,fontWeight:700,fontSize:10,padding:"3px 8px",border:`1px solid ${openPos.has(p.num)?ac+"66":"#1e2e3a"}`,borderRadius:5,cursor:"pointer"}}>P{p.num}</button>)}</div>
               <div style={{display:"flex",alignItems:"center",gap:4,marginLeft:"auto"}}>
-                <span onClick={()=>setZoom(z=>Math.max(0.5,+(z-0.15).toFixed(2)))} style={{fontSize:14,cursor:"pointer",color:"var(--muted2)",userSelect:"none"}}>−</span>
+                <span onClick={()=>setZoom(z=>Math.max(0.5,+(z-0.15).toFixed(2)))} style={{fontSize:14,cursor:"pointer",color:"#556",userSelect:"none"}}>−</span>
                 <input type="range" min={0.5} max={2} step={0.05} value={zoom} onChange={e=>setZoom(+e.target.value)} style={{width:60,accentColor:ac}}/>
-                <span onClick={()=>setZoom(z=>Math.min(2,+(z+0.15).toFixed(2)))} style={{fontSize:14,cursor:"pointer",color:"var(--muted2)",userSelect:"none"}}>+</span>
-                <span style={{fontFamily:M,fontSize:9,color:"var(--label)",minWidth:28}}>{Math.round(zoom*100)}%</span>
+                <span onClick={()=>setZoom(z=>Math.min(2,+(z+0.15).toFixed(2)))} style={{fontSize:14,cursor:"pointer",color:"#556",userSelect:"none"}}>+</span>
+                <span style={{fontFamily:M,fontSize:9,color:"#445",minWidth:28}}>{Math.round(zoom*100)}%</span>
               </div>
               <div style={{display:"flex",gap:8}}>
-                <span onClick={()=>setNcht(new Set([0,1,2,3,4,5,6]))} style={{fontFamily:M,fontSize:9,color:"var(--link3)",cursor:"pointer"}}>all</span>
-                <span onClick={()=>setNcht(new Set())} style={{fontFamily:M,fontSize:9,color:"var(--faint)",cursor:"pointer"}}>none</span>
+                <span onClick={()=>setNcht(new Set([0,1,2,3,4,5,6]))} style={{fontFamily:M,fontSize:9,color:"#4a8aaa",cursor:"pointer"}}>all</span>
+                <span onClick={()=>setNcht(new Set())} style={{fontFamily:M,fontSize:9,color:"#334",cursor:"pointer"}}>none</span>
               </div>
-              <button onClick={()=>setNeckFull(v=>!v)} style={{fontFamily:M,fontSize:11,color:"var(--muted)",background:"var(--btn2)",border:"1px solid var(--btn-border)",borderRadius:5,padding:"2px 8px",cursor:"pointer"}}>
+              <button onClick={()=>setNeckFull(v=>!v)} style={{fontFamily:M,fontSize:11,color:"#778",background:"rgba(255,255,255,0.05)",border:"1px solid #2a3a4a",borderRadius:5,padding:"2px 8px",cursor:"pointer"}}>
                 {neckFull?"✕":"⤢"}
               </button>
             </div>
@@ -2166,7 +1904,7 @@ function App() {
                     accent={focusedChord ? focusedChord.color : ac}
                     sc={SC} zoom={neckFull ? Math.max(1.2, (window.innerHeight-80) / (5*34+56)) : zoom}
                     blues={blues} exts={nexts}
-                    shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot}
+                    shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={toggleDot}
                     focusedNotes={neckFocusedNotes}
                     focusedColor={focusedChord ? focusedChord.color : null}
                     qualOver={qualOver}/>
@@ -2174,9 +1912,9 @@ function App() {
               })()}
             </div>
             {!neckFull && (
-              <div style={{padding:"10px 12px 12px",borderTop:"1px solid var(--divider)"}}>
-                {shapeOn&&<div style={{marginBottom:10,padding:"8px 10px",background:"var(--well5)",borderRadius:8,border:"1px solid "+ac+"33"}}>
-                  <div style={{fontFamily:M,fontSize:9,color:"var(--heading)",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>
+              <div style={{padding:"10px 12px 12px",borderTop:"1px solid #182535"}}>
+                {shapeOn&&<div style={{marginBottom:10,padding:"8px 10px",background:"rgba(0,0,0,0.25)",borderRadius:8,border:"1px solid "+ac+"33"}}>
+                  <div style={{fontFamily:M,fontSize:9,color:"#3a6a8a",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>
                     {focusedChord?"Shape for "+focusedChord.label+" — tap notes":"Chord Shape — tap notes on fretboard"}
                   </div>
                   <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"flex-start"}}>
@@ -2187,8 +1925,8 @@ function App() {
                           <span style={{fontFamily:M,fontSize:10,color:g.color,fontWeight:700,flex:1}}>
                             {g.dots.length===0?"tap notes…":g.dots.map(d=>d.note).join("·")}
                           </span>
-                          <span style={{fontFamily:M,fontSize:8,color:"var(--muted2)"}}>({g.dots.length}/4)</span>
-                          {g.dots.length>0&&<span onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,dots:[]}:x))} style={{fontSize:9,cursor:"pointer",color:"var(--label)",userSelect:"none"}}>✕</span>}
+                          <span style={{fontFamily:M,fontSize:8,color:"#556"}}>({g.dots.length}/4)</span>
+                          {g.dots.length>0&&<span onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,dots:[]}:x))} style={{fontSize:9,cursor:"pointer",color:"#445",userSelect:"none"}}>✕</span>}
                         </div>
                         <div style={{display:"flex",gap:2,flexWrap:"wrap"}}>
                           {["maj","min","dim","7","9"].map(q=>(
@@ -2196,7 +1934,7 @@ function App() {
                               style={{fontFamily:M,fontSize:8,padding:"1px 5px",borderRadius:3,cursor:"pointer",
                                 background:g.quality===q?g.color+"30":"transparent",
                                 border:"1px solid "+(g.quality===q?g.color:g.color+"33"),
-                                color:g.quality===q?g.color:"var(--label)"}}>
+                                color:g.quality===q?g.color:"#445"}}>
                               {q}
                             </span>
                           ))}
@@ -2210,12 +1948,12 @@ function App() {
                       </button>
                     )}
                     <button onClick={()=>setShapeGroups([{color:SHAPE_COLORS[0],dots:[],quality:null}])}
-                      style={{fontFamily:M,fontSize:9,color:"var(--faint)",background:"transparent",border:"1px solid var(--border)",borderRadius:6,padding:"5px 8px",cursor:"pointer",alignSelf:"center",marginLeft:"auto"}}>
+                      style={{fontFamily:M,fontSize:9,color:"#334",background:"transparent",border:"1px solid #1e2e3a",borderRadius:6,padding:"5px 8px",cursor:"pointer",alignSelf:"center",marginLeft:"auto"}}>
                       clear all
                     </button>
                   </div>
                 </div>}
-                <div style={{fontSize:9,letterSpacing:3,color:"var(--heading)",fontFamily:M,textTransform:"uppercase",marginBottom:6}}>Triads · {root} {mode}</div>
+                <div style={{fontSize:9,letterSpacing:3,color:"#3a6a8a",fontFamily:M,textTransform:"uppercase",marginBottom:6}}>Triads · {root} {mode}</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
                   {TR.map((t,ti)=><TCard key={ti} t={t} root={root} on={ncht.has(ti)} onClick={()=>togN(ti)} sc={SC} pd={PD} onPlay={hearCh} ext={nexts[ti]||null} onExt={val=>setNextExt(ti,val)} qualityOverride={qualOver[ti]||null} onQualityToggle={q=>setQualOver(p=>({...p,[ti]:q}))}/>)}
                 </div>
@@ -2224,18 +1962,18 @@ function App() {
           </>
         );
         return neckFull ? (
-          <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,zIndex:999,background:"var(--bg-deep)",display:"flex",flexDirection:"column",overflow:"hidden"}}>
+          <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,zIndex:999,background:"#080f18",display:"flex",flexDirection:"column",overflow:"hidden"}}>
             {/* toolbar */}
-            <div style={{display:"flex",alignItems:"center",gap:6,padding:"6px 10px",borderBottom:"1px solid var(--divider)",flexWrap:"nowrap",flexShrink:0,overflowX:"auto"}}>
-              <div style={{display:"flex",gap:3,flexShrink:0}}>{POS.map(p=><button key={p.num} onClick={()=>togPos(p.num)} style={{background:openPos.has(p.num)?`${ac}25`:"var(--btn)",color:openPos.has(p.num)?ac:"var(--label)",fontFamily:M,fontWeight:700,fontSize:10,padding:"3px 8px",border:`1px solid ${openPos.has(p.num)?ac+"66":"var(--border)"}`,borderRadius:5,cursor:"pointer"}}>P{p.num}</button>)}</div>
+            <div style={{display:"flex",alignItems:"center",gap:6,padding:"6px 10px",borderBottom:"1px solid #182535",flexWrap:"nowrap",flexShrink:0,overflowX:"auto"}}>
+              <div style={{display:"flex",gap:3,flexShrink:0}}>{POS.map(p=><button key={p.num} onClick={()=>togPos(p.num)} style={{background:openPos.has(p.num)?`${ac}25`:"rgba(255,255,255,0.04)",color:openPos.has(p.num)?ac:"#445",fontFamily:M,fontWeight:700,fontSize:10,padding:"3px 8px",border:`1px solid ${openPos.has(p.num)?ac+"66":"#1e2e3a"}`,borderRadius:5,cursor:"pointer"}}>P{p.num}</button>)}</div>
               <div style={{display:"flex",alignItems:"center",gap:4,marginLeft:"auto",flexShrink:0}}>
-                <span onClick={()=>setZoom(z=>Math.max(0.5,+(z-0.1).toFixed(2)))} style={{fontSize:14,cursor:"pointer",color:"var(--muted2)",userSelect:"none"}}>−</span>
-                <span style={{fontFamily:M,fontSize:9,color:"var(--label)",minWidth:28}}>{Math.round(zoom*100)}%</span>
-                <span onClick={()=>setZoom(z=>Math.min(3,+(z+0.1).toFixed(2)))} style={{fontSize:14,cursor:"pointer",color:"var(--muted2)",userSelect:"none"}}>+</span>
+                <span onClick={()=>setZoom(z=>Math.max(0.5,+(z-0.1).toFixed(2)))} style={{fontSize:14,cursor:"pointer",color:"#556",userSelect:"none"}}>−</span>
+                <span style={{fontFamily:M,fontSize:9,color:"#445",minWidth:28}}>{Math.round(zoom*100)}%</span>
+                <span onClick={()=>setZoom(z=>Math.min(3,+(z+0.1).toFixed(2)))} style={{fontSize:14,cursor:"pointer",color:"#556",userSelect:"none"}}>+</span>
               </div>
-              <span onClick={()=>setNcht(new Set([0,1,2,3,4,5,6]))} style={{fontFamily:M,fontSize:9,color:"var(--link3)",cursor:"pointer",flexShrink:0}}>all</span>
-              <span onClick={()=>setNcht(new Set())} style={{fontFamily:M,fontSize:9,color:"var(--faint)",cursor:"pointer",flexShrink:0}}>none</span>
-              <button onClick={()=>setNeckFull(false)} style={{fontFamily:M,fontSize:11,color:"var(--text)",background:"var(--btn3)",border:"1px solid var(--btn-border)",borderRadius:5,padding:"3px 10px",cursor:"pointer",flexShrink:0}}>✕ close</button>
+              <span onClick={()=>setNcht(new Set([0,1,2,3,4,5,6]))} style={{fontFamily:M,fontSize:9,color:"#4a8aaa",cursor:"pointer",flexShrink:0}}>all</span>
+              <span onClick={()=>setNcht(new Set())} style={{fontFamily:M,fontSize:9,color:"#334",cursor:"pointer",flexShrink:0}}>none</span>
+              <button onClick={()=>setNeckFull(false)} style={{fontFamily:M,fontSize:11,color:"#eee",background:"rgba(255,255,255,0.08)",border:"1px solid #3a4a5a",borderRadius:5,padding:"3px 10px",cursor:"pointer",flexShrink:0}}>✕ close</button>
             </div>
             {/* fretboard — fills remaining height, scrolls horizontally */}
             <div style={{flex:1,overflowX:"auto",overflowY:"hidden",display:"flex",alignItems:"center"}}>
@@ -2265,7 +2003,7 @@ function App() {
                     triads={TR} pd={PD}
                     accent={focusedChord ? focusedChord.color : ac}
                     sc={SC} zoom={fz} blues={blues} exts={nexts}
-                    shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot}
+                    shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={toggleDot}
                     focusedNotes={neckFocusedNotes2}
                     focusedColor={focusedChord ? focusedChord.color : null}
                     qualOver={qualOver}/>
@@ -2275,15 +2013,15 @@ function App() {
             {/* chord banner at bottom */}
             {focusedChord && (
               <div style={{padding:"5px 14px",background:`${focusedChord.color}22`,borderTop:`1px solid ${focusedChord.color}55`,display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
-                <span style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:20,color:focusedChord.color}}>{focusedChord.label}</span>
+                <span style={{fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:20,color:focusedChord.color}}>{focusedChord.label}</span>
                 <div style={{display:"flex",gap:5}}>
-                  {focusedChord.notes.map((n,i)=><span key={i} style={{background:`${focusedChord.color}22`,border:`1px solid ${focusedChord.color}55`,borderRadius:4,padding:"1px 7px",fontSize:11,fontWeight:700,fontFamily:M,color:"var(--text)"}}>{n}</span>)}
+                  {focusedChord.notes.map((n,i)=><span key={i} style={{background:`${focusedChord.color}22`,border:`1px solid ${focusedChord.color}55`,borderRadius:4,padding:"1px 7px",fontSize:11,fontWeight:700,fontFamily:M,color:"#eee"}}>{n}</span>)}
                 </div>
               </div>
             )}
           </div>
         ) : (
-          <div style={{maxWidth:660,margin:"0 auto 10px",background:"var(--well3)",border:`1px solid ${ac}33`,borderRadius:12,overflow:"hidden"}}>
+          <div style={{maxWidth:660,margin:"0 auto 10px",background:"rgba(0,0,0,0.5)",border:`1px solid ${ac}33`,borderRadius:12,overflow:"hidden"}}>
             {neckContent}
           </div>
         );
@@ -2307,15 +2045,15 @@ function App() {
           }
           return (
             <div style={{background:`${focusedChord.color}18`,border:`2px solid ${focusedChord.color}`,borderRadius:12,padding:"10px 16px",display:"flex",alignItems:"center",gap:12}}>
-              <div style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:32,color:focusedChord.color}}>{bannerLabel}</div>
+              <div style={{fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:32,color:focusedChord.color}}>{bannerLabel}</div>
               <div style={{flex:1}}>
                 <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-                  {bannerNotes.map((n,i)=><span key={i} style={{background:`${focusedChord.color}22`,border:`1px solid ${focusedChord.color}55`,borderRadius:4,padding:"2px 8px",fontSize:13,fontWeight:700,fontFamily:M,color:"var(--text)"}}>{n}</span>)}
+                  {bannerNotes.map((n,i)=><span key={i} style={{background:`${focusedChord.color}22`,border:`1px solid ${focusedChord.color}55`,borderRadius:4,padding:"2px 8px",fontSize:13,fontWeight:700,fontFamily:M,color:"#eee"}}>{n}</span>)}
                 </div>
                 {ovr && ovr !== (t&&t.q) && <div style={{fontFamily:M,fontSize:9,color:"#f0c040",marginTop:3}}>borrowed ({ovr})</div>}
-                <div style={{fontFamily:M,fontSize:9,color:"var(--label)",marginTop:2}}>Highlighted on all positions below</div>
+                <div style={{fontFamily:M,fontSize:9,color:"#445",marginTop:2}}>Highlighted on all positions below</div>
               </div>
-              <span onClick={()=>setFocusedProgIdx(null)} style={{fontSize:18,cursor:"pointer",color:"var(--label)",userSelect:"none"}}>✕</span>
+              <span onClick={()=>setFocusedProgIdx(null)} style={{fontSize:18,cursor:"pointer",color:"#445",userSelect:"none"}}>✕</span>
             </div>
           );
         })()}
@@ -2364,32 +2102,32 @@ function App() {
           const base=getBase(pos);
           const labels = focusedChord ? focusedChord.label : [...(cht[pos.num]||new Set())].map(ti=>TR[ti].n).join(" + ");
           return (
-            <div key={pos.num} style={{background:"var(--panel2)",border:`1px solid ${isExp?"var(--border-lit)":"var(--border-dim)"}`,borderRadius:12,overflow:"hidden",boxShadow:isExp?"var(--shadow)":"none"}}>
-              <div onClick={()=>togPos(pos.num)} style={{padding:"10px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:10,background:isExp?`${ac}08`:"transparent",borderBottom:isExp?"1px solid var(--divider)":"none"}}>
-                <div style={{width:28,height:28,borderRadius:"50%",flexShrink:0,background:isExp?`linear-gradient(135deg,${ac},${maj?"#b07800":isDor?"#205020":isMix?"#704010":"#2060a0"})`:"var(--btn2)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:13,color:isExp?"#fff":"var(--muted2)"}}>{pos.num}</div>
+            <div key={pos.num} style={{background:"rgba(255,255,255,0.018)",border:`1px solid ${isExp?"#253545":"#182030"}`,borderRadius:12,overflow:"hidden",boxShadow:isExp?"0 4px 20px rgba(0,0,0,0.4)":"none"}}>
+              <div onClick={()=>togPos(pos.num)} style={{padding:"10px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:10,background:isExp?`${ac}08`:"transparent",borderBottom:isExp?"1px solid #182535":"none"}}>
+                <div style={{width:28,height:28,borderRadius:"50%",flexShrink:0,background:isExp?`linear-gradient(135deg,${ac},${maj?"#b07800":isDor?"#205020":isMix?"#704010":"#2060a0"})`:"rgba(255,255,255,0.05)",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Playfair Display',serif",fontWeight:900,fontSize:13,color:isExp?"#fff":"#556"}}>{pos.num}</div>
                 <div style={{flex:1}}>
-                  <div style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:700,fontSize:13,color:"var(--text-soft)"}}>Position {pos.num}</div>
-                  <div style={{fontFamily:M,fontSize:9,color:"var(--label2)",marginTop:1}}>{pos.sd} · fret {base}{ch.size>0&&<span style={{color:ac,marginLeft:6}}>{labels}</span>}</div>
+                  <div style={{fontFamily:"'Playfair Display',serif",fontWeight:700,fontSize:13,color:"#ccc"}}>Position {pos.num}</div>
+                  <div style={{fontFamily:M,fontSize:9,color:"#3a5060",marginTop:1}}>{pos.sd} · fret {base}{ch.size>0&&<span style={{color:ac,marginLeft:6}}>{labels}</span>}</div>
                 </div>
                 <div style={{display:"flex",gap:2,flexWrap:"wrap",justifyContent:"flex-end",maxWidth:150}}>
                   {TR.map((t,ti)=><span key={ti} style={{fontFamily:M,fontWeight:700,fontSize:8,color:t.c,background:ch.has(ti)?`${t.c}30`:`${t.c}0e`,border:`1px solid ${ch.has(ti)?t.c:t.c+"28"}`,borderRadius:3,padding:"1px 4px",opacity:ch.has(ti)||ch.size===0?1:0.3}}>{t.n}</span>)}
                 </div>
-                <div style={{color:"var(--faint)",fontSize:14,transition:"transform .2s",transform:isExp?"rotate(180deg)":"none",flexShrink:0}}>▾</div>
+                <div style={{color:"#2a4058",fontSize:14,transition:"transform .2s",transform:isExp?"rotate(180deg)":"none",flexShrink:0}}>▾</div>
               </div>
               {isExp && (
                 <div style={{padding:"12px 12px 14px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-                    <div style={{fontSize:9,letterSpacing:2,color:"var(--heading)",fontFamily:M,textTransform:"uppercase"}}>{ch.size===0?`${root} ${mode} · fret ${base}`:`${labels} · fret ${base}`}</div>
+                    <div style={{fontSize:9,letterSpacing:2,color:"#3a6a8a",fontFamily:M,textTransform:"uppercase"}}>{ch.size===0?`${root} ${mode} · fret ${base}`:`${labels} · fret ${base}`}</div>
                     <div style={{display:"flex",gap:12}}>
-                      <span onClick={e=>{e.stopPropagation();all(pos.num);}} style={{fontFamily:M,fontSize:9,color:"var(--link3)",cursor:"pointer"}}>all</span>
-                      <span onClick={e=>{e.stopPropagation();clr(pos.num);}} style={{fontFamily:M,fontSize:9,color:"var(--faint)",cursor:"pointer"}}>none</span>
+                      <span onClick={e=>{e.stopPropagation();all(pos.num);}} style={{fontFamily:M,fontSize:9,color:"#4a8aaa",cursor:"pointer"}}>all</span>
+                      <span onClick={e=>{e.stopPropagation();clr(pos.num);}} style={{fontFamily:M,fontSize:9,color:"#334",cursor:"pointer"}}>none</span>
                     </div>
                   </div>
-                  <div style={{background:"var(--well2)",borderRadius:10,padding:"8px",border:"1px solid var(--border-dim)",overflowX:"auto",marginBottom:showProg?6:12}}>
-                    <Fretboard pos={pos} root={root} base={base} checked={ch} triads={TR} pd={PD} accent={focusedChord?focusedChord.color:ac} sc={SC} zoom={1} blues={blues} exts={exts[pos.num]||{}} fullScale={fullScale} shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot} qualOver={qualOver} focusedNotes={effectiveFocusedNotes} focusedColor={focusedChord?focusedChord.color:null}/>
+                  <div style={{background:"rgba(0,0,0,0.45)",borderRadius:10,padding:"8px",border:"1px solid #182030",overflowX:"auto",marginBottom:showProg?6:12}}>
+                    <Fretboard pos={pos} root={root} base={base} checked={ch} triads={TR} pd={PD} accent={focusedChord?focusedChord.color:ac} sc={SC} zoom={1} blues={blues} exts={exts[pos.num]||{}} fullScale={fullScale} shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={toggleDot} qualOver={qualOver} focusedNotes={effectiveFocusedNotes} focusedColor={focusedChord?focusedChord.color:null}/>
                   </div>
-                  {shapeOn&&<div style={{marginBottom:10,padding:"8px 10px",background:"var(--well5)",borderRadius:8,border:"1px solid "+ac+"33"}}>
-                    <div style={{fontFamily:M,fontSize:9,color:"var(--heading)",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>
+                  {shapeOn&&<div style={{marginBottom:10,padding:"8px 10px",background:"rgba(0,0,0,0.25)",borderRadius:8,border:"1px solid "+ac+"33"}}>
+                    <div style={{fontFamily:M,fontSize:9,color:"#3a6a8a",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>
                       {focusedChord?"Shape for "+focusedChord.label+" — tap notes":"Chord Shape — tap notes on fretboard"}
                     </div>
                     <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"flex-start"}}>
@@ -2400,8 +2138,8 @@ function App() {
                             <span style={{fontFamily:M,fontSize:10,color:g.color,fontWeight:700,flex:1}}>
                               {g.dots.length===0?"tap notes…":g.dots.map(d=>d.note).join("·")}
                             </span>
-                            <span style={{fontFamily:M,fontSize:8,color:"var(--muted2)"}}>({g.dots.length}/4)</span>
-                            {g.dots.length>0&&<span onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,dots:[]}:x))} style={{fontSize:9,cursor:"pointer",color:"var(--label)",userSelect:"none"}}>✕</span>}
+                            <span style={{fontFamily:M,fontSize:8,color:"#556"}}>({g.dots.length}/4)</span>
+                            {g.dots.length>0&&<span onClick={()=>setShapeGroups(p=>p.map((x,i)=>i===gi?{...x,dots:[]}:x))} style={{fontSize:9,cursor:"pointer",color:"#445",userSelect:"none"}}>✕</span>}
                           </div>
                           <div style={{display:"flex",gap:2,flexWrap:"wrap"}}>
                             {["maj","min","dim","7","9"].map(q=>(
@@ -2409,7 +2147,7 @@ function App() {
                                 style={{fontFamily:M,fontSize:8,padding:"1px 5px",borderRadius:3,cursor:"pointer",
                                   background:g.quality===q?g.color+"30":"transparent",
                                   border:"1px solid "+(g.quality===q?g.color:g.color+"33"),
-                                  color:g.quality===q?g.color:"var(--label)"}}>
+                                  color:g.quality===q?g.color:"#445"}}>
                                 {q}
                               </span>
                             ))}
@@ -2423,12 +2161,12 @@ function App() {
                         </button>
                       )}
                       <button onClick={()=>setShapeGroups([{color:SHAPE_COLORS[0],dots:[],quality:null}])}
-                        style={{fontFamily:M,fontSize:9,color:"var(--faint)",background:"transparent",border:"1px solid var(--border)",borderRadius:6,padding:"5px 8px",cursor:"pointer",alignSelf:"center",marginLeft:"auto"}}>
+                        style={{fontFamily:M,fontSize:9,color:"#334",background:"transparent",border:"1px solid #1e2e3a",borderRadius:6,padding:"5px 8px",cursor:"pointer",alignSelf:"center",marginLeft:"auto"}}>
                         clear all
                       </button>
                     </div>
                   </div>}
-                  <div style={{fontSize:9,letterSpacing:2,color:"var(--heading)",fontFamily:M,textTransform:"uppercase",marginBottom:6}}>Tap triads to highlight · tap notes to hear</div>
+                  <div style={{fontSize:9,letterSpacing:2,color:"#3a6a8a",fontFamily:M,textTransform:"uppercase",marginBottom:6}}>Tap triads to highlight · tap notes to hear</div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
                     {TR.map((t,ti)=><TCard key={ti} t={t} root={root} on={ch.has(ti)} onClick={e=>{e.stopPropagation();togCht(pos.num,ti);}} sc={SC} pd={PD} onPlay={hearCh} ext={(exts[pos.num]||{})[ti]||(exts[pos.num]||{})[String(ti)]||null} onExt={val=>setExt(pos.num,ti,val)} qualityOverride={qualOver[ti]||null} onQualityToggle={q=>setQualOver(p=>({...p,[ti]:q}))}/>)}
                   </div>
@@ -2482,9 +2220,6 @@ root.render(<App />);
   } else {
     bindBtn();
   }
-
-  // Auto-dismiss the splash after 5s if the button isn't tapped
-  setTimeout(function(){ hideSplash(); }, 5000);
 })();
 </script>
 

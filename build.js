@@ -56,6 +56,13 @@ if ("serviceWorker" in navigator) {
 </body>`;
   src = src.replace("</body>", swReg);
 
+  // Stamp the build revision into the splash so it's visible which build is live
+  const VERSION = "v2.0";
+  const d = new Date();
+  const stamp = VERSION + " \u00b7 " + d.toISOString().slice(0,10) + " " +
+    String(d.getUTCHours()).padStart(2,"0") + ":" + String(d.getUTCMinutes()).padStart(2,"0") + " UTC";
+  src = src.replace(">rev dev<", ">rev " + stamp + "<");
+
   fs.writeFileSync("index.html", src);
   console.log("✓ built index.html (" + src.length + " bytes, bundle " + min.length + " bytes)");
 })();

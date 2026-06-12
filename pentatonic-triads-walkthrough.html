@@ -10,7 +10,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
   width: 100%; height: 100%; overflow: hidden;
-  background: #0b1018; color: #c8d8e8;
+  background: #f5f2ec; color: #3a3326;
   font-family: 'IBM Plex Mono', monospace;
 }
 
@@ -24,10 +24,12 @@ html, body {
 /* ── Nav ──────────────────────────────────────────────────────── */
 #nav {
   position: fixed; bottom: 0; left: 0; right: 0;
-  height: 56px; z-index: 100;
+  z-index: 100;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 20px;
-  background: linear-gradient(to top, #0a1018, transparent);
+  background: rgba(245,242,236,0.97);
+  border-top: 1px solid #ddd4c2;
+  box-shadow: 0 -4px 18px rgba(90,70,40,0.10);
 }
 .nav-btn {
   font-family: 'IBM Plex Mono', monospace;
@@ -68,29 +70,29 @@ html, body {
 
 /* ── Typography ───────────────────────────────────────────────── */
 .scene-label {
-  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
-  color: #3a5a70; margin-bottom: 10px;
+  font-size: 12px; letter-spacing: 4px; text-transform: uppercase;
+  color: #96720e; font-weight: 700; margin-bottom: 10px;
 }
 .scene-title {
   font-family: 'Playfair Display', serif;
   font-size: clamp(28px, 6vw, 52px);
   font-weight: 900; line-height: 1.1; text-align: center;
-  background: linear-gradient(135deg, #f0c040 30%, #60b8f0 100%);
+  background: linear-gradient(135deg, #a87b10 25%, #1d6fae 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text; margin-bottom: 8px;
 }
 .scene-subtitle {
-  font-size: clamp(10px, 2vw, 13px); color: #5a9ab0;
-  letter-spacing: 1px; text-align: center; margin-bottom: 24px;
-  max-width: 480px; line-height: 1.7;
+  font-size: clamp(14px, 2.8vw, 17px); color: #4a4334;
+  letter-spacing: 0.5px; text-align: center; margin-bottom: 24px;
+  max-width: 540px; line-height: 1.75;
 }
 .caption {
-  font-size: clamp(10px, 2vw, 12px); color: #5a8a9a;
+  font-size: clamp(13px, 2.6vw, 15px); color: #55493a;
   letter-spacing: 0.5px; text-align: center;
   max-width: 480px; line-height: 1.8;
   margin-top: 18px;
 }
-.caption strong { color: #a0c8e0; font-weight: 600; }
+.caption strong { color: #2a241a; font-weight: 700; }
 
 /* ── Fretboard ────────────────────────────────────────────────── */
 .fretboard-wrap {
@@ -261,18 +263,18 @@ html, body {
   50%       { box-shadow: 0 0 28px #40c04066; }
 }
 .bpm-display {
-  font-size: 22px; font-weight: 700; color: #f0c040;
-  min-width: 44px; text-align: center;
+  font-size: 24px; font-weight: 700; color: #96720e;
+  min-width: 48px; text-align: center;
 }
-.bpm-label { font-size: 8px; color: #3a5a70; letter-spacing: 2px; }
+.bpm-label { font-size: 10px; color: #8a7350; letter-spacing: 2px; font-weight: 700; }
 .beat-bar {
   display: flex; gap: 5px; margin: 8px 0;
 }
 .beat-dot {
   width: 10px; height: 10px; border-radius: 50%;
-  background: #1a2e3e; transition: background .1s, transform .1s;
+  background: #cfc2a8; transition: background .1s, transform .1s;
 }
-.beat-dot.on { background: #f0c040; transform: scale(1.4); }
+.beat-dot.on { background: #e0a818; transform: scale(1.4); }
 .toggle-row {
   display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
   justify-content: center;
@@ -326,30 +328,27 @@ html, body {
 
 /* ── v2 additions: chapters, narration, new scene widgets ─────── */
 /* ── v3: bigger, brighter controls + scene menu ── */
-#nav {
-  background: linear-gradient(to top, rgba(8,13,22,0.97) 70%, rgba(8,13,22,0));
-  padding: 14px 14px 16px; gap: 12px;
-}
+#nav { padding: 14px 14px 16px; gap: 12px; }
 .nav-btn {
   font-size: 12px; padding: 12px 20px; border-radius: 9px;
-  color: #b8d2e6; border: 1.5px solid #35506a; background: #121d2c;
+  color: #3a3326; border: 1.5px solid #c8bba0; background: #fffdf8;
   font-weight: 700; letter-spacing: 1.5px;
 }
-.nav-btn:hover:not(:disabled) { color: #f0c040; border-color: #f0c040; background: #1a2433; }
+.nav-btn:hover:not(:disabled) { color: #96720e; border-color: #96720e; background: #fdf6e4; }
 .nav-btn:disabled { opacity: 0.35; }
 .nav-btn.small { font-size: 10px; padding: 8px 13px; border-radius: 7px; }
-#btn-auto.auto-off { color: #f0c040; border-color: #f0c040aa; background: #f0c04014; }
-.dot-nav { width: 11px; height: 11px; background: #34506a; }
-.dot-nav:hover { background: #5a82a8; transform: scale(1.2); }
-.dot-nav.active { background: #f0c040; box-shadow: 0 0 12px #f0c040aa; transform: scale(1.25); }
+#btn-auto.auto-off { color: #96720e; border-color: #d8aa20; background: #f0c04022; }
+.dot-nav { width: 11px; height: 11px; background: #cfc2a8; }
+.dot-nav:hover { background: #a8987a; transform: scale(1.2); }
+.dot-nav.active { background: #e0a818; box-shadow: 0 0 10px #e0a81866; transform: scale(1.25); }
 #dots-nav { gap: 7px; margin-bottom: 2px; }
-#chapter-label { font-size: 10px; color: #8fb2cc; letter-spacing: 2.5px; }
-#scene-counter { font-size: 11px; color: #b8d2e6; font-weight: 700; }
+#chapter-label { font-size: 10px; color: #96720e; letter-spacing: 2.5px; font-weight: 700; }
+#scene-counter { font-size: 11px; color: #3a3326; font-weight: 700; }
 .nav-meta { display: flex; gap: 10px; align-items: center; }
 
 #menu-overlay {
   position: fixed; inset: 0; z-index: 200; display: none;
-  background: rgba(5,9,15,0.97); overflow-y: auto;
+  background: rgba(245,242,236,0.985); overflow-y: auto;
   padding: 26px 16px 40px; -webkit-overflow-scrolling: touch;
 }
 #menu-overlay.open { display: block; }
@@ -357,41 +356,42 @@ html, body {
 .menu-head {
   display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;
 }
-.menu-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: #eee; }
+.menu-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900; color: #2a241a; }
 .menu-chapter {
-  font-size: 10px; letter-spacing: 3px; color: #f0c040; text-transform: uppercase;
-  margin: 20px 0 8px; font-weight: 700;
+  font-size: 11px; letter-spacing: 3px; color: #96720e; text-transform: uppercase;
+  margin: 22px 0 8px; font-weight: 700;
 }
 .menu-item {
   display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
-  background: #101a28; border: 1.5px solid #283c52; border-radius: 10px;
-  color: #c2d6e6; font-family: 'IBM Plex Mono', monospace; font-size: 12px;
-  padding: 13px 15px; margin-bottom: 7px; cursor: pointer; transition: all .15s;
+  background: #fffdf8; border: 1.5px solid #d8cdb6; border-radius: 10px;
+  color: #3a3326; font-family: 'IBM Plex Mono', monospace; font-size: 13px;
+  padding: 14px 15px; margin-bottom: 8px; cursor: pointer; transition: all .15s;
+  box-shadow: 0 1px 6px rgba(90,70,40,0.07);
 }
-.menu-item:hover { border-color: #f0c040; color: #fff; }
-.menu-item.current { border-color: #f0c040; background: #f0c04015; color: #f0c040; }
+.menu-item:hover { border-color: #d8aa20; color: #96720e; }
+.menu-item.current { border-color: #d8aa20; background: #f0c04022; color: #6e5408; }
 .menu-item .mi-num {
-  width: 24px; height: 24px; border-radius: 6px; background: #1b2a3c;
+  width: 26px; height: 26px; border-radius: 7px; background: #ece4d2;
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700; color: #7fa6c4; flex-shrink: 0;
+  font-size: 11px; font-weight: 700; color: #8a7350; flex-shrink: 0;
 }
 .menu-item.current .mi-num { background: #f0c040; color: #111; }
-#chapter-label { font-size: 8px; letter-spacing: 3px; color: #3a5a70; text-transform: uppercase; }
+
 #skip-link {
   position: fixed; top: 10px; right: 14px; z-index: 110;
   font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-  color: #3a5a70; text-decoration: none; border: 1px solid #1a2e3e;
+  color: #8a7350; text-decoration: none; border: 1.5px solid #d0c4a8; background: #fffdf8cc;
   border-radius: 4px; padding: 5px 10px; transition: color .2s, border-color .2s;
 }
-#skip-link:hover { color: #f0c040; border-color: #f0c04055; }
+#skip-link:hover { color: #96720e; border-color: #96720e88; }
 .say {
-  min-height: 38px; margin-top: 14px; text-align: center;
-  font-size: clamp(10px, 2vw, 12px); color: #5a8a9a;
-  letter-spacing: 0.5px; line-height: 1.7; max-width: 480px;
+  min-height: 48px; margin-top: 16px; text-align: center;
+  font-size: clamp(14px, 2.8vw, 16px); color: #55493a;
+  letter-spacing: 0.3px; line-height: 1.75; max-width: 540px;
   transition: opacity .25s;
 }
-.say strong { color: #a0c8e0; font-weight: 600; }
-.say em { color: #f0c040; font-style: normal; font-weight: 600; }
+.say strong { color: #2a241a; font-weight: 700; }
+.say em { color: #96720e; font-style: normal; font-weight: 700; }
 
 /* tap-to-hear ripple */
 @keyframes ripple { from { r: 12; opacity: .8; } to { r: 30; opacity: 0; } }
@@ -652,7 +652,7 @@ html, body {
   <div class="scene" id="s10">
     <div class="scene-label">Progression · 1</div>
     <div class="scene-title" style="font-size:clamp(20px,4vw,34px)">Build a progression</div>
-    <div class="scene-subtitle" style="margin-bottom:14px">Open the <strong style="color:#7ab0d0">Prog</strong> panel. Tap chord names to add them.<br>Or start from a preset: 12-bar Blues, Andalusian…</div>
+    <div class="scene-subtitle" style="margin-bottom:14px">Open the <strong style="color:#1d6fae">Prog</strong> panel. Tap chord names to add them.<br>Or start from a preset: 12-bar Blues, Andalusian…</div>
     <div style="opacity:0;width:100%;max-width:480px" id="s10-ui">
       <div style="font-size:9px;letter-spacing:2px;color:#3a5a70;margin-bottom:8px;text-align:center">TAP TO ADD ↓</div>
       <div class="tap-row" id="s10-taprow"></div>
@@ -822,10 +822,10 @@ html, body {
       ▶ &nbsp;Open Pentatonic Triads
     </a>
     <div style="opacity:0;margin-top:18px" id="s18-url">
-      <span style="font-size:10px;color:#3a5a70;letter-spacing:1px">mmazz3117-del.github.io/Triads</span>
+      <span style="font-size:12px;color:#8a7350;letter-spacing:1px">mmazz3117-del.github.io/Triads</span>
     </div>
     <div style="opacity:0;margin-top:14px" id="s18-replay">
-      <span onclick="setAuto(true);goTo(0)" style="font-size:10px;color:#5a8a9a;letter-spacing:2px;cursor:pointer;border-bottom:1px dotted #3a5a70">↺ &nbsp;REPLAY THE TOUR</span>
+      <span onclick="setAuto(true);goTo(0)" style="font-size:12px;color:#8a7350;letter-spacing:2px;cursor:pointer;border-bottom:1px dotted #b3a585;font-weight:700">↺ &nbsp;REPLAY THE TOUR</span>
     </div>
   </div>
 

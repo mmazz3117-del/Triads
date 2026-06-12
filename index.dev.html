@@ -1653,7 +1653,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
                     {ch.notes.map((n,i)=><span key={i} style={{fontFamily:M,fontWeight:700,fontSize:9,color:ax(ch.color),background:`${ax(ch.color)}15`,border:`1px solid ${ax(ch.color)}55`,borderRadius:3,padding:"2px 5px",minWidth:18,textAlign:"center"}}>{n}</span>)}
                   </div>
                   <div style={{display:"flex",gap:3,alignItems:"center"}} onClick={e=>e.stopPropagation()}>
-                    <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>beats</span>
+                    <span style={{fontFamily:M,fontSize:10,fontWeight:600,letterSpacing:0.5,color:"var(--muted)"}}>beats</span>
                     {[1,2,4,8].map(n=>(
                       <span key={n} onClick={e=>{e.stopPropagation();setChordBeats(idx,n);}}
                         style={{fontFamily:M,fontSize:10,fontWeight:700,padding:"3px 7px",borderRadius:4,cursor:"pointer",
@@ -1665,7 +1665,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
                     ))}
                   </div>
                   <div style={{display:"flex",gap:3,alignItems:"center"}} onClick={e=>e.stopPropagation()}>
-                    <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>ext</span>
+                    <span style={{fontFamily:M,fontSize:10,fontWeight:600,letterSpacing:0.5,color:"var(--muted)"}}>ext</span>
                     {["7","9"].map(x=>(
                       <span key={x} onClick={e=>{e.stopPropagation();setChordExt(idx,ch.ext===x?null:x);}}
                         style={{fontFamily:M,fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:4,cursor:"pointer",
@@ -1710,7 +1710,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
             TAP {tapTimes.length>0&&<span style={{opacity:0.6}}>({tapTimes.length})</span>}
           </button>
           <div style={{display:"flex",gap:3,alignItems:"center"}}>
-            <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>default beats:</span>
+            <span style={{fontFamily:M,fontSize:10,fontWeight:600,letterSpacing:0.5,color:"var(--muted)"}}>default beats:</span>
             {[1,2,4,8].map(n=><span key={n} onClick={()=>setBpc(n)} style={{fontFamily:M,fontSize:9,color:bpc===n?"#fff":"var(--label)",background:bpc===n?"var(--sel-bg)":"transparent",border:`1px solid ${bpc===n?"var(--sel-border)":"var(--border)"}`,borderRadius:4,padding:"2px 6px",cursor:"pointer"}}>{n}</span>)}
           </div>
         </div>
@@ -1721,18 +1721,18 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
         <React.Fragment>
         <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginTop:8,paddingTop:8,borderTop:"1px solid var(--border)"}}>
           <div style={{display:"flex",gap:3,alignItems:"center"}}>
-            <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>count-in:</span>
+            <span style={{fontFamily:M,fontSize:10,fontWeight:600,letterSpacing:0.5,color:"var(--muted)"}}>count-in:</span>
             {[0,1,2].map(n=><span key={n} onClick={()=>setCountIn(n)} style={{fontFamily:M,fontSize:9,color:countIn===n?"#fff":"var(--label)",background:countIn===n?"var(--sel-bg)":"transparent",border:`1px solid ${countIn===n?"var(--sel-border)":"var(--border)"}`,borderRadius:4,padding:"2px 6px",cursor:"pointer"}}>{n===0?"off":`${n} bar${n>1?"s":""}`}</span>)}
           </div>
           <div style={{display:"flex",gap:3,alignItems:"center"}}>
-            <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>loop:</span>
+            <span style={{fontFamily:M,fontSize:10,fontWeight:600,letterSpacing:0.5,color:"var(--muted)"}}>loop:</span>
             {[0,2,4,8].map(n=><span key={n} onClick={()=>setLoopCount(n)} style={{fontFamily:M,fontSize:9,color:loopCount===n?"#fff":"var(--label)",background:loopCount===n?"var(--sel-bg)":"transparent",border:`1px solid ${loopCount===n?"var(--sel-border)":"var(--border)"}`,borderRadius:4,padding:"2px 6px",cursor:"pointer"}}>{n===0?"∞":`${n}x`}</span>)}
             {on&&loopCount>0&&<span style={{fontFamily:M,fontSize:9,color:accent}}>{loopsDone}/{loopCount}</span>}
           </div>
         </div>
         <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",marginTop:8,paddingTop:8,borderTop:"1px solid var(--border)"}}>
           <div style={{display:"flex",gap:3,alignItems:"center"}}>
-            <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>drums:</span>
+            <span style={{fontFamily:M,fontSize:10,fontWeight:600,letterSpacing:0.5,color:"var(--muted)"}}>drums:</span>
             <span onClick={()=>{
               const next=!drumOn;
               setDrumOn(next);
@@ -1741,13 +1741,13 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
             }} style={{fontFamily:M,fontSize:9,padding:"2px 8px",borderRadius:4,cursor:"pointer",color:drumOn?"#fff":"var(--label)",background:drumOn?"var(--sel-bg)":"transparent",border:"1px solid "+(drumOn?"var(--sel-border)":"var(--border)")}}>{drumOn?"on":"off"}</span>
           </div>
           {drumOn&&<div style={{display:"flex",gap:4,alignItems:"center"}}>
-            <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>vol:</span>
+            <span style={{fontFamily:M,fontSize:10,fontWeight:600,letterSpacing:0.5,color:"var(--muted)"}}>vol:</span>
             <input type="range" min="0" max="1" step="0.05" value={drumVol} onChange={e=>setDrumVol(parseFloat(e.target.value))}
               style={{width:70,accentColor:"var(--sel-border)",cursor:"pointer"}}/>
             <span style={{fontFamily:M,fontSize:9,color:"var(--muted2)",minWidth:24}}>{Math.round(drumVol*100)}%</span>
           </div>}
           {drumOn&&<div style={{display:"flex",gap:3,alignItems:"center",flexWrap:"wrap"}}>
-            <span style={{fontFamily:M,fontSize:8,color:"var(--label)"}}>pattern:</span>
+            <span style={{fontFamily:M,fontSize:10,fontWeight:600,letterSpacing:0.5,color:"var(--muted)"}}>pattern:</span>
             {["Shuffle","Blues","SlowBlues","BluesRock","Boogie","Jazz","SwingJazz","Bossa","Rock","Funk"].map(p=><span key={p} onClick={()=>{setDrumPattern(p);if(on&&startDrums)startDrums(sr.current.bpm,p);}} style={{fontFamily:M,fontSize:9,padding:"2px 6px",borderRadius:4,cursor:"pointer",color:drumPattern===p?"#fff":"var(--label)",background:drumPattern===p?"var(--sel-bg)":"transparent",border:"1px solid "+(drumPattern===p?"var(--sel-border)":"var(--border)")}}>{p}</span>)}
           </div>}
         </div>

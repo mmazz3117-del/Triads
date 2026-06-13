@@ -34,20 +34,26 @@
     "url": "https://pentatonictriads.com/",
     "description": "Free online guitar fretboard tool for visualizing pentatonic scales, triads, and chord progressions across all 12 keys.",
     "applicationCategory": "EducationalApplication",
-    "applicationSubCategory": "Music Education",
-    "operatingSystem": "Any (web browser)",
-    "browserRequirements": "Requires JavaScript and a modern browser",
-    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
-    "featureList": [
-      "Pentatonic scale visualization in all 12 keys",
-      "5 CAGED positions across the fretboard",
-      "Major pentatonic, minor pentatonic, Dorian, and Mixolydian modes",
-      "Diatonic triad cards with 7th and 9th extensions",
-      "Chord progression builder with drums",
-      "Real guitar audio samples",
-      "Works offline as a Progressive Web App"
-    ],
-    "audience": {"@type": "Audience", "audienceType": "Guitar students, music teachers, songwriters"}
+    "operatingSystem": "Any (modern web browser)",
+    "browserRequirements": "Requires JavaScript",
+    "inLanguage": "en",
+    "datePublished": "2026-06-01",
+    "isAccessibleForFree": true,
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": "Pentatonic scale visualization in 12 keys. 5 CAGED positions. Major pentatonic, minor pentatonic, Dorian, and Mixolydian modes. Diatonic triads with 7th and 9th extensions. Chord progression builder with drum machine. Real guitar audio samples. Works offline as a Progressive Web App.",
+    "audience": {
+      "@type": "EducationalAudience",
+      "educationalRole": "student"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Pentatonic Triads",
+      "url": "https://pentatonictriads.com/"
+    }
   }
   </script>
   <link rel="manifest" href="./manifest.webmanifest">
@@ -388,7 +394,7 @@
 <div id="root"></div>
 
 <!-- Splash overlay -->
-<div id="splash">
+<div id="splash" role="banner"><header style="display:contents">
   <div class="bg-grad"></div>
 
   <svg class="bg-strings" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice">
@@ -467,11 +473,11 @@
        target="_blank" rel="noopener noreferrer"
        class="readme-link"><svg width="10" height="10" viewBox="0 0 24 24" style="vertical-align:-1px;margin-right:6px"><polygon points="6 4 20 12 6 20 6 4" fill="currentColor"/></svg>Tutorial</a>
 
-    <div class="splash-ver">rev dev</div>
+    </header><main style="display:contents"><div class="splash-ver">rev dev</div>
 
     <!-- SEO content: written for visitors who scroll past the splash before tapping Open,
          and indexed by search engines. Keeps the splash uncluttered. -->
-    <section class="splash-seo">
+    </main><footer style="display:contents"><section class="splash-seo" aria-label="About Pentatonic Triads">
       <h1 class="seo-h">A free guitar fretboard tool that lives in your browser.</h1>
       <p>Pentatonic Triads is an interactive practice app for guitarists learning <strong>pentatonic scales</strong>, <strong>modal theory</strong>, and <strong>chord progressions</strong>. Visualize the major pentatonic, minor pentatonic, Dorian, and Mixolydian modes across all twelve keys and five CAGED positions on a tappable fretboard — every dot plays its true pitch with real guitar samples.</p>
       <h2 class="seo-h2">Built for the way guitarists actually practice</h2>
@@ -490,6 +496,7 @@
       <div class="dot-pip" style="background:#f08040"></div>
       <div class="dot-pip" style="background:#f0c040"></div>
     </div>
+    </footer>
   </div>
 </div>
 

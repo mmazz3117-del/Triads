@@ -1,0 +1,37 @@
+# Pentatonic Triads
+
+> A free, browser-based guitar practice tool for visualizing pentatonic and modal scales, building chord progressions, and practicing with drums and real guitar audio. No signup, no install, works offline.
+
+## What it is
+
+Pentatonic Triads is a single-page web application for guitarists. It runs entirely in the browser (no server, no account) and shows the major pentatonic, minor pentatonic, Dorian, and Mixolydian scales across all 12 keys and five CAGED positions on an interactive fretboard. Every dot is tappable and plays its true pitch using either real guitar samples or a synthesized backup tone.
+
+## Core features
+
+- Four scale modes: major pentatonic, minor pentatonic, Dorian, Mixolydian
+- Five CAGED positions per mode, in all 12 keys, mathematically verified
+- Seven diatonic triad cards per position with optional 7th and 9th extensions
+- One-tap relative major/minor jump
+- Chord progression builder with playback, drums, count-in, and loop
+- Standalone metronome with tap tempo and 3/4, 4/4, 6/4 time signatures
+- Shape tool for marking and saving custom chord fingerings
+- Merged neck view showing all five positions on one scrollable fretboard, color-coded by position
+- Three themes: dark, medium, and warm-paper light
+- Progressive Web App: installable, works offline after first visit
+
+## Who it is for
+
+Guitar students learning the fretboard, music teachers demonstrating scale relationships, and songwriters sketching chord progressions. Free for personal and educational use.
+
+## Pages
+
+- [Home — interactive app](https://pentatonictriads.com/): the main practice tool
+- [Animated tutorial](https://pentatonictriads.com/pentatonic-triads-walkthrough.html): an 18-scene walkthrough covering every feature, with self-pace and topic-jump menu
+
+## Technology
+
+Plain HTML, React 18 via CDN, Web Audio API for synthesis, MP3 samples for real guitar tones. Single-file architecture, no build pipeline required at runtime. Open source spirit: no analytics, no tracking, no ads.
+
+## Contact
+
+Built and maintained as a personal project. Site: https://pentatonictriads.com/

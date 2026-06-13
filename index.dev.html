@@ -14,14 +14,42 @@
   <script>/* apply saved theme before first paint */try{var __t=localStorage.getItem("pent-theme");if(__t==="medium"||__t==="light")document.documentElement.setAttribute("data-theme",__t);}catch(e){}</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pentatonic Triads</title>
-  <meta name="description" content="Free guitar practice tool — pentatonic &amp; modal scales, triads, chord progressions, drums and real guitar audio. 4 modes, 5 positions, all 12 keys. No install.">
+  <title>Pentatonic Triads — Free Online Guitar Fretboard & Chord Progression Tool</title>
+  <meta name="description" content="Free online guitar fretboard tool. Visualize pentatonic and modal scales (major, minor, Dorian, Mixolydian) across all 12 keys and 5 CAGED positions. Build chord progressions with drums and real guitar audio. No signup, works offline.">
   <meta property="og:title" content="Pentatonic Triads — Guitar Practice Tool">
   <meta property="og:description" content="Explore scales, triads and chord progressions on an interactive fretboard. 4 modes &middot; 5 positions &middot; all 12 keys &middot; drums &amp; audio.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://pentatonictriads.com/">
   <meta property="og:image" content="https://pentatonictriads.com/pentatonic_triads_splash.png">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="keywords" content="guitar fretboard tool, pentatonic scale, guitar scales, chord progression builder, CAGED system, guitar practice, fretboard visualizer, modal scales, Dorian, Mixolydian, guitar theory, free guitar app, online fretboard">
+  <meta name="author" content="Pentatonic Triads">
+  <link rel="canonical" href="https://pentatonictriads.com/">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Pentatonic Triads",
+    "alternateName": "Pentatonic Triads — Guitar Practice Tool",
+    "url": "https://pentatonictriads.com/",
+    "description": "Free online guitar fretboard tool for visualizing pentatonic scales, triads, and chord progressions across all 12 keys.",
+    "applicationCategory": "EducationalApplication",
+    "applicationSubCategory": "Music Education",
+    "operatingSystem": "Any (web browser)",
+    "browserRequirements": "Requires JavaScript and a modern browser",
+    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+    "featureList": [
+      "Pentatonic scale visualization in all 12 keys",
+      "5 CAGED positions across the fretboard",
+      "Major pentatonic, minor pentatonic, Dorian, and Mixolydian modes",
+      "Diatonic triad cards with 7th and 9th extensions",
+      "Chord progression builder with drums",
+      "Real guitar audio samples",
+      "Works offline as a Progressive Web App"
+    ],
+    "audience": {"@type": "Audience", "audienceType": "Guitar students, music teachers, songwriters"}
+  }
+  </script>
   <link rel="manifest" href="./manifest.webmanifest">
   <meta name="theme-color" content="#0b1018">
   <link rel="apple-touch-icon" href="./icon-192.png">
@@ -333,6 +361,25 @@
       margin-top: 18px; font-family: 'IBM Plex Mono', monospace;
       font-size: 12px; letter-spacing: 2px; color: #6a96b4; font-weight: 600;
     }
+    .splash-seo {
+      max-width: 660px; margin: 32px auto 12px; padding: 0 20px;
+      text-align: left; color: #6a86a0; font-size: 13px; line-height: 1.7;
+    }
+    .splash-seo .seo-h {
+      font-family: 'Playfair Display', 'Playfair Fallback', serif;
+      font-size: 18px; font-weight: 700; color: #b8d2e6;
+      margin-bottom: 12px; line-height: 1.35; text-align: center;
+    }
+    .splash-seo .seo-h2 {
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      color: #5a86a8; font-weight: 700; margin: 20px 0 8px;
+    }
+    .splash-seo p { margin-bottom: 12px; }
+    .splash-seo strong { color: #9ac0d8; font-weight: 600; }
+    .splash-seo .seo-credits {
+      font-size: 11px; color: #4a6a86; text-align: center; margin-top: 18px;
+      padding-top: 14px; border-top: 1px solid #1a2a38;
+    }
   </style>
 </head>
 <body>
@@ -421,6 +468,18 @@
        class="readme-link"><svg width="10" height="10" viewBox="0 0 24 24" style="vertical-align:-1px;margin-right:6px"><polygon points="6 4 20 12 6 20 6 4" fill="currentColor"/></svg>Tutorial</a>
 
     <div class="splash-ver">rev dev</div>
+
+    <!-- SEO content: written for visitors who scroll past the splash before tapping Open,
+         and indexed by search engines. Keeps the splash uncluttered. -->
+    <section class="splash-seo">
+      <h1 class="seo-h">A free guitar fretboard tool that lives in your browser.</h1>
+      <p>Pentatonic Triads is an interactive practice app for guitarists learning <strong>pentatonic scales</strong>, <strong>modal theory</strong>, and <strong>chord progressions</strong>. Visualize the major pentatonic, minor pentatonic, Dorian, and Mixolydian modes across all twelve keys and five CAGED positions on a tappable fretboard — every dot plays its true pitch with real guitar samples.</p>
+      <h2 class="seo-h2">Built for the way guitarists actually practice</h2>
+      <p>Tap a triad card to light up its notes on the neck. Layer two or three triads to see the shared notes that bridge between chords. Build chord progressions with diatonic 7ths and 9ths, then loop them with a drum machine while you solo over the top. Switch instantly between a key and its relative major or minor. View the whole neck merged into one wide fretboard, color-coded by position.</p>
+      <h2 class="seo-h2">No signup, no ads, no install</h2>
+      <p>The whole app is a single HTML file that loads in any browser — phone, tablet, or desktop. Add it to your home screen and it works offline as a Progressive Web App. Your progressions and custom chord shapes save locally in your browser. Pick from a dark, medium, or warm-paper theme.</p>
+      <p class="seo-credits">Made for guitar students, music teachers, and songwriters who want a clean, fast, focused tool — no subscription, no account, no tracking.</p>
+    </section>
 
     <div class="dot-row">
       <div class="dot-pip" style="background:#f0c040"></div>

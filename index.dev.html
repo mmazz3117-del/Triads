@@ -331,7 +331,7 @@
     .readme-link:hover { color: #7ab8d8; border-color: #3a6a8a99; }
     .splash-ver {
       margin-top: 18px; font-family: 'IBM Plex Mono', monospace;
-      font-size: 9px; letter-spacing: 2px; color: #3a5a70;
+      font-size: 12px; letter-spacing: 2px; color: #6a96b4; font-weight: 600;
     }
   </style>
 </head>
@@ -1844,6 +1844,7 @@ function App() {
   const samplesRef = useRef({});
   const [samplesReady, setSamplesReady] = useState(false);
   const [samplesLoading, setSamplesLoading] = useState(false);
+  const [useSamples, setUseSamples] = useState(true); // toggle real guitar ⇄ synth tone
 
   const getCtx = () => { if(!ctxRef.current) ctxRef.current=new(window.AudioContext||window.webkitAudioContext)(); if(ctxRef.current.state==="suspended") ctxRef.current.resume(); return ctxRef.current; };
 
@@ -1919,18 +1920,18 @@ function App() {
 
   const playNote = useCallback((note, dur, oct) => {
     const d=dur||1.5, o=oct||4, ctx=getCtx();
-    if(samplesReady) playSample(note,o,ctx.currentTime,d,0.7);
+    if(samplesReady&&useSamples) playSample(note,o,ctx.currentTime,d,0.7);
     else pluckFallback((NOTE_FREQ[note]||440)*Math.pow(2,(o-4)),ctx.currentTime,d,0.55);
-  }, [samplesReady, playSample, pluckFallback]);
+  }, [samplesReady, useSamples, playSample, pluckFallback]);
 
   const playChord = useCallback((notes) => {
     const ctx=getCtx(), now=ctx.currentTime;
     notes.forEach((note,i) => {
       const oct=i<Math.ceil(notes.length/2)?3:4, strum=i*0.038;
-      if(samplesReady) playSample(note,oct,now+strum,2.8,0.72);
+      if(samplesReady&&useSamples) playSample(note,oct,now+strum,2.8,0.72);
       else pluckFallback((NOTE_FREQ[note]||440)*Math.pow(2,(oct-4)),now+strum,2.5,0.6);
     });
-  }, [samplesReady, playSample, pluckFallback]);
+  }, [samplesReady, useSamples, playSample, pluckFallback]);
 
   const playClick = useCallback((accent) => { try { const c=getCtx(),o=c.createOscillator(),g=c.createGain(); o.connect(g);g.connect(c.destination);o.type="square";o.frequency.value=accent?1200:800;g.gain.setValueAtTime(accent?0.3:0.15,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.04);o.start(c.currentTime);o.stop(c.currentTime+0.04); } catch(e){} }, []);
 
@@ -2156,7 +2157,7 @@ function App() {
 
       <div style={{maxWidth:660,margin:"0 auto 10px",display:"flex",gap:5,flexWrap:"wrap",justifyContent:"center"}}>
         {[{l:"Metro",ic:"metro",a:metro,fn:()=>setMetro(v=>!v)},{l:"♭5 Blues",ic:null,a:blues,fn:()=>setBlues(v=>!v)},{l:"7 Notes",ic:null,a:fullScale,fn:()=>setFullScale(v=>!v)},{l:"Prog",ic:"queue",a:showProg,fn:()=>setShowProg(v=>!v)},{l:"Shape",ic:"hex",a:shapeOn,fn:()=>{setShapeOn(v=>!v);setShapeMap({"_global":[{color:SHAPE_COLORS[0],dots:[],quality:null}]});}},{l:"Neck",ic:"neckIc",a:neck,fn:()=>setNeck(v=>!v)}].map(b=><button key={b.l} onClick={b.fn} style={{fontFamily:M,fontWeight:700,fontSize:10,background:b.a?`${ac}22`:"var(--btn)",color:b.a?ac:"var(--muted2)",border:`1px solid ${b.a?ac+"55":"var(--border)"}`,borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>{b.ic&&<Ic n={b.ic} s={11} style={{marginRight:5}}/>}{b.l}</button>)}
-        <button onClick={()=>{getCtx();loadSamples();}} style={{fontFamily:M,fontWeight:700,fontSize:10,background:samplesReady?"rgba(64,168,96,0.2)":samplesLoading?"rgba(255,200,0,0.1)":"var(--btn)",color:samplesReady?ax("#40a860"):samplesLoading?ax("#ffc800"):"var(--muted2)",border:"1px solid "+(samplesReady?"#40a86055":samplesLoading?"#ffc80055":"var(--border)"),borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}><Ic n="speaker" s={11} style={{marginRight:5}}/>{samplesReady?"Guitar On":samplesLoading?"Loading...":"Guitar"}</button>
+        <button onClick={()=>{getCtx();if(samplesReady){setUseSamples(v=>!v);}else{loadSamples();}}} style={{fontFamily:M,fontWeight:700,fontSize:10,background:samplesReady&&useSamples?"rgba(64,168,96,0.2)":samplesLoading?"rgba(255,200,0,0.1)":"var(--btn)",color:samplesReady&&useSamples?ax("#40a860"):samplesLoading?ax("#ffc800"):"var(--muted2)",border:"1px solid "+(samplesReady&&useSamples?"#40a86055":samplesLoading?"#ffc80055":"var(--border)"),borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}><Ic n="speaker" s={11} style={{marginRight:5}}/>{samplesReady?(useSamples?"Guitar On":"Guitar Off"):samplesLoading?"Loading...":"Guitar"}</button>
       </div>
 
       {shapeOn&&(

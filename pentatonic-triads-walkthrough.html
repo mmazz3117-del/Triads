@@ -1479,6 +1479,31 @@ function scene15(){
     t.textContent=fn; svg.appendChild(t); }});
   const RANGES=[[5,8],[7,10],[9,13],[12,15],[14,17]];
   const COLS=["#60b8f0","#a0d080","#f0c040","#f06060","#c080f0"];
+  // A minor pentatonic across the neck (string rows 0=high e … 5=low E),
+  // colored by which position box the fret falls in (overlaps use the lower box).
+  const OPEN=[64,59,55,50,45,40]; // MIDI of open strings, high→low
+  const PENT=new Set([9,0,2,4,7]); // A C D E G as pitch classes
+  const posOf=fret=>{ for(let i=0;i<RANGES.length;i++){ if(fret>=RANGES[i][0]&&fret<=RANGES[i][1]) return i; } return -1; };
+  const neckDots=[];
+  for(let r=0;r<6;r++){
+    for(let fret=sf;fret<sf+nf;fret++){
+      const pc=(OPEN[r]+fret)%12;
+      if(PENT.has(pc)){
+        const pi=posOf(fret); if(pi<0) continue;
+        const NAMES=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+        neckDots.push({r,fret,pi,note:NAMES[pc],root:pc===9});
+      }
+    }
+  }
+  neckDots.forEach(d=>{
+    const cx=lp+(d.fret-sf)*fw+fw/2, cy=tp+d.r*sh+sh/2, col=COLS[d.pi];
+    const g=mkEl("g",{class:"neck-dot",opacity:"0"});
+    if(d.root) g.appendChild(mkEl("circle",{cx,cy,r:8.5,fill:"none",stroke:col,"stroke-width":"1.5",opacity:"0.6"}));
+    g.appendChild(mkEl("circle",{cx,cy,r:6.5,fill:col}));
+    const t=mkEl("text",{x:cx,y:cy+2.6,"text-anchor":"middle",fill:"#0d1520","font-family":"IBM Plex Mono,monospace","font-size":"6.5","font-weight":"700"});
+    t.textContent=d.note; g.appendChild(t);
+    g.dataset.pi=d.pi; svg.appendChild(g);
+  });
   const brackets=RANGES.map(([a,b],i)=>{
     const g=mkEl("g",{class:"neck-bracket"});
     const y=tp+6*sh+8, x1=lp+(a-sf)*fw, x2=lp+(b-sf+1)*fw;
@@ -1491,7 +1516,10 @@ function scene15(){
   });
   fadeUp(ui,150);
   say("s15-say",500,"Toggle positions on, one by one…");
-  chips.forEach((c,i)=>tmo(()=>{ c.classList.add("on"); brackets[i].classList.add("visible"); },1300+i*850));
+  chips.forEach((c,i)=>tmo(()=>{
+    c.classList.add("on"); brackets[i].classList.add("visible");
+    document.querySelectorAll(`#fb15 .neck-dot[data-pi="${i}"]`).forEach(d=>d.setAttribute("opacity","1"));
+  },1300+i*850));
   say("s15-say",5600,"Five boxes, <strong>zero gaps</strong> — the whole neck connected. Pinch or slide to zoom.");
 }
 
@@ -1504,9 +1532,18 @@ function scene16(){
   tmo(()=>showDots("fb16",null,0),300);
   say("s16-say",600,"In <strong>Shape</strong> mode, tap frets to mark a fingering…");
   const SHAPE=[10,9,7]; // low A root, E, A — classic Am fragment
+  const placed=[];
   SHAPE.forEach((di,k)=>tmo(()=>{
     const [cx,cy]=dotXY(POS1_DOTS[di]);
     const svg=document.getElementById("fb16");
+    // connector line from the previous marked note (drawn behind the ring)
+    if(placed.length){
+      const [px,py]=placed[placed.length-1];
+      const ln=mkEl("line",{x1:px,y1:py,x2:cx,y2:cy,stroke:"#f0c040","stroke-width":"2","stroke-linecap":"round",opacity:"0",class:"shape-link"});
+      svg.appendChild(ln);
+      requestAnimationFrame(()=>{ ln.style.transition="opacity .4s"; ln.setAttribute("opacity","0.55"); });
+    }
+    placed.push([cx,cy]);
     svg.appendChild(mkEl("circle",{cx,cy,r:15,fill:"none",stroke:"#f0c040","stroke-width":"2.5",class:"shape-ring"}));
   },1800+k*800));
   say("s16-say",4400,"Up to four notes per shape — then tag its quality…");

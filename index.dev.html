@@ -20,7 +20,7 @@
 -->
 <html lang="en">
 <head>
-  <script>/* apply saved theme before first paint */try{var __t=localStorage.getItem("pent-theme");if(__t==="medium"||__t==="light")document.documentElement.setAttribute("data-theme",__t);}catch(e){}</script>
+  <script>/* apply saved theme (default forest) before first paint */try{var __t=localStorage.getItem("pent-theme")||"forest";if(__t!=="dark")document.documentElement.setAttribute("data-theme",__t);}catch(e){document.documentElement.setAttribute("data-theme","forest");}</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pentatonic Triads — Free Online Guitar Fretboard & Chord Progression Tool</title>
@@ -68,7 +68,7 @@
   }
   </script>
   <link rel="manifest" href="./manifest.webmanifest">
-  <meta name="theme-color" content="#0b1018">
+  <meta name="theme-color" content="#0c1a17">
   <link rel="apple-touch-icon" href="./icon-192.png">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -190,6 +190,108 @@
       --bluenote-bg: #3a2750;
       --shadow: 0 4px 20px rgba(0,0,0,0.35);
       --shadow-card: 0 2px 14px rgba(0,0,0,0.28);
+    }
+    html[data-theme="forest"] {
+      --bg: #0c1a17;
+      --bg-glow1: #123029;
+      --bg-glow2: #0e201c;
+      --bg-deep: #081411;
+      --panel: rgba(120,200,170,0.035);
+      --panel2: rgba(120,200,170,0.03);
+      --card: rgba(120,200,170,0.035);
+      --card2: #7fffd40d;
+      --btn: rgba(140,210,180,0.06);
+      --btn2: rgba(140,210,180,0.09);
+      --btn3: rgba(140,210,180,0.13);
+      --well: rgba(0,0,0,0.34);
+      --well2: rgba(0,0,0,0.38);
+      --well3: rgba(0,0,0,0.4);
+      --well4: rgba(0,0,0,0.28);
+      --well5: rgba(0,0,0,0.22);
+      --border: #1f463c;
+      --border-soft: #1b3e35;
+      --border-dim: #18362e;
+      --divider: #1c4138;
+      --border-lit: #2a5a4d;
+      --btn-border: #2c5246;
+      --sel-bg: #1d5244;
+      --sel-border: #3a8a72;
+      --text: #e8f2ee;
+      --text-soft: #c8ddd5;
+      --muted: #88b3a4;
+      --muted2: #6f9a8b;
+      --label: #5a8576;
+      --faint: #466a5d;
+      --label2: #6f9a8b;
+      --heading: #5fae93;
+      --link: #6fcaa8;
+      --link2: #5fbf9c;
+      --link3: #4fa888;
+      --nut: #88b8a8;
+      --string: #2a4a42;
+      --inlay: #16332b;
+      --dot: #3d7d68;
+      --dot-dim: #2a5547;
+      --dot-text-dim: #6fa590;
+      --ghost-bg: #14463a;
+      --ghost-border: #2f7861;
+      --ghost-text: #7accad;
+      --root-stroke: #ffffffbb;
+      --split-stroke: #ffffff22;
+      --bluenote-bg: #2a1a3a;
+      --shadow: 0 4px 20px rgba(0,0,0,0.45);
+      --shadow-card: 0 2px 14px rgba(0,0,0,0.34);
+    }
+    html[data-theme="midnight"] {
+      --bg: #070d1f;
+      --bg-glow1: #0d1838;
+      --bg-glow2: #0a1230;
+      --bg-deep: #050a18;
+      --panel: rgba(120,160,255,0.04);
+      --panel2: rgba(120,160,255,0.032);
+      --card: rgba(120,160,255,0.04);
+      --card2: #8fb0ff0d;
+      --btn: rgba(130,165,255,0.06);
+      --btn2: rgba(130,165,255,0.09);
+      --btn3: rgba(130,165,255,0.13);
+      --well: rgba(0,0,0,0.42);
+      --well2: rgba(0,0,0,0.46);
+      --well3: rgba(0,0,0,0.5);
+      --well4: rgba(0,0,0,0.32);
+      --well5: rgba(0,0,0,0.26);
+      --border: #1c2c54;
+      --border-soft: #182648;
+      --border-dim: #15203e;
+      --divider: #1a2950;
+      --border-lit: #283e72;
+      --btn-border: #2a3c68;
+      --sel-bg: #233a74;
+      --sel-border: #3a5cad;
+      --text: #e8eeff;
+      --text-soft: #c5d2f0;
+      --muted: #8095c4;
+      --muted2: #6878a8;
+      --label: #56668f;
+      --faint: #404e72;
+      --label2: #6878a8;
+      --heading: #6f8fd8;
+      --link: #7fa0e8;
+      --link2: #6f92e0;
+      --link3: #5f82d4;
+      --nut: #8595c0;
+      --string: #243258;
+      --inlay: #162244;
+      --dot: #3d5aa8;
+      --dot-dim: #283f78;
+      --dot-text-dim: #7088c0;
+      --ghost-bg: #1a2c5c;
+      --ghost-border: #34509c;
+      --ghost-text: #8aa6e8;
+      --root-stroke: #ffffffcc;
+      --split-stroke: #ffffff26;
+      --bluenote-bg: #2a1a3a;
+      --shadow: 0 4px 22px rgba(0,0,0,0.5);
+      --shadow-card: 0 2px 14px rgba(0,0,0,0.38);
     }
     html[data-theme="light"] {
       --bg: #f5f2ec;
@@ -767,9 +869,11 @@ const THEMES = {
   dark:   {inlay:"#1e3040",muted:"#778",nut:"#889",string:"#243040",label2:"#3a5060",dot:"#3d6080",dotDim:"#2a4055",dotTextDim:"#5a7a8a",ghostBg:"#1e3a5a",ghostBorder:"#3a6080",ghostText:"#7aaaca",rootStroke:"#ffffffaa",splitStroke:"#ffffff20",bluenoteBg:"#2a1a3a",wire:"#1e2e3e"},
   medium: {inlay:"#33445a",muted:"#9fb0c0",nut:"#aab8c6",string:"#3c4f64",label2:"#7c93a8",dot:"#5b7e9c",dotDim:"#46607a",dotTextDim:"#8aa2b6",ghostBg:"#2e4866",ghostBorder:"#547698",ghostText:"#a9c4dc",rootStroke:"#ffffffcc",splitStroke:"#ffffff30",bluenoteBg:"#3a2750",wire:"#34465c"},
   light:  {inlay:"#e4ddcc",muted:"#756b5a",nut:"#6e6253",string:"#c9c0ab",label2:"#837a66",dot:"#7d8fa4",dotDim:"#c4bca8",dotTextDim:"#8a8068",ghostBg:"#ede6d4",ghostBorder:"#b5a88c",ghostText:"#6e6244",rootStroke:"#00000066",splitStroke:"#00000022",bluenoteBg:"#f5e8fa",wire:"#d8cfbd"},
+  forest: {inlay:"#16332b",muted:"#88b3a4",nut:"#88b8a8",string:"#2a4a42",label2:"#6f9a8b",dot:"#3d7d68",dotDim:"#2a5547",dotTextDim:"#6fa590",ghostBg:"#14463a",ghostBorder:"#2f7861",ghostText:"#7accad",rootStroke:"#ffffffbb",splitStroke:"#ffffff22",bluenoteBg:"#2a1a3a",wire:"#1f463c"},
+  midnight:{inlay:"#162244",muted:"#8095c4",nut:"#8595c0",string:"#243258",label2:"#6878a8",dot:"#3d5aa8",dotDim:"#283f78",dotTextDim:"#7088c0",ghostBg:"#1a2c5c",ghostBorder:"#34509c",ghostText:"#8aa6e8",rootStroke:"#ffffffcc",splitStroke:"#ffffff26",bluenoteBg:"#2a1a3a",wire:"#1c2c54"},
 };
 THEMES.light.darkAccents = true; // accents darken for text/border contrast on paper
-const THEME_ORDER = ["dark","medium","light"];
+const THEME_ORDER = ["dark","midnight","medium","forest","light"];
 let T = THEMES.dark;
 
 // Accent colors darkened for readable text/borders on the light theme.
@@ -1854,7 +1958,7 @@ function App() {
   const [root,setRoot]=useState("A");
   // Theme: persisted; CSS vars switch via the data-theme attribute, and the
   // module-level T (used by SVG) is reassigned every render to stay in sync.
-  const [theme,setTheme]=useState(()=>{try{const t=localStorage.getItem("pent-theme");return THEMES[t]?t:"dark";}catch(e){return "dark";}});
+  const [theme,setTheme]=useState(()=>{try{const t=localStorage.getItem("pent-theme");return THEMES[t]?t:"forest";}catch(e){return "forest";}});
   // One-time tour offer for first-time visitors
   const [tourOffer,setTourOffer]=useState(()=>{try{return !localStorage.getItem("pt-tour-offered");}catch(e){return false;}});
   const [posColors,setPosColors]=useState(false); // Neck: color dots by position
@@ -1866,7 +1970,7 @@ function App() {
     try{localStorage.setItem("pent-theme",theme);}catch(e){}
     // keep the browser chrome / status bar color in sync
     const tc=document.querySelector('meta[name="theme-color"]');
-    if(tc) tc.setAttribute("content", theme==="light"?"#f5f2ec":theme==="medium"?"#1c2533":"#0b1018");
+    if(tc) tc.setAttribute("content", theme==="light"?"#f5f2ec":theme==="medium"?"#1c2533":theme==="forest"?"#0c1a17":theme==="midnight"?"#070d1f":"#0b1018");
   },[theme]);
   const [family,setFamily]=useState("pentatonic"); // "pentatonic" | "modal"
   const [quality,setQuality]=useState("minor");    // "major" | "minor" (meaning differs per family)
@@ -2150,6 +2254,7 @@ function App() {
 
   return (
     <div style={{minHeight:"100vh",background:"var(--bg)",backgroundImage:"radial-gradient(ellipse at 15% 15%,var(--bg-glow1) 0%,transparent 55%),radial-gradient(ellipse at 85% 85%,var(--bg-glow2) 0%,transparent 55%)",color:"var(--text)",padding:"12px 8px 48px"}}>
+
       <style>{`
         *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
         html,body{overscroll-behavior-y:none;}
@@ -2206,7 +2311,7 @@ function App() {
               background:theme===th?"var(--sel-bg)":"var(--btn)",
               color:theme===th?"#fff":"var(--muted2)",
               border:`1px solid ${theme===th?"var(--sel-border)":"var(--border)"}`}}>
-              {th==="dark"?"● dark":th==="medium"?"◐ med":"○ light"}
+              {th==="dark"?"● dark":th==="midnight"?"✦ midnight":th==="medium"?"◐ med":th==="forest"?"◓ forest":"○ light"}
             </button>
           ))}
           <a href="./pentatonic-triads-walkthrough.html" target="_blank" rel="noopener"
@@ -2214,6 +2319,7 @@ function App() {
               textDecoration:"none",marginLeft:6,background:"var(--btn)",color:"var(--link3)",border:"1px solid var(--border)"}}>
             <Ic n="book" s={11} style={{marginRight:5,verticalAlign:"-2px"}}/>tour
           </a>
+
         </div>
       </div>
 

@@ -589,7 +589,7 @@
        target="_blank" rel="noopener noreferrer"
        class="readme-link"><svg width="10" height="10" viewBox="0 0 24 24" style="vertical-align:-1px;margin-right:6px"><polygon points="6 4 20 12 6 20 6 4" fill="currentColor"/></svg>Tutorial</a>
 
-    <div class="splash-ver">rev v2.0 · 2026-06-14 20:21 UTC</div>
+    <div class="splash-ver">rev v2.0 · 2026-06-14 20:29 UTC</div>
     <div class="splash-copy">© 2026 Pentatonic Triads · All rights reserved</div>
 
 
@@ -654,8 +654,7 @@ const{useState:useState,useRef:useRef,useEffect:useEffect,useCallback:useCallbac
     bindBtn();
   }
 
-  // Auto-dismiss the splash after 5s if the button isn't tapped
-  setTimeout(function(){ hideSplash(); }, 5000);
+  // Splash stays until the user taps 'Open App' — no auto-dismiss.
 })();
 </script>
 

@@ -2775,8 +2775,7 @@ root.render(<App />);
     bindBtn();
   }
 
-  // Auto-dismiss the splash after 5s if the button isn't tapped
-  setTimeout(function(){ hideSplash(); }, 5000);
+  // Splash stays until the user taps 'Open App' — no auto-dismiss.
 })();
 </script>
 

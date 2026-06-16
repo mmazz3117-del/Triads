@@ -2319,17 +2319,19 @@ function App() {
               {th==="dark"?"● dark":th==="midnight"?"✦ midnight":th==="medium"?"◐ med":th==="forest"?"◓ forest":"○ light"}
             </button>
           ))}
+        </div>
+        {/* Tour + Feedback — own row so the theme row stays clean on mobile */}
+        <div style={{display:"flex",justifyContent:"center",alignItems:"center",marginTop:6,gap:8}}>
           <a href="./pentatonic-triads-walkthrough.html" target="_blank" rel="noopener"
-            style={{fontFamily:M,fontSize:9,fontWeight:700,padding:"3px 10px",borderRadius:4,letterSpacing:1,textTransform:"uppercase",
-              textDecoration:"none",marginLeft:6,background:"var(--btn)",color:"var(--link3)",border:"1px solid var(--border)"}}>
+            style={{fontFamily:M,fontSize:9,fontWeight:700,padding:"4px 14px",borderRadius:4,letterSpacing:1,textTransform:"uppercase",
+              textDecoration:"none",background:"var(--btn)",color:"var(--link3)",border:"1px solid var(--border)"}}>
             <Ic n="book" s={11} style={{marginRight:5,verticalAlign:"-2px"}}/>tour
           </a>
           <a href="https://forms.gle/4cVXTdBzAwuDTMLr7" target="_blank" rel="noopener"
-            style={{fontFamily:M,fontSize:9,fontWeight:700,padding:"3px 10px",borderRadius:4,letterSpacing:1,textTransform:"uppercase",
-              textDecoration:"none",marginLeft:6,background:"var(--btn)",color:"var(--link3)",border:"1px solid var(--border)"}}>
+            style={{fontFamily:M,fontSize:9,fontWeight:700,padding:"4px 14px",borderRadius:4,letterSpacing:1,textTransform:"uppercase",
+              textDecoration:"none",background:"var(--btn)",color:"var(--link3)",border:"1px solid var(--border)"}}>
             <Ic n="chat" s={11} style={{marginRight:5,verticalAlign:"-2px"}}/>feedback
           </a>
-
         </div>
       </div>
 

@@ -56,8 +56,23 @@ if ("serviceWorker" in navigator) {
 </body>`;
   src = src.replace("</body>", swReg);
 
-  // Stamp the build revision into the splash so it's visible which build is live
-  const VERSION = "v2.0";
+  // Stamp the build revision into the splash so it's visible which build is live.
+  // Versioning: bump minor each build (2.1, 2.2 ... 2.9). Once minor hits 9,
+  // start bumping a patch number (2.9.1, 2.9.2 ...) until a manual major bump.
+  let major = 2, minor = 1, patch = 0;
+  try {
+    const v = JSON.parse(fs.readFileSync("version.json", "utf8"));
+    major = v.major; minor = v.minor; patch = v.patch || 0;
+    if (minor < 9) {
+      minor += 1;                 // 2.1 -> 2.2 ... -> 2.9
+    } else {
+      minor = 9; patch += 1;      // 2.9 -> 2.9.1 -> 2.9.2 ...
+    }
+  } catch (e) {
+    minor = 1; patch = 0;         // first run -> 2.1
+  }
+  fs.writeFileSync("version.json", JSON.stringify({ major, minor, patch }) + "\n");
+  const VERSION = "v" + major + "." + minor + (patch > 0 ? "." + patch : "");
   const d = new Date();
   const stamp = VERSION + " \u00b7 " + d.toISOString().slice(0,10) + " " +
     String(d.getUTCHours()).padStart(2,"0") + ":" + String(d.getUTCMinutes()).padStart(2,"0") + " UTC";

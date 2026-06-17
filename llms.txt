@@ -4,7 +4,7 @@
 
 ## What it is
 
-Pentatonic Triads is a single-page web application for guitarists. It runs entirely in the browser (no server, no account) and shows the major pentatonic, minor pentatonic, Dorian, and Mixolydian scales across all 12 keys and five CAGED positions on an interactive fretboard. Every dot is tappable and plays its true pitch using either real guitar samples or a synthesized backup tone.
+Pentatonic Triads is a single-page web application for guitarists. It runs entirely in the browser and shows the major pentatonic, minor pentatonic, Dorian, and Mixolydian scales across all 12 keys and five CAGED positions on an interactive fretboard. Every dot is tappable and plays its true pitch using either real guitar samples or a synthesized backup tone.
 
 ## Core features
 
@@ -16,7 +16,7 @@ Pentatonic Triads is a single-page web application for guitarists. It runs entir
 - Standalone metronome with tap tempo and 3/4, 4/4, 6/4 time signatures
 - Shape tool for marking and saving custom chord fingerings
 - Merged neck view showing all five positions on one scrollable fretboard, color-coded by position
-- Three themes: dark, medium, and warm-paper light
+- Five themes: dark, midnight, medium, forest, and warm-paper light (forest is the default)
 - Progressive Web App: installable, works offline after first visit
 
 ## Who it is for
@@ -30,8 +30,8 @@ Guitar students learning the fretboard, music teachers demonstrating scale relat
 
 ## Technology
 
-Plain HTML, React 18 via CDN, Web Audio API for synthesis, MP3 samples for real guitar tones. Single-file architecture, no build pipeline required at runtime. Open source spirit: no analytics, no tracking, no ads.
+Plain HTML, React 18 via CDN, Web Audio API for synthesis, MP3 samples for real guitar tones. Single-file architecture, no build pipeline required at runtime. No ads. Uses Google Analytics for understanding usage and localStorage for saving your progressions and preferences.
 
 ## Contact
 
-Built and maintained as a personal project. Site: https://pentatonictriads.com/
+Built and maintained as a personal project. Feedback welcome via the form at https://forms.gle/4cVXTdBzAwuDTMLr7 — site: https://pentatonictriads.com/

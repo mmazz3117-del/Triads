@@ -2226,7 +2226,23 @@ function App() {
   const rf=fretE(root), rk=maj?relMin(root):isDor?relMaj(root):isMix?relMin(root):relMaj(root);
   const M="'IBM Plex Mono','Plex Mono Fallback',monospace";
 
-  const getBase=pos=>{let f=rf+pos.off;const minF=Math.min(...pos.dots.map(d=>d.f));while(f+minF<0)f+=12;return f;};
+  // Anchor the 5-box numbering to the governing pentatonic's "box 1". Minor / Dorian /
+  // Mixolydian stay EXACTLY as before (root box = Position 1, the mode's own tonic).
+  // Major pentatonic re-anchors to the relative-minor box — the universal "major pent =
+  // relative-minor shapes" convention — so A major opens at fret 2 (F# minor box 1) and
+  // D major at fret 7 (B minor box 1). Notes and scale degrees are untouched; only the
+  // major boxes get re-ordered, with the relative-minor box becoming Position 1.
+  const relMinFret = fretE(relMin(root));
+  const baseOf = pos => {
+    const minF = Math.min(...pos.dots.map(d=>d.f));
+    let f = maj ? relMinFret + (((rf + pos.off - relMinFret) % 12) + 12) % 12 // major: relative-minor window
+                : rf + pos.off;                                               // others: unchanged root anchor
+    while (f + minF < 0) f += 12;                                             // keep every note on the neck
+    return f;
+  };
+  const POSN = maj
+    ? POS.map(p => ({ ...p, base: baseOf(p) })).sort((a,b) => a.base - b.base).map((p,i) => ({ ...p, num: i+1 }))
+    : POS.map(p => ({ ...p, base: baseOf(p) }));
   const togPos=n=>setOpenPos(p=>{const s=new Set(p);s.has(n)?s.delete(n):s.add(n);return s;});
   const togCht=(pn,ti)=>setCht(p=>{const c=new Set(p[pn]||[]);c.has(ti)?c.delete(ti):c.add(ti);return{...p,[pn]:c};});
   const clr=pn=>setCht(p=>({...p,[pn]:new Set()}));
@@ -2268,8 +2284,8 @@ function App() {
     });
   };
 
-  const openList=POS.filter(p=>openPos.has(p.num));
-  const openBases=openList.map(p=>getBase(p));
+  const openList=POSN.filter(p=>openPos.has(p.num));
+  const openBases=openList.map(p=>p.base);
 
   return (
     <div style={{minHeight:"100vh",background:"var(--bg)",backgroundImage:"radial-gradient(ellipse at 15% 15%,var(--bg-glow1) 0%,transparent 55%),radial-gradient(ellipse at 85% 85%,var(--bg-glow2) 0%,transparent 55%)",color:"var(--text)",padding:"12px 8px 48px"}}>
@@ -2422,7 +2438,7 @@ function App() {
         const neckContent = (
           <>
             <div style={{display:"flex",alignItems:"center",gap:6,padding:"8px 12px",borderBottom:"1px solid var(--divider)",flexWrap:"wrap"}}>
-              <div style={{display:"flex",gap:3,alignItems:"center"}}>{POS.map(p=>{const pc=posColors?ax(POS_COLORS[(p.num-1)%POS_COLORS.length]):ac;return <button key={p.num} onClick={()=>togPos(p.num)} style={{background:openPos.has(p.num)?`${pc}25`:"var(--btn)",color:openPos.has(p.num)?pc:"var(--label)",fontFamily:M,fontWeight:700,fontSize:10,padding:"3px 8px",border:`1px solid ${openPos.has(p.num)?pc+"66":"var(--border)"}`,borderRadius:5,cursor:"pointer"}}>P{p.num}</button>;})}
+              <div style={{display:"flex",gap:3,alignItems:"center"}}>{POSN.map(p=>{const pc=posColors?ax(POS_COLORS[(p.num-1)%POS_COLORS.length]):ac;return <button key={p.num} onClick={()=>togPos(p.num)} style={{background:openPos.has(p.num)?`${pc}25`:"var(--btn)",color:openPos.has(p.num)?pc:"var(--label)",fontFamily:M,fontWeight:700,fontSize:10,padding:"3px 8px",border:`1px solid ${openPos.has(p.num)?pc+"66":"var(--border)"}`,borderRadius:5,cursor:"pointer"}}>P{p.num}</button>;})}
                 <button onClick={()=>setPosColors(v=>!v)} title="Color notes by position" style={{display:"flex",alignItems:"center",gap:1,background:posColors?"var(--sel-bg)":"var(--btn)",border:`1px solid ${posColors?"var(--sel-border)":"var(--border)"}`,borderRadius:5,padding:"4px 7px",cursor:"pointer",marginLeft:4}}>
                   {[0,1,2].map(i=><span key={i} style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:POS_COLORS[i],opacity:posColors?1:0.45}}/>)}
                   <span style={{fontFamily:M,fontSize:8,fontWeight:700,letterSpacing:1,color:posColors?"#fff":"var(--muted2)",marginLeft:3}}>POS</span>
@@ -2527,7 +2543,7 @@ function App() {
           <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,zIndex:999,background:"var(--bg-deep)",display:"flex",flexDirection:"column",overflow:"hidden"}}>
             {/* toolbar */}
             <div style={{display:"flex",alignItems:"center",gap:6,padding:"6px 10px",borderBottom:"1px solid var(--divider)",flexWrap:"nowrap",flexShrink:0,overflowX:"auto"}}>
-              <div style={{display:"flex",gap:3,flexShrink:0,alignItems:"center",flexWrap:"wrap"}}>{POS.map(p=>{const pc=posColors?ax(POS_COLORS[(p.num-1)%POS_COLORS.length]):ac;return <button key={p.num} onClick={()=>togPos(p.num)} style={{background:openPos.has(p.num)?`${pc}25`:"var(--btn)",color:openPos.has(p.num)?pc:"var(--label)",fontFamily:M,fontWeight:700,fontSize:10,padding:"3px 8px",border:`1px solid ${openPos.has(p.num)?pc+"66":"var(--border)"}`,borderRadius:5,cursor:"pointer"}}>P{p.num}</button>;})}
+              <div style={{display:"flex",gap:3,flexShrink:0,alignItems:"center",flexWrap:"wrap"}}>{POSN.map(p=>{const pc=posColors?ax(POS_COLORS[(p.num-1)%POS_COLORS.length]):ac;return <button key={p.num} onClick={()=>togPos(p.num)} style={{background:openPos.has(p.num)?`${pc}25`:"var(--btn)",color:openPos.has(p.num)?pc:"var(--label)",fontFamily:M,fontWeight:700,fontSize:10,padding:"3px 8px",border:`1px solid ${openPos.has(p.num)?pc+"66":"var(--border)"}`,borderRadius:5,cursor:"pointer"}}>P{p.num}</button>;})}
                 <button onClick={()=>setPosColors(v=>!v)} title="Color notes by position" style={{display:"flex",alignItems:"center",gap:1,background:posColors?"var(--sel-bg)":"var(--btn)",border:`1px solid ${posColors?"var(--sel-border)":"var(--border)"}`,borderRadius:5,padding:"4px 7px",cursor:"pointer",marginLeft:4}}>
                   {[0,1,2].map(i=><span key={i} style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:POS_COLORS[i],opacity:posColors?1:0.45}}/>)}
                   <span style={{fontFamily:M,fontSize:8,fontWeight:700,letterSpacing:1,color:posColors?"#fff":"var(--muted2)",marginLeft:3}}>POS</span>
@@ -2646,7 +2662,7 @@ function App() {
           }
           return null; // just computing, rendered below
         })()}
-        {POS.map(pos => {
+        {POSN.map(pos => {
           // Recompute effective notes per pos render (can't use variables from IIFE above)
           let effectiveFocusedNotes = null;
           if (focusedChord) {
@@ -2666,7 +2682,7 @@ function App() {
           const isExp=openPos.has(pos.num);
           // When progression chord focused, override checked set to highlight that chord
           const ch = focusedChord ? new Set([focusedChord.ti]) : (cht[pos.num]||new Set());
-          const base=getBase(pos);
+          const base=pos.base;
           const labels = focusedChord ? focusedChord.label : [...(cht[pos.num]||new Set())].map(ti=>TR[ti].n).join(" + ");
           return (
             <div key={pos.num} style={{background:"var(--panel2)",border:`1px solid ${isExp?"var(--border-lit)":"var(--border-dim)"}`,borderRadius:14,overflow:"hidden",boxShadow:isExp?"var(--shadow)":"var(--shadow-card)"}}>

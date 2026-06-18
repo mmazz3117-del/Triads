@@ -924,8 +924,19 @@ const Ic = ({n, s=12, style}) => (
 );
 
 
+// Interval labels relative to the scale root — chromatic semitone index → degree name.
+// Drives the "Intervals" dot-label toggle (show R/♭3/5 instead of note names).
+// SVG text can't read CSS, so this is plain JS resolved at render time.
+const INTERVAL_LABELS = ["R","♭2","2","♭3","3","4","♭5","5","♭6","6","♭7","7"];
+function dotLabel(note, root, intervals) {
+  if (!intervals) return note;
+  const ni = NOTES.indexOf(note), ri = NOTES.indexOf(root);
+  if (ni < 0 || ri < 0) return note;
+  return INTERVAL_LABELS[(ni - ri + 12) % 12];
+}
+
 let __dotUid = 0;
-function SvgDot({cx, cy, r, colors, note, isRoot, dim, accent}) {
+function SvgDot({cx, cy, r, colors, note, isRoot, dim, accent, root, intervals}) {
   const fs = Math.max(7, r * 0.72);
   const id = React.useRef(`dclip${++__dotUid}`).current; // unique per dot instance
   const single = colors.length <= 1;
@@ -954,7 +965,7 @@ function SvgDot({cx, cy, r, colors, note, isRoot, dim, accent}) {
       {/* Label */}
       <text x={cx} y={cy+fs*0.4} textAnchor="middle" fontSize={fs} fontWeight="700"
         fill={dim ? T.dotTextDim : (single && isRoot ? "#111" : "#fff")}
-        fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{note}</text>
+        fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{dotLabel(note, root, intervals)}</text>
     </g>
   );
 }
@@ -991,7 +1002,7 @@ function getBorrowedNoteMap(checked, triads, qualOver, root, sc) {
 }
 
 // Fretboard SVG
-function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blues, exts, fullScale, shapeOn, shapeGroups, onDotClick, qualOver, focusedNotes, focusedColor}) {
+function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blues, exts, fullScale, shapeOn, shapeGroups, onDotClick, qualOver, focusedNotes, focusedColor, intervals}) {
   const none = checked.size === 0;
   const { dots, blDots } = buildDots(pos, base, checked, triads, pd, root, sc, blues, exts, fullScale);
   if (!dots.length) return null;
@@ -1058,7 +1069,7 @@ function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blue
       {blDots.map((d,i) => (
         <g key={`b${i}`}>
           <circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill={T.bluenoteBg} stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/>
-          <text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{blNote}</text>
+          <text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{dotLabel(blNote, root, intervals)}</text>
         </g>
       ))}
       {dots.map((dot,i) => {
@@ -1086,14 +1097,14 @@ function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blue
           return (
             <g key={i} opacity={0.4}>
               <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR*0.65} fill={T.ghostBg} stroke={T.ghostBorder} strokeWidth={1}/>
-              <text x={fx(dot.af)} y={sy(dot.s)+Math.max(5,DR*0.5)} textAnchor="middle" fontSize={Math.max(6,DR*0.55)} fontWeight="700" fill={T.ghostText} fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{dot.note}</text>
+              <text x={fx(dot.af)} y={sy(dot.s)+Math.max(5,DR*0.5)} textAnchor="middle" fontSize={Math.max(6,DR*0.55)} fontWeight="700" fill={T.ghostText} fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{dotLabel(dot.note, root, intervals)}</text>
             </g>
           );
         }
         return (
           <g key={i} opacity={opacity}>
             {dot.isExt && cols.length > 0 && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+4} fill="none" stroke={cols[0]} strokeWidth={1.5} strokeDasharray="3 2" opacity={0.7}/>}
-            <SvgDot cx={fx(dot.af)} cy={sy(dot.s)} r={DR} colors={finalCols} note={dot.note} isRoot={dot.isRoot} dim={false} accent={accent}/>
+            <SvgDot cx={fx(dot.af)} cy={sy(dot.s)} r={DR} colors={finalCols} note={dot.note} isRoot={dot.isRoot} dim={false} accent={accent} root={root} intervals={intervals}/>
             {onDotClick && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+2} fill="transparent" stroke="transparent" strokeWidth={8} style={{cursor:"pointer"}} onClick={()=>onDotClick(dot.s,dot.af,dot.note)}/>}
           </g>
         );
@@ -1104,7 +1115,7 @@ function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blue
 }
 
 // Neck view (multiple positions) — uses buildDots per position then merges
-function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, blues, exts, shapeOn, shapeGroups, onDotClick, focusedNotes, focusedColor, qualOver, posColors}) {
+function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, blues, exts, shapeOn, shapeGroups, onDotClick, focusedNotes, focusedColor, qualOver, posColors, intervals}) {
   const none = checked.size === 0 && !focusedNotes;
   const blNote = NOTES[(NOTES.indexOf(root)+6)%12];
 
@@ -1206,7 +1217,7 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
         const x1=fx(lo)-FW*0.4, x2=fx(hi)+FW*0.4, y=TP+5*SH+DR+10+(pi%2)*9;
         return <g key={num}><line x1={x1} y1={y} x2={x2} y2={y} stroke={pc} strokeWidth={1.5} opacity={0.75}/><line x1={x1} y1={y-4} x2={x1} y2={y+4} stroke={pc} strokeWidth={1.5} opacity={0.75}/><line x1={x2} y1={y-4} x2={x2} y2={y+4} stroke={pc} strokeWidth={1.5} opacity={0.75}/><text x={(x1+x2)/2} y={y+14} textAnchor="middle" fontSize={10} fill={pc} fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace" fontWeight="700">P{num}</text></g>;
       })}
-      {blDots.map((d,i) => <g key={`b${i}`}><circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill={T.bluenoteBg} stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/><text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{blNote}</text></g>)}
+      {blDots.map((d,i) => <g key={`b${i}`}><circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill={T.bluenoteBg} stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/><text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{dotLabel(blNote, root, intervals)}</text></g>)}
       {allD.map((dot,i) => {
         let cols, dim;
         if (focusedNotes) {
@@ -1231,7 +1242,7 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
         return (
           <g key={i} opacity={dim ? 0.5 : 1}>
             {dot.isExt && cols.length > 0 && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+4} fill="none" stroke={cols[0]} strokeWidth={1.5} strokeDasharray="3 2" opacity={0.7}/>}
-            <SvgDot cx={fx(dot.af)} cy={sy(dot.s)} r={DR} colors={finalCols} note={dot.note} isRoot={dot.isRoot} dim={false} accent={accent}/>
+            <SvgDot cx={fx(dot.af)} cy={sy(dot.s)} r={DR} colors={finalCols} note={dot.note} isRoot={dot.isRoot} dim={false} accent={accent} root={root} intervals={intervals}/>
             {onDotClick && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+2} fill="transparent" stroke="transparent" strokeWidth={8} style={{cursor:"pointer"}} onClick={()=>onDotClick(dot.s,dot.af,dot.note)}/>}
           </g>
         );
@@ -1987,6 +1998,9 @@ function App() {
   const [nexts,setNexts]=useState({});
   const [blues,setBlues]=useState(false), [metro,setMetro]=useState(false);
   const [fullScale,setFullScale]=useState(false);
+  // Interval-label mode: show R/♭3/5 on dots instead of note names. Persisted.
+  const [intervals,setIntervals]=useState(()=>{try{return localStorage.getItem("pent-intervals")==="1";}catch(e){return false;}});
+  useEffect(()=>{try{localStorage.setItem("pent-intervals",intervals?"1":"0");}catch(e){}},[intervals]);
   const [shapeOn,setShapeOn]=useState(false);
   // shapeGroups keyed by chord label (or "_global") → [{color,dots,quality}]
   const [shapeMap,setShapeMap]=useState({"_global":[{color:SHAPE_COLORS[0],dots:[],quality:null}]});
@@ -2354,7 +2368,7 @@ function App() {
       </div>
 
       <div style={{maxWidth:660,margin:"0 auto 10px",display:"flex",gap:5,flexWrap:"wrap",justifyContent:"center"}}>
-        {[{l:"Metro",ic:"metro",a:metro,fn:()=>setMetro(v=>!v)},{l:"♭5 Blues",ic:null,a:blues,fn:()=>setBlues(v=>!v)},{l:"7 Notes",ic:null,a:fullScale,fn:()=>setFullScale(v=>!v)},{l:"Prog",ic:"queue",a:showProg,fn:()=>setShowProg(v=>!v)},{l:"Shape",ic:"hex",a:shapeOn,fn:()=>{setShapeOn(v=>!v);setShapeMap({"_global":[{color:SHAPE_COLORS[0],dots:[],quality:null}]});}},{l:"Neck",ic:"neckIc",a:neck,fn:()=>setNeck(v=>!v)}].map(b=><button key={b.l} onClick={b.fn} style={{fontFamily:M,fontWeight:700,fontSize:10,background:b.a?`${ac}22`:"var(--btn)",color:b.a?ac:"var(--muted2)",border:`1px solid ${b.a?ac+"55":"var(--border)"}`,borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>{b.ic&&<Ic n={b.ic} s={11} style={{marginRight:5}}/>}{b.l}</button>)}
+        {[{l:"Metro",ic:"metro",a:metro,fn:()=>setMetro(v=>!v)},{l:"♭5 Blues",ic:null,a:blues,fn:()=>setBlues(v=>!v)},{l:"7 Notes",ic:null,a:fullScale,fn:()=>setFullScale(v=>!v)},{l:"Intervals",ic:null,a:intervals,fn:()=>setIntervals(v=>!v)},{l:"Prog",ic:"queue",a:showProg,fn:()=>setShowProg(v=>!v)},{l:"Shape",ic:"hex",a:shapeOn,fn:()=>{setShapeOn(v=>!v);setShapeMap({"_global":[{color:SHAPE_COLORS[0],dots:[],quality:null}]});}},{l:"Neck",ic:"neckIc",a:neck,fn:()=>setNeck(v=>!v)}].map(b=><button key={b.l} onClick={b.fn} style={{fontFamily:M,fontWeight:700,fontSize:10,background:b.a?`${ac}22`:"var(--btn)",color:b.a?ac:"var(--muted2)",border:`1px solid ${b.a?ac+"55":"var(--border)"}`,borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>{b.ic&&<Ic n={b.ic} s={11} style={{marginRight:5}}/>}{b.l}</button>)}
         <button onClick={()=>{getCtx();if(samplesReady){setUseSamples(v=>!v);}else{loadSamples();}}} style={{fontFamily:M,fontWeight:700,fontSize:10,background:samplesReady&&useSamples?"rgba(64,168,96,0.2)":samplesLoading?"rgba(255,200,0,0.1)":"var(--btn)",color:samplesReady&&useSamples?ax("#40a860"):samplesLoading?ax("#ffc800"):"var(--muted2)",border:"1px solid "+(samplesReady&&useSamples?"#40a86055":samplesLoading?"#ffc80055":"var(--border)"),borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}><Ic n="speaker" s={11} style={{marginRight:5}}/>{samplesReady?(useSamples?"Guitar On":"Guitar Off"):samplesLoading?"Loading...":"Guitar"}</button>
       </div>
 
@@ -2450,7 +2464,7 @@ function App() {
                     triads={TR} pd={PD}
                     accent={focusedChord ? focusedChord.color : acRaw}
                     sc={SC} zoom={neckFull ? Math.max(1.2, (window.innerHeight-80) / (5*34+56)) : zoom}
-                    blues={blues} exts={nexts}
+                    blues={blues} exts={nexts} intervals={intervals}
                     shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot}
                     focusedNotes={neckFocusedNotes}
                     focusedColor={focusedChord ? focusedChord.color : null}
@@ -2554,7 +2568,7 @@ function App() {
                     checked={focusedChord ? new Set([focusedChord.ti]) : ncht}
                     triads={TR} pd={PD}
                     accent={focusedChord ? focusedChord.color : acRaw}
-                    sc={SC} zoom={fz} blues={blues} exts={nexts}
+                    sc={SC} zoom={fz} blues={blues} exts={nexts} intervals={intervals}
                     shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot}
                     focusedNotes={neckFocusedNotes2}
                     focusedColor={focusedChord ? focusedChord.color : null}
@@ -2677,7 +2691,7 @@ function App() {
                     </div>
                   </div>
                   <div style={{background:"var(--well2)",borderRadius:10,padding:"8px",border:"1px solid var(--border-dim)",overflowX:"auto",marginBottom:showProg?6:12}}>
-                    <Fretboard pos={pos} root={root} base={base} checked={ch} triads={TR} pd={PD} accent={focusedChord?focusedChord.color:acRaw} sc={SC} zoom={1} blues={blues} exts={exts[pos.num]||{}} fullScale={fullScale} shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot} qualOver={qualOver} focusedNotes={effectiveFocusedNotes} focusedColor={focusedChord?focusedChord.color:null}/>
+                    <Fretboard pos={pos} root={root} base={base} checked={ch} triads={TR} pd={PD} accent={focusedChord?focusedChord.color:acRaw} sc={SC} zoom={1} blues={blues} exts={exts[pos.num]||{}} fullScale={fullScale} intervals={intervals} shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot} qualOver={qualOver} focusedNotes={effectiveFocusedNotes} focusedColor={focusedChord?focusedChord.color:null}/>
                   </div>
                   {shapeOn&&<div style={{marginBottom:10,padding:"8px 10px",background:"var(--well5)",borderRadius:8,border:"1px solid "+ac+"33"}}>
                     <div style={{fontFamily:M,fontSize:9,color:"var(--heading)",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>

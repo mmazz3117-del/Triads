@@ -640,7 +640,7 @@ function majP(root){ return [0,2,4,7,9].map(s=>NOTES[(NOTES.indexOf(root)+s)%12]
 function minP(root){ return [0,3,5,7,10].map(s=>NOTES[(NOTES.indexOf(root)+s)%12]); }
 function relMin(r){ return NOTES[(NOTES.indexOf(r)-3+12)%12]; }
 function relMaj(r){ return NOTES[(NOTES.indexOf(r)+3)%12]; }
-function cname(t,root,sc){ return dn(t.d[0],root,sc)+(t.q==="minor"?"m":t.q==="dim"?"°":""); }
+function cname(t,root,sc,map){ return spell(dn(t.d[0],root,sc),map)+(t.q==="minor"?"m":t.q==="dim"?"°":""); }
 function fretsFor(note,str,lo,hi){
   const base=(NOTES.indexOf(note)-OPEN_IDX[str]+12)%12,res=[];
   for(let o=0;o<=2;o++){const f=base+o*12;if(f>=lo&&f<=hi)res.push(f);}
@@ -661,6 +661,41 @@ const INLAYS=[3,5,7,9,12,15,17,19,21,24], DINLAY=new Set([12,24]);
 function dorP(root){ return [0,2,3,7,9].map(s=>NOTES[(NOTES.indexOf(root)+s)%12]); }  // 1 2 b3 5 6
 function mixP(root){ return [0,2,4,7,10].map(s=>NOTES[(NOTES.indexOf(root)+s)%12]); }  // 1 2 3 5 b7
 
+// ---- Key-aware note spelling -------------------------------------------------
+// DISPLAY ONLY. Every pitch computation in the app stays on the sharp-named NOTES
+// array (fret math, NOTE_FREQ, interval labels). These helpers translate a sharp
+// pitch-class name into the letter that's correct for the current key — so flat
+// keys read "B♭" not "A#", and every scale degree gets its own letter (no repeats).
+const FLAT_NOTES = ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"];
+// Proper 7-letter spelling of each major key, indexed by tonic pitch class.
+const MAJ_SPELL = {
+  0:["C","D","E","F","G","A","B"],        1:["Db","Eb","F","Gb","Ab","Bb","C"],
+  2:["D","E","F#","G","A","B","C#"],      3:["Eb","F","G","Ab","Bb","C","D"],
+  4:["E","F#","G#","A","B","C#","D#"],    5:["F","G","A","Bb","C","D","E"],
+  6:["F#","G#","A#","B","C#","D#","E#"],  7:["G","A","B","C","D","E","F#"],
+  8:["Ab","Bb","C","Db","Eb","F","G"],    9:["A","B","C#","D","E","F#","G#"],
+  10:["Bb","C","D","Eb","F","G","A"],     11:["B","C#","D#","E","F#","G#","A#"],
+};
+const MAJ_FLATKEY = new Set([1,3,5,8,10]); // keys conventionally spelled with flats
+// The parent major key (tonic pitch class) whose signature this mode/root uses.
+function parentMajorPc(root, mode){
+  const r = NOTES.indexOf(root);
+  const off = mode==="minor" ? 3 : mode==="dorian" ? 10 : mode==="mixolydian" ? 5 : 0;
+  return (r + off) % 12;
+}
+// {sharpName: displayName} for the current key — diatonic notes spelled by letter
+// from the parent major; the 5 chromatic notes follow the key's accidental side.
+function buildSpellMap(root, mode){
+  const parent = parentMajorPc(root, mode), scale = MAJ_SPELL[parent];
+  const pcName = (MAJ_FLATKEY.has(parent) ? FLAT_NOTES : NOTES).slice();
+  for (let i=0;i<7;i++){ pcName[(parent+MS[i])%12] = scale[i]; }
+  const map = {};
+  for (let pc=0;pc<12;pc++) map[NOTES[pc]] = pcName[pc];
+  return map;
+}
+function spell(note, map){ return (map && map[note]) || note; }
+function tonicName(root, mode){ return buildSpellMap(root, mode)[root]; }
+
 // Diatonic extensions: the 7th is the next third stacked above the triad,
 // so it always stays in key — I/IV get maj7, ii/iii/vi get m7, V and the
 // modal VII get a true dom7, and diminished triads get a ø7 (half-dim).
@@ -669,22 +704,28 @@ function getExtNotes(t, root, sc, ext) {
   const sd = ((t.d[2] + 2 - 1) % 7) + 1;   // scale degree a diatonic third above the 5th
   const seventh = dn(sd, root, sc);
   if (ext === "7") return [seventh];
-  const ninth = NOTES[(NOTES.indexOf(dn(t.d[0], root, sc)) + 2) % 12];
+  const nd = (t.d[0] % 7) + 1;             // diatonic 2nd above the root = the 9th, stays in key
+  const ninth = dn(nd, root, sc);
   return [seventh, ninth];
 }
 
 function extLabel(t, root, sc, ext) {
   if (!ext) return "";
-  if (t.q === "dim") return ext === "7" ? "ø7" : "ø9"; // diatonic 7th over ° = half-diminished
   const rootIdx = NOTES.indexOf(dn(t.d[0], root, sc));
   const sd = ((t.d[2] + 2 - 1) % 7) + 1;
   const isMaj7 = (NOTES.indexOf(dn(sd, root, sc)) - rootIdx + 12) % 12 === 11;
-  if (ext === "7") return isMaj7 ? "maj7" : "7";
-  return isMaj7 ? "maj9" : "9";
+  if (ext === "7") return t.q === "dim" ? "ø7" : (isMaj7 ? "maj7" : "7");
+  // ext === "9": the diatonic 9th can be a ♭9 on some chords (e.g. iii, vii°);
+  // label it honestly rather than implying a natural 9.
+  const nd = (t.d[0] % 7) + 1;
+  const flat9 = ((NOTES.indexOf(dn(nd, root, sc)) - rootIdx + 12) % 12) === 1;
+  if (t.q === "dim") return flat9 ? "ø7♭9" : "ø9";
+  if (isMaj7) return "maj9";              // major-7th chords always carry a natural 9 in key
+  return flat9 ? "7♭9" : "9";
 }
 
-function cnameExt(t, root, sc, ext) {
-  const rootNote = dn(t.d[0],root,sc);
+function cnameExt(t, root, sc, ext, map) {
+  const rootNote = spell(dn(t.d[0],root,sc), map);
   if (t.q === "dim" && ext) return rootNote + extLabel(t, root, sc, ext); // "Bø7", not "B°ø7"
   const base = rootNote + (t.q==="minor"?"m":t.q==="dim"?"°":"");
   return base + extLabel(t, root, sc, ext);
@@ -928,15 +969,15 @@ const Ic = ({n, s=12, style}) => (
 // Drives the "Intervals" dot-label toggle (show R/♭3/5 instead of note names).
 // SVG text can't read CSS, so this is plain JS resolved at render time.
 const INTERVAL_LABELS = ["R","♭2","2","♭3","3","4","♭5","5","♭6","6","♭7","7"];
-function dotLabel(note, root, intervals) {
-  if (!intervals) return note;
+function dotLabel(note, root, intervals, map) {
+  if (!intervals) return spell(note, map);
   const ni = NOTES.indexOf(note), ri = NOTES.indexOf(root);
-  if (ni < 0 || ri < 0) return note;
+  if (ni < 0 || ri < 0) return spell(note, map);
   return INTERVAL_LABELS[(ni - ri + 12) % 12];
 }
 
 let __dotUid = 0;
-function SvgDot({cx, cy, r, colors, note, isRoot, dim, accent, root, intervals}) {
+function SvgDot({cx, cy, r, colors, note, isRoot, dim, accent, root, intervals, map}) {
   const fs = Math.max(7, r * 0.72);
   const id = React.useRef(`dclip${++__dotUid}`).current; // unique per dot instance
   const single = colors.length <= 1;
@@ -965,7 +1006,7 @@ function SvgDot({cx, cy, r, colors, note, isRoot, dim, accent, root, intervals})
       {/* Label */}
       <text x={cx} y={cy+fs*0.4} textAnchor="middle" fontSize={fs} fontWeight="700"
         fill={dim ? T.dotTextDim : (single && isRoot ? "#111" : "#fff")}
-        fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{dotLabel(note, root, intervals)}</text>
+        fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{dotLabel(note, root, intervals, map)}</text>
     </g>
   );
 }
@@ -1002,7 +1043,7 @@ function getBorrowedNoteMap(checked, triads, qualOver, root, sc) {
 }
 
 // Fretboard SVG
-function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blues, exts, fullScale, shapeOn, shapeGroups, onDotClick, qualOver, focusedNotes, focusedColor, intervals}) {
+function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blues, exts, fullScale, shapeOn, shapeGroups, onDotClick, qualOver, focusedNotes, focusedColor, intervals, map}) {
   const none = checked.size === 0;
   const { dots, blDots } = buildDots(pos, base, checked, triads, pd, root, sc, blues, exts, fullScale);
   if (!dots.length) return null;
@@ -1069,7 +1110,7 @@ function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blue
       {blDots.map((d,i) => (
         <g key={`b${i}`}>
           <circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill={T.bluenoteBg} stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/>
-          <text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{dotLabel(blNote, root, intervals)}</text>
+          <text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{dotLabel(blNote, root, intervals, map)}</text>
         </g>
       ))}
       {dots.map((dot,i) => {
@@ -1097,14 +1138,14 @@ function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blue
           return (
             <g key={i} opacity={0.4}>
               <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR*0.65} fill={T.ghostBg} stroke={T.ghostBorder} strokeWidth={1}/>
-              <text x={fx(dot.af)} y={sy(dot.s)+Math.max(5,DR*0.5)} textAnchor="middle" fontSize={Math.max(6,DR*0.55)} fontWeight="700" fill={T.ghostText} fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{dotLabel(dot.note, root, intervals)}</text>
+              <text x={fx(dot.af)} y={sy(dot.s)+Math.max(5,DR*0.5)} textAnchor="middle" fontSize={Math.max(6,DR*0.55)} fontWeight="700" fill={T.ghostText} fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{dotLabel(dot.note, root, intervals, map)}</text>
             </g>
           );
         }
         return (
           <g key={i} opacity={opacity}>
             {dot.isExt && cols.length > 0 && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+4} fill="none" stroke={cols[0]} strokeWidth={1.5} strokeDasharray="3 2" opacity={0.7}/>}
-            <SvgDot cx={fx(dot.af)} cy={sy(dot.s)} r={DR} colors={finalCols} note={dot.note} isRoot={dot.isRoot} dim={false} accent={accent} root={root} intervals={intervals}/>
+            <SvgDot cx={fx(dot.af)} cy={sy(dot.s)} r={DR} colors={finalCols} note={dot.note} isRoot={dot.isRoot} dim={false} accent={accent} root={root} intervals={intervals} map={map}/>
             {onDotClick && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+2} fill="transparent" stroke="transparent" strokeWidth={8} style={{cursor:"pointer"}} onClick={()=>onDotClick(dot.s,dot.af,dot.note)}/>}
           </g>
         );
@@ -1115,7 +1156,7 @@ function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blue
 }
 
 // Neck view (multiple positions) — uses buildDots per position then merges
-function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, blues, exts, shapeOn, shapeGroups, onDotClick, focusedNotes, focusedColor, qualOver, posColors, intervals}) {
+function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, blues, exts, shapeOn, shapeGroups, onDotClick, focusedNotes, focusedColor, qualOver, posColors, intervals, map}) {
   const none = checked.size === 0 && !focusedNotes;
   const blNote = NOTES[(NOTES.indexOf(root)+6)%12];
 
@@ -1217,7 +1258,7 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
         const x1=fx(lo)-FW*0.4, x2=fx(hi)+FW*0.4, y=TP+5*SH+DR+10+(pi%2)*9;
         return <g key={num}><line x1={x1} y1={y} x2={x2} y2={y} stroke={pc} strokeWidth={1.5} opacity={0.75}/><line x1={x1} y1={y-4} x2={x1} y2={y+4} stroke={pc} strokeWidth={1.5} opacity={0.75}/><line x1={x2} y1={y-4} x2={x2} y2={y+4} stroke={pc} strokeWidth={1.5} opacity={0.75}/><text x={(x1+x2)/2} y={y+14} textAnchor="middle" fontSize={10} fill={pc} fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace" fontWeight="700">P{num}</text></g>;
       })}
-      {blDots.map((d,i) => <g key={`b${i}`}><circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill={T.bluenoteBg} stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/><text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{dotLabel(blNote, root, intervals)}</text></g>)}
+      {blDots.map((d,i) => <g key={`b${i}`}><circle cx={fx(d.af)} cy={sy(d.s)} r={DR} fill={T.bluenoteBg} stroke="#e040e0" strokeWidth={2} strokeDasharray="3 2"/><text x={fx(d.af)} y={sy(d.s)+4} textAnchor="middle" fontSize={Math.max(7,DR*0.7)} fontWeight="700" fill="#e040e0" fontFamily="IBM Plex Mono,Plex Mono Fallback,monospace">{dotLabel(blNote, root, intervals, map)}</text></g>)}
       {allD.map((dot,i) => {
         let cols, dim;
         if (focusedNotes) {
@@ -1242,7 +1283,7 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
         return (
           <g key={i} opacity={dim ? 0.5 : 1}>
             {dot.isExt && cols.length > 0 && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+4} fill="none" stroke={cols[0]} strokeWidth={1.5} strokeDasharray="3 2" opacity={0.7}/>}
-            <SvgDot cx={fx(dot.af)} cy={sy(dot.s)} r={DR} colors={finalCols} note={dot.note} isRoot={dot.isRoot} dim={false} accent={accent} root={root} intervals={intervals}/>
+            <SvgDot cx={fx(dot.af)} cy={sy(dot.s)} r={DR} colors={finalCols} note={dot.note} isRoot={dot.isRoot} dim={false} accent={accent} root={root} intervals={intervals} map={map}/>
             {onDotClick && <circle cx={fx(dot.af)} cy={sy(dot.s)} r={DR+2} fill="transparent" stroke="transparent" strokeWidth={8} style={{cursor:"pointer"}} onClick={()=>onDotClick(dot.s,dot.af,dot.note)}/>}
           </g>
         );
@@ -1253,7 +1294,7 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
 }
 
 // Triad card
-function TCard({t, root, on, onClick, sc, pd, onPlay, ext, onExt, qualityOverride, onQualityToggle}) {
+function TCard({t, root, on, onClick, sc, pd, onPlay, ext, onExt, qualityOverride, onQualityToggle, map}) {
   const DG = {1:"R",2:"2",3:"b3",4:"4",5:"5",6:"b6",7:"b7"};
   // Compute the chord's root note from the diatonic scale degree
   const rootNote = dn(t.d[0], root, sc);
@@ -1281,9 +1322,9 @@ function TCard({t, root, on, onClick, sc, pd, onPlay, ext, onExt, qualityOverrid
   // Build display name based on effective quality
   let nm;
   if (qualityOverride && qualityOverride !== origQuality) {
-    nm = effQuality === "major" ? rootNote : rootNote + "m";
+    nm = effQuality === "major" ? spell(rootNote,map) : spell(rootNote,map) + "m";
   } else {
-    nm = cnameExt(t, root, sc, ext);
+    nm = cnameExt(t, root, sc, ext, map);
   }
   const M = "'IBM Plex Mono','Plex Mono Fallback',monospace";
   const isFlipped = qualityOverride && qualityOverride !== origQuality;
@@ -1301,8 +1342,8 @@ function TCard({t, root, on, onClick, sc, pd, onPlay, ext, onExt, qualityOverrid
       </div>
       {/* Notes row */}
       <div style={{display:"flex",gap:3,flexWrap:"wrap",paddingLeft:18,marginBottom:4}}>
-        {notes.map((n,i) => <span key={i} onClick={e=>{e.stopPropagation();onPlay([n]);}} style={{background:`${ax(t.c)}22`,border:`1px solid ${ax(t.c)}44`,borderRadius:4,padding:"1px 6px",fontSize:11,fontWeight:700,fontFamily:M,color:"var(--text)",cursor:"pointer"}}>{n}</span>)}
-        {extNotes.map((n,i) => <span key={`e${i}`} onClick={e=>{e.stopPropagation();onPlay([n]);}} style={{background:`${ax(t.c)}40`,border:`2px solid ${ax(t.c)}`,borderRadius:4,padding:"1px 6px",fontSize:11,fontWeight:700,fontFamily:M,color:"#fff",cursor:"pointer"}}>{n}</span>)}
+        {notes.map((n,i) => <span key={i} onClick={e=>{e.stopPropagation();onPlay([n]);}} style={{background:`${ax(t.c)}22`,border:`1px solid ${ax(t.c)}44`,borderRadius:4,padding:"1px 6px",fontSize:11,fontWeight:700,fontFamily:M,color:"var(--text)",cursor:"pointer"}}>{spell(n,map)}</span>)}
+        {extNotes.map((n,i) => <span key={`e${i}`} onClick={e=>{e.stopPropagation();onPlay([n]);}} style={{background:`${ax(t.c)}40`,border:`2px solid ${ax(t.c)}`,borderRadius:4,padding:"1px 6px",fontSize:11,fontWeight:700,fontFamily:M,color:"#fff",cursor:"pointer"}}>{spell(n,map)}</span>)}
       </div>
       {/* 7 / 9 extension toggles + quality flip */}
       <div style={{display:"flex",gap:3,paddingLeft:18,marginBottom:3,alignItems:"center"}} onClick={e=>e.stopPropagation()}>
@@ -1441,7 +1482,7 @@ const PROG_PRESETS = {
   },
 };
 
-function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,quality,playClick,onProgRef,prog,setProg,savedProgs,setSavedProgs,startDrums,stopDrums,drumOn,setDrumOn,drumPattern,setDrumPattern,drumVol,setDrumVol,shapeMap,setShapeMap}){
+function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,quality,playClick,onProgRef,prog,setProg,savedProgs,setSavedProgs,startDrums,stopDrums,drumOn,setDrumOn,drumPattern,setDrumPattern,drumVol,setDrumVol,shapeMap,setShapeMap,map}){
   accent=ax(accent); // HTML-only component — darken accents for light theme
   const [bpm,setBpm]=useState(80),[bpc,setBpc]=useState(4);
   const [on,setOn]=useState(false),[cur,setCur]=useState(0),[beat,setBeat]=useState(0);
@@ -1552,7 +1593,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
 
   const add=ti=>{
     const t=triads[ti];const notes=t.d.map(d=>dn(d,root,sc));
-    setProg(p=>[...p,{ti,label:cname(t,root,sc),notes,color:t.c,beats:bpc,ext:null}]);
+    setProg(p=>[...p,{ti,label:cname(t,root,sc,map),notes,color:t.c,beats:bpc,ext:null}]);
     setPresetDegrees(null); // user edit, no longer a tracked preset
   };
   const duplicateChord=idx=>{
@@ -1619,8 +1660,9 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
     const fifthInt=(NOTES.indexOf(ch.notes[2])-rootIdx+12)%12;
     const sevInt=ch.notes[3]!==undefined?(NOTES.indexOf(ch.notes[3])-rootIdx+12)%12:null;
     const nine=ch.ext==="9";
-    if(thirdInt===3&&fifthInt===6) return r+(sevInt===9?"°":"ø")+(nine?"9":"7");
-    return r+(thirdInt===3?"m":"")+(sevInt===11?"maj":"")+(nine?"9":"7");
+    const rd=spell(r,map);
+    if(thirdInt===3&&fifthInt===6) return rd+(sevInt===9?"°":"ø")+(nine?"9":"7");
+    return rd+(thirdInt===3?"m":"")+(sevInt===11?"maj":"")+(nine?"9":"7");
   };
   const setChordExt=(idx,ext)=>{
     setProg(p=>{
@@ -1718,7 +1760,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
     const newProg=preset.chords.map(deg=>{
       const t=triads[deg];
       const notes=t.d.map(d=>dn(d,root,sc));
-      return {ti:deg,label:cname(t,root,sc),notes,color:t.c,beats:bpc,ext:null};
+      return {ti:deg,label:cname(t,root,sc,map),notes,color:t.c,beats:bpc,ext:null};
     });
     setProg(newProg);
     setPresetDegrees(preset.chords);
@@ -1730,7 +1772,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
     const newProg=presetDegrees.map(deg=>{
       const t=triads[deg]; if(!t) return null;
       const notes=t.d.map(d=>dn(d,root,sc));
-      return {ti:deg,label:cname(t,root,sc),notes,color:t.c,beats:bpc,ext:null};
+      return {ti:deg,label:cname(t,root,sc,map),notes,color:t.c,beats:bpc,ext:null};
     }).filter(Boolean);
     setProg(newProg);
   },[root,family,quality]);
@@ -1811,7 +1853,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
       <div style={{marginBottom:10}}>
         <div style={{fontSize:9,color:"var(--label)",fontFamily:M,marginBottom:6}}>TAP A CHORD TO ADD IT ↓</div>
         <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-          {triads.map((t,ti)=><button key={ti} onClick={()=>add(ti)} style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:15,color:ax(t.c),background:`${ax(t.c)}18`,border:`1px solid ${ax(t.c)}55`,borderRadius:7,padding:"7px 13px",cursor:"pointer",minHeight:38}}>{cname(t,root,sc)}<span style={{fontSize:9,fontFamily:M,marginLeft:3}}>+</span></button>)}
+          {triads.map((t,ti)=><button key={ti} onClick={()=>add(ti)} style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:15,color:ax(t.c),background:`${ax(t.c)}18`,border:`1px solid ${ax(t.c)}55`,borderRadius:7,padding:"7px 13px",cursor:"pointer",minHeight:38}}>{cname(t,root,sc,map)}<span style={{fontSize:9,fontFamily:M,marginLeft:3}}>+</span></button>)}
         </div>
       </div>
 
@@ -1857,7 +1899,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
                   <span onClick={e=>{e.stopPropagation();setFocusedIdx(idx);}} style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:19,color:ax(ch.color),cursor:"pointer",padding:"2px 6px"}}>{chordExtName(ch)}</span>
                   {/* Chord notes — shows the actual notes that make up this chord */}
                   <div style={{display:"flex",gap:3,flexWrap:"wrap",justifyContent:"center"}}>
-                    {ch.notes.map((n,i)=><span key={i} style={{fontFamily:M,fontWeight:700,fontSize:9,color:ax(ch.color),background:`${ax(ch.color)}15`,border:`1px solid ${ax(ch.color)}55`,borderRadius:3,padding:"2px 5px",minWidth:18,textAlign:"center"}}>{n}</span>)}
+                    {ch.notes.map((n,i)=><span key={i} style={{fontFamily:M,fontWeight:700,fontSize:9,color:ax(ch.color),background:`${ax(ch.color)}15`,border:`1px solid ${ax(ch.color)}55`,borderRadius:3,padding:"2px 5px",minWidth:18,textAlign:"center"}}>{spell(n,map)}</span>)}
                   </div>
                   <div style={{display:"flex",gap:3,alignItems:"center"}} onClick={e=>e.stopPropagation()}>
                     <span style={{fontFamily:M,fontSize:10,fontWeight:600,letterSpacing:0.5,color:"var(--muted)"}}>beats</span>
@@ -2234,6 +2276,7 @@ function App() {
     : quality==="major" ? "mixolydian" : "dorian";
 
   const maj=mode==="major", isDor=mode==="dorian", isMix=mode==="mixolydian";
+  const spellMap = buildSpellMap(root, mode); // key-aware display spelling (sharp names stay for all pitch math)
   const TR=maj?MT:isDor?DT:isMix?XT:NT;
   const POS=maj?MP:isDor?DP:isMix?XP:NP;
   const SC=maj?MS:isDor?DS:isMix?XS:NS;
@@ -2400,10 +2443,10 @@ function App() {
           </button>
         </div>
         <div style={{display:"flex",flexWrap:"wrap",gap:4,justifyContent:"center",marginBottom:8}}>
-          {NOTES.map(k=><button key={k} onClick={()=>setRoot(k)} style={{background:root===k?`linear-gradient(135deg,${acRaw},${maj?"#b07800":isDor?"#205020":isMix?"#704010":"#2060a0"})`:"var(--btn)",color:root===k?"#fff":"var(--muted)",fontFamily:M,fontWeight:700,fontSize:13,borderRadius:6,padding:"7px 13px",border:root===k?"none":"1px solid var(--border-soft)",cursor:"pointer",minHeight:38,minWidth:38}}>{k}</button>)}
+          {NOTES.map(k=><button key={k} onClick={()=>setRoot(k)} style={{background:root===k?`linear-gradient(135deg,${acRaw},${maj?"#b07800":isDor?"#205020":isMix?"#704010":"#2060a0"})`:"var(--btn)",color:root===k?"#fff":"var(--muted)",fontFamily:M,fontWeight:700,fontSize:13,borderRadius:6,padding:"7px 13px",border:root===k?"none":"1px solid var(--border-soft)",cursor:"pointer",minHeight:38,minWidth:38}}>{tonicName(k, mode)}</button>)}
         </div>
         <div style={{display:"flex",gap:4,flexWrap:"wrap",justifyContent:"center"}}>
-          {ps.map((n,i)=><div key={i} onClick={()=>hear(n)} style={{textAlign:"center",background:i===0?`${ac}18`:"var(--card2)",border:`1px solid ${i===0?ac+"55":"var(--border)"}`,borderRadius:5,padding:"2px 8px",cursor:"pointer"}}><div style={{fontFamily:M,fontWeight:700,fontSize:12,color:i===0?ac:"var(--text-soft)"}}>{n}</div><div style={{fontSize:8,color:"var(--heading)"}}>{pl[i]}</div></div>)}
+          {ps.map((n,i)=><div key={i} onClick={()=>hear(n)} style={{textAlign:"center",background:i===0?`${ac}18`:"var(--card2)",border:`1px solid ${i===0?ac+"55":"var(--border)"}`,borderRadius:5,padding:"2px 8px",cursor:"pointer"}}><div style={{fontFamily:M,fontWeight:700,fontSize:12,color:i===0?ac:"var(--text-soft)"}}>{spell(n,spellMap)}</div><div style={{fontSize:8,color:"var(--heading)"}}>{pl[i]}</div></div>)}
           {blues && <div onClick={()=>hear(NOTES[(NOTES.indexOf(root)+6)%12])} style={{textAlign:"center",background:"var(--bluenote-bg)",border:"1px solid #e040e050",borderRadius:5,padding:"2px 8px",cursor:"pointer"}}><div style={{fontFamily:M,fontWeight:700,fontSize:12,color:"#e040e0"}}>{NOTES[(NOTES.indexOf(root)+6)%12]}</div><div style={{fontSize:8,color:"#e040e0"}}>b5</div></div>}
         </div>
       </div>
@@ -2457,7 +2500,7 @@ function App() {
       )}
 
       {metro && <div style={{maxWidth:660,margin:"0 auto 16px"}}><Metro pc={playClick}/></div>}
-      {showProg && <div style={{maxWidth:660,margin:"0 auto 16px"}}><ProgBuilder triads={TR} root={root} sc={SC} accent={ac} playChord={hearCh} onChordFocus={ch=>{setFocusedProgIdx(ch!=null?(ch._progIdx??null):null);}} family={family} quality={quality} playClick={playClick} onProgRef={setProgCtl} prog={prog} setProg={setProg} savedProgs={savedProgs} setSavedProgs={setSavedProgs} startDrums={startDrums} stopDrums={stopDrums} drumOn={drumOn} setDrumOn={setDrumOn} drumPattern={drumPattern} setDrumPattern={setDrumPattern} drumVol={drumVol} setDrumVol={setDrumVol} shapeMap={shapeMap} setShapeMap={setShapeMap}/></div>}
+      {showProg && <div style={{maxWidth:660,margin:"0 auto 16px"}}><ProgBuilder triads={TR} root={root} sc={SC} accent={ac} playChord={hearCh} onChordFocus={ch=>{setFocusedProgIdx(ch!=null?(ch._progIdx??null):null);}} family={family} quality={quality} playClick={playClick} onProgRef={setProgCtl} prog={prog} setProg={setProg} savedProgs={savedProgs} setSavedProgs={setSavedProgs} startDrums={startDrums} stopDrums={stopDrums} drumOn={drumOn} setDrumOn={setDrumOn} drumPattern={drumPattern} setDrumPattern={setDrumPattern} drumVol={drumVol} setDrumVol={setDrumVol} shapeMap={shapeMap} setShapeMap={setShapeMap} map={spellMap}/></div>}
 
       {neck && (()=>{
         const neckContent = (
@@ -2500,7 +2543,7 @@ function App() {
                   }
                 }
                 return (
-                  <Neck positions={openList} root={root} bases={openBases}
+                  <Neck positions={openList} root={root} bases={openBases} map={spellMap}
                     checked={focusedChord ? new Set([focusedChord.ti]) : ncht}
                     triads={TR} pd={PD}
                     accent={focusedChord ? focusedChord.color : acRaw}
@@ -2558,7 +2601,7 @@ function App() {
                 </div>}
                 <div style={{fontSize:11,fontWeight:700,letterSpacing:2.5,color:"var(--heading)",fontFamily:M,textTransform:"uppercase",marginBottom:6}}>Triads · {root} {mode}</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
-                  {TR.map((t,ti)=><TCard key={ti} t={t} root={root} on={ncht.has(ti)} onClick={()=>togN(ti)} sc={SC} pd={PD} onPlay={hearCh} ext={nexts[ti]||null} onExt={val=>setNextExt(ti,val)} qualityOverride={qualOver[ti]||null} onQualityToggle={q=>setQualOver(p=>({...p,[ti]:q}))}/>)}
+                  {TR.map((t,ti)=><TCard key={ti} t={t} root={root} map={spellMap} on={ncht.has(ti)} onClick={()=>togN(ti)} sc={SC} pd={PD} onPlay={hearCh} ext={nexts[ti]||null} onExt={val=>setNextExt(ti,val)} qualityOverride={qualOver[ti]||null} onQualityToggle={q=>setQualOver(p=>({...p,[ti]:q}))}/>)}
                 </div>
               </div>
             )}
@@ -2611,7 +2654,7 @@ function App() {
                 const mobZoom = isLandscape ? Math.max(1.0, (window.innerHeight - 100) / (5*34 + 56)) : autoZoom;
                 const fz = neckFull ? mobZoom * zoom : zoom;
                 return (
-                  <Neck positions={openList} root={root} bases={openBases}
+                  <Neck positions={openList} root={root} bases={openBases} map={spellMap}
                     checked={focusedChord ? new Set([focusedChord.ti]) : ncht}
                     triads={TR} pd={PD}
                     accent={focusedChord ? focusedChord.color : acRaw}
@@ -2630,7 +2673,7 @@ function App() {
               <div style={{padding:"5px 14px",background:`${ax(focusedChord.color)}22`,borderTop:`1px solid ${ax(focusedChord.color)}55`,display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
                 <span style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:20,color:ax(focusedChord.color)}}>{focusedChord.label}</span>
                 <div style={{display:"flex",gap:5}}>
-                  {focusedChord.notes.map((n,i)=><span key={i} style={{background:`${ax(focusedChord.color)}22`,border:`1px solid ${ax(focusedChord.color)}55`,borderRadius:4,padding:"1px 7px",fontSize:11,fontWeight:700,fontFamily:M,color:"var(--text)"}}>{n}</span>)}
+                  {focusedChord.notes.map((n,i)=><span key={i} style={{background:`${ax(focusedChord.color)}22`,border:`1px solid ${ax(focusedChord.color)}55`,borderRadius:4,padding:"1px 7px",fontSize:11,fontWeight:700,fontFamily:M,color:"var(--text)"}}>{spell(n,spellMap)}</span>)}
                 </div>
               </div>
             )}
@@ -2656,14 +2699,14 @@ function App() {
             const third = ovr==="major" ? NOTES[(rootIdx+4)%12] : NOTES[(rootIdx+3)%12];
             const fifth = NOTES[(rootIdx+7)%12];
             bannerNotes = [rootNote, third, fifth];
-            bannerLabel = ovr==="major" ? rootNote : rootNote+"m";
+            bannerLabel = ovr==="major" ? spell(rootNote,spellMap) : spell(rootNote,spellMap)+"m";
           }
           return (
             <div style={{background:`${ax(focusedChord.color)}18`,border:`2px solid ${ax(focusedChord.color)}`,borderRadius:12,padding:"10px 16px",display:"flex",alignItems:"center",gap:12}}>
               <div style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:32,color:ax(focusedChord.color)}}>{bannerLabel}</div>
               <div style={{flex:1}}>
                 <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-                  {bannerNotes.map((n,i)=><span key={i} style={{background:`${ax(focusedChord.color)}22`,border:`1px solid ${ax(focusedChord.color)}55`,borderRadius:4,padding:"2px 8px",fontSize:13,fontWeight:700,fontFamily:M,color:"var(--text)"}}>{n}</span>)}
+                  {bannerNotes.map((n,i)=><span key={i} style={{background:`${ax(focusedChord.color)}22`,border:`1px solid ${ax(focusedChord.color)}55`,borderRadius:4,padding:"2px 8px",fontSize:13,fontWeight:700,fontFamily:M,color:"var(--text)"}}>{spell(n,spellMap)}</span>)}
                 </div>
                 {ovr && ovr !== (t&&t.q) && <div style={{fontFamily:M,fontSize:9,color:"#f0c040",marginTop:3}}>borrowed ({ovr})</div>}
                 <div style={{fontFamily:M,fontSize:9,color:"var(--label)",marginTop:2}}>Highlighted on all positions below</div>
@@ -2739,7 +2782,7 @@ function App() {
                     </div>
                   </div>
                   <div style={{background:"var(--well2)",borderRadius:10,padding:"8px",border:"1px solid var(--border-dim)",overflowX:"auto",marginBottom:showProg?6:12}}>
-                    <Fretboard pos={pos} root={root} base={base} checked={ch} triads={TR} pd={PD} accent={focusedChord?focusedChord.color:acRaw} sc={SC} zoom={1} blues={blues} exts={exts[pos.num]||{}} fullScale={fullScale} intervals={intervals} shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot} qualOver={qualOver} focusedNotes={effectiveFocusedNotes} focusedColor={focusedChord?focusedChord.color:null}/>
+                    <Fretboard pos={pos} root={root} base={base} checked={ch} triads={TR} pd={PD} accent={focusedChord?focusedChord.color:acRaw} sc={SC} zoom={1} blues={blues} exts={exts[pos.num]||{}} fullScale={fullScale} intervals={intervals} shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot} qualOver={qualOver} focusedNotes={effectiveFocusedNotes} focusedColor={focusedChord?focusedChord.color:null} map={spellMap}/>
                   </div>
                   {shapeOn&&<div style={{marginBottom:10,padding:"8px 10px",background:"var(--well5)",borderRadius:8,border:"1px solid "+ac+"33"}}>
                     <div style={{fontFamily:M,fontSize:9,color:"var(--heading)",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>
@@ -2783,7 +2826,7 @@ function App() {
                   </div>}
                   <div style={{fontSize:9,letterSpacing:2,color:"var(--heading)",fontFamily:M,textTransform:"uppercase",marginBottom:6}}>Tap a triad to light it up · tap any note to hear it</div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
-                    {TR.map((t,ti)=><TCard key={ti} t={t} root={root} on={ch.has(ti)} onClick={e=>{e.stopPropagation();togCht(pos.num,ti);}} sc={SC} pd={PD} onPlay={hearCh} ext={(exts[pos.num]||{})[ti]||(exts[pos.num]||{})[String(ti)]||null} onExt={val=>setExt(pos.num,ti,val)} qualityOverride={qualOver[ti]||null} onQualityToggle={q=>setQualOver(p=>({...p,[ti]:q}))}/>)}
+                    {TR.map((t,ti)=><TCard key={ti} t={t} root={root} map={spellMap} on={ch.has(ti)} onClick={e=>{e.stopPropagation();togCht(pos.num,ti);}} sc={SC} pd={PD} onPlay={hearCh} ext={(exts[pos.num]||{})[ti]||(exts[pos.num]||{})[String(ti)]||null} onExt={val=>setExt(pos.num,ti,val)} qualityOverride={qualOver[ti]||null} onQualityToggle={q=>setQualOver(p=>({...p,[ti]:q}))}/>)}
                   </div>
                 </div>
               )}

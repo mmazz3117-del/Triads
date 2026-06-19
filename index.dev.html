@@ -2209,6 +2209,23 @@ function App() {
 
   const stopDrums = useCallback(() => { if(drumRef.current){clearInterval(drumRef.current);drumRef.current=null;} }, []);
 
+  // #4 — Stop the drum loop whenever the progression panel is closed. The drum
+  // interval lives at App level (drumRef), but play/stop lives in ProgBuilder; its
+  // unmount cleanup only clears the chord scheduler, so without this the drums would
+  // keep looping with no visible control after the panel is toggled off.
+  useEffect(()=>{ if(!showProg) stopDrums(); },[showProg,stopDrums]);
+
+  // #5 — The full-screen neck auto-zoom reads window size at render time, so a
+  // re-render is needed when the viewport changes (rotate / resize / mobile browser
+  // chrome show-hide). Bump a throwaway state tick (debounced) to trigger it.
+  const [,setVpTick]=useState(0);
+  useEffect(()=>{
+    let t; const onResize=()=>{ clearTimeout(t); t=setTimeout(()=>setVpTick(n=>n+1),150); };
+    window.addEventListener("resize",onResize);
+    window.addEventListener("orientationchange",onResize);
+    return ()=>{ clearTimeout(t); window.removeEventListener("resize",onResize); window.removeEventListener("orientationchange",onResize); };
+  },[]);
+
   // Derive mode from family + quality
   // Pentatonic family: major=major, minor=minor
   // Modal family:      major=mixolydian, minor=dorian
@@ -2260,7 +2277,7 @@ function App() {
   const setNextExt=(ti,val)=>setNexts(p=>({...p,[ti]:val}));
   const swMode=(fam,qual)=>{
     setFamily(fam); setQuality(qual);
-    setCht({}); setNcht(new Set()); setExts({}); setNexts({});
+    setCht({}); setNcht(new Set()); setExts({}); setNexts({}); setQualOver({});
     setOpenPos(new Set([1]));
   };
   const swQuality=q=>swMode(family,q);

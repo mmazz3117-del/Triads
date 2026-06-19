@@ -1540,6 +1540,13 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
   };
 
   const toggle=()=>on?stop():start();
+  // Expose the transport to the parent so the full-screen neck can start/stop the
+  // progression. Purely additive: a ref keeps the latest toggle, an effect republishes
+  // {on, hasProg, toggle} whenever the play-state or progression changes, and an
+  // unmount cleanup clears it so a stale control never lingers.
+  const toggleRef=useRef(toggle); toggleRef.current=toggle;
+  useEffect(()=>{ if(onProgRef) onProgRef({on, hasProg:prog.length>0, toggle:()=>toggleRef.current()}); },[on,prog.length,onProgRef]);
+  useEffect(()=>()=>{ if(onProgRef) onProgRef(null); },[onProgRef]);
   useEffect(()=>{if(on&&!counting){clearInterval(ref.current);clearTimeout(ref.current);startInterval(sr.current.cur);}},[bpm,bpc]);
   useEffect(()=>()=>{clearInterval(ref.current);clearInterval(countRef.current);},[]);
 
@@ -2030,6 +2037,7 @@ function App() {
     })();
   },[]);
   const [neckFull,setNeckFull]=useState(false);
+  const [progCtl,setProgCtl]=useState(null); // {on,hasProg,toggle} published by ProgBuilder for the full-screen transport
   const [played,setPlayed]=useState(null);
 
   // Derive focusedChord LIVE from prog+focusedProgIdx — always reflects latest notes
@@ -2432,7 +2440,7 @@ function App() {
       )}
 
       {metro && <div style={{maxWidth:660,margin:"0 auto 16px"}}><Metro pc={playClick}/></div>}
-      {showProg && <div style={{maxWidth:660,margin:"0 auto 16px"}}><ProgBuilder triads={TR} root={root} sc={SC} accent={ac} playChord={hearCh} onChordFocus={ch=>{setFocusedProgIdx(ch!=null?(ch._progIdx??null):null);}} family={family} quality={quality} playClick={playClick} prog={prog} setProg={setProg} savedProgs={savedProgs} setSavedProgs={setSavedProgs} startDrums={startDrums} stopDrums={stopDrums} drumOn={drumOn} setDrumOn={setDrumOn} drumPattern={drumPattern} setDrumPattern={setDrumPattern} drumVol={drumVol} setDrumVol={setDrumVol} shapeMap={shapeMap} setShapeMap={setShapeMap}/></div>}
+      {showProg && <div style={{maxWidth:660,margin:"0 auto 16px"}}><ProgBuilder triads={TR} root={root} sc={SC} accent={ac} playChord={hearCh} onChordFocus={ch=>{setFocusedProgIdx(ch!=null?(ch._progIdx??null):null);}} family={family} quality={quality} playClick={playClick} onProgRef={setProgCtl} prog={prog} setProg={setProg} savedProgs={savedProgs} setSavedProgs={setSavedProgs} startDrums={startDrums} stopDrums={stopDrums} drumOn={drumOn} setDrumOn={setDrumOn} drumPattern={drumPattern} setDrumPattern={setDrumPattern} drumVol={drumVol} setDrumVol={setDrumVol} shapeMap={shapeMap} setShapeMap={setShapeMap}/></div>}
 
       {neck && (()=>{
         const neckContent = (
@@ -2548,6 +2556,11 @@ function App() {
                   {[0,1,2].map(i=><span key={i} style={{display:"inline-block",width:6,height:6,borderRadius:"50%",background:POS_COLORS[i],opacity:posColors?1:0.45}}/>)}
                   <span style={{fontFamily:M,fontSize:8,fontWeight:700,letterSpacing:1,color:posColors?"#fff":"var(--muted2)",marginLeft:3}}>POS</span>
                 </button></div>
+              {progCtl && progCtl.hasProg && (
+                <button onClick={progCtl.toggle} title={progCtl.on?"Stop progression":"Play progression"} style={{display:"flex",alignItems:"center",fontFamily:M,fontWeight:700,fontSize:11,color:"#fff",background:progCtl.on?"linear-gradient(135deg,#f06060,#a03030)":"linear-gradient(135deg,#40a860,#207040)",border:"none",borderRadius:6,padding:"5px 12px",cursor:"pointer",flexShrink:0,marginLeft:6}}>
+                  {progCtl.on?<><Ic n="stop" s={10} style={{marginRight:5}}/>Stop</>:<><Ic n="play" s={10} style={{marginRight:5}}/>Play</>}
+                </button>
+              )}
               <div style={{display:"flex",alignItems:"center",gap:4,marginLeft:"auto",flexShrink:0}}>
                 <span onClick={()=>setZoom(z=>Math.max(0.5,+(z-0.1).toFixed(2)))} style={{fontSize:14,cursor:"pointer",color:"var(--muted2)",userSelect:"none"}}>−</span>
                 <span style={{fontFamily:M,fontSize:9,color:"var(--label)",minWidth:28}}>{Math.round(zoom*100)}%</span>
@@ -2557,8 +2570,9 @@ function App() {
               <span onClick={()=>setNcht(new Set())} style={{fontFamily:M,fontSize:9,color:"var(--faint)",cursor:"pointer",flexShrink:0}}>none</span>
               <button onClick={()=>setNeckFull(false)} style={{fontFamily:M,fontSize:11,color:"var(--text)",background:"var(--btn3)",border:"1px solid var(--btn-border)",borderRadius:5,padding:"3px 10px",cursor:"pointer",flexShrink:0}}><Ic n="x" s={10} style={{marginRight:4}}/>close</button>
             </div>
-            {/* fretboard — fills remaining height, scrolls horizontally */}
-            <div style={{flex:1,overflowX:"auto",overflowY:"hidden",display:"flex",alignItems:"center"}}>
+            {/* fretboard — fills remaining height, scrolls in both axes when zoomed past the viewport */}
+            <div style={{flex:1,overflowX:"auto",overflowY:"auto",WebkitOverflowScrolling:"touch"}}>
+              <div style={{minWidth:"max-content",minHeight:"100%",display:"flex",alignItems:"center",justifyContent:"center",padding:"4px 10px"}}>
               {(()=>{
                 let neckFocusedNotes2 = null;
                 if (focusedChord) {
@@ -2592,6 +2606,7 @@ function App() {
                     qualOver={qualOver}/>
                 );
               })()}
+              </div>
             </div>
             {/* chord banner at bottom */}
             {focusedChord && (

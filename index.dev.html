@@ -1156,7 +1156,7 @@ function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blue
 }
 
 // Neck view (multiple positions) — uses buildDots per position then merges
-function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, blues, exts, shapeOn, shapeGroups, onDotClick, focusedNotes, focusedColor, qualOver, posColors, intervals, map}) {
+function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, blues, exts, shapeOn, shapeGroups, onDotClick, focusedNotes, focusedColor, qualOver, posColors, intervals, map, fullNeck}) {
   const none = checked.size === 0 && !focusedNotes;
   const blNote = NOTES[(NOTES.indexOf(root)+6)%12];
 
@@ -1188,7 +1188,34 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
     for (let s=0;s<6;s++) fretsFor(blNote,s,lo,hi).forEach(f=>{ if(!dm.has(`${s}-${f}`)) blDots.push({s,af:f}); });
   }
 
-  const allD = [...dm.values()];
+  // Full-neck mode: keep the position boxes/brackets as-is, but also render every
+  // scale tone from the nut up to the top of the selected positions — so the player
+  // sees the rest of the scale BELOW where Position 1 starts. Dots that coincide with
+  // a selected position keep that position's color; the extra lower-octave tones show
+  // as neutral scale dots.
+  let allD;
+  if (fullNeck && dm.size > 0) {
+    const ceiling = Math.max(...[...dm.values()].map(d=>d.af));
+    const ri = NOTES.indexOf(root);
+    const fullPos = {num:0, dots:[]};
+    for (let s=0; s<6; s++) for (let f=0; f<=ceiling; f++) {
+      const semi = (((OPEN_IDX[s]+f-ri)%12)+12)%12;
+      const di = sc.indexOf(semi);
+      if (di>=0 && pd.has(di+1)) fullPos.dots.push({s, f, d:di+1});
+    }
+    const fnBuilt = buildDots(fullPos, 0, checked, triads, pd, root, sc, false, exts||{});
+    const fdm = new Map();
+    fnBuilt.dots.forEach(dot=>{
+      const key = `${dot.s}-${dot.af}`;
+      const sel = dm.get(key);
+      const merged = {...dot, degs:new Set(dot.degs), posNums: sel ? new Set(sel.posNums) : new Set()};
+      if (sel) { sel.degs.forEach(d=>merged.degs.add(d)); if(sel.isRoot) merged.isRoot=true; if(sel.isExt) merged.isExt=true; }
+      fdm.set(key, merged);
+    });
+    allD = [...fdm.values()];
+  } else {
+    allD = [...dm.values()];
+  }
   if (!allD.length) return <div style={{padding:"24px 16px",textAlign:"center",fontFamily:"IBM Plex Mono,Plex Mono Fallback,monospace"}}><div style={{fontSize:11,color:"var(--text-soft)",marginBottom:4}}>The neck is dark</div><div style={{fontSize:9,color:"var(--muted)",lineHeight:1.7}}>Tap P1–P5 above to light up a position — or all five to see the whole map.</div></div>;
 
   // Add borrowed-chord notes that aren't in the scale
@@ -1865,7 +1892,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
       )}
       {prog.length>0&&(
         <div style={{marginBottom:10}}>
-          <div style={{fontSize:9,color:"var(--label)",fontFamily:M,marginBottom:5}}>TAP A NAME TO FOCUS IT &nbsp;·&nbsp; <Ic n="chevL" s={9}/><Ic n="chevR" s={9}/> MOVE &nbsp;·&nbsp; <Ic n="copy" s={9}/> DUPLICATE</div>
+          <div style={{fontSize:9,color:"var(--label)",fontFamily:M,marginBottom:5}}>TAP A NAME TO FOCUS (AGAIN TO CLEAR) &nbsp;·&nbsp; <Ic n="chevL" s={9}/><Ic n="chevR" s={9}/> MOVE &nbsp;·&nbsp; <Ic n="copy" s={9}/> DUPLICATE</div>
           <div style={{display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
             {prog.map((ch,idx)=>{
               const isPlaying=on&&cur===idx&&!counting;
@@ -1896,7 +1923,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
                     <span onClick={e=>{e.stopPropagation();duplicateChord(idx);}} title="Duplicate" style={{fontFamily:M,fontSize:14,color:"var(--link)",cursor:"pointer",padding:"2px 6px",background:"rgba(96,184,240,0.08)",borderRadius:3}}><Ic n="copy" s={12}/></span>
                   </div>
                   {isPlaying&&<div style={{display:"flex",gap:2}}>{Array.from({length:chBeats},(_,i)=><div key={i} style={{width:5,height:5,borderRadius:"50%",background:beat===i?ax(ch.color):"var(--inlay)",transition:"background .05s"}}/>)}</div>}
-                  <span onClick={e=>{e.stopPropagation();setFocusedIdx(idx);}} style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:19,color:ax(ch.color),cursor:"pointer",padding:"2px 6px"}}>{chordExtName(ch)}</span>
+                  <span onClick={e=>{e.stopPropagation();setFocusedIdx(focusedIdx===idx?null:idx);}} title={focusedIdx===idx?"Tap to un-focus":"Tap to focus"} style={{fontFamily:"'Playfair Display','Playfair Fallback',serif",fontWeight:900,fontSize:19,color:ax(ch.color),cursor:"pointer",padding:"2px 6px"}}>{chordExtName(ch)}</span>
                   {/* Chord notes — shows the actual notes that make up this chord */}
                   <div style={{display:"flex",gap:3,flexWrap:"wrap",justifyContent:"center"}}>
                     {ch.notes.map((n,i)=><span key={i} style={{fontFamily:M,fontWeight:700,fontSize:9,color:ax(ch.color),background:`${ax(ch.color)}15`,border:`1px solid ${ax(ch.color)}55`,borderRadius:3,padding:"2px 5px",minWidth:18,textAlign:"center"}}>{spell(n,map)}</span>)}
@@ -2050,6 +2077,9 @@ function App() {
   // Interval-label mode: show R/♭3/5 on dots instead of note names. Persisted.
   const [intervals,setIntervals]=useState(()=>{try{return localStorage.getItem("pent-intervals")==="1";}catch(e){return false;}});
   useEffect(()=>{try{localStorage.setItem("pent-intervals",intervals?"1":"0");}catch(e){}},[intervals]);
+  // Full-neck mode: keep positions anchored, but also render scale tones below Position 1 across the whole neck. Persisted.
+  const [fullNeck,setFullNeck]=useState(()=>{try{return localStorage.getItem("pent-fullneck")==="1";}catch(e){return false;}});
+  useEffect(()=>{try{localStorage.setItem("pent-fullneck",fullNeck?"1":"0");}catch(e){}},[fullNeck]);
   const [shapeOn,setShapeOn]=useState(false);
   // shapeGroups keyed by chord label (or "_global") → [{color,dots,quality}]
   const [shapeMap,setShapeMap]=useState({"_global":[{color:SHAPE_COLORS[0],dots:[],quality:null}]});
@@ -2521,6 +2551,7 @@ function App() {
                 <span onClick={()=>setNcht(new Set([0,1,2,3,4,5,6]))} style={{fontFamily:M,fontSize:9,color:"var(--link3)",cursor:"pointer"}}>all</span>
                 <span onClick={()=>setNcht(new Set())} style={{fontFamily:M,fontSize:9,color:"var(--faint)",cursor:"pointer"}}>none</span>
               </div>
+              <button onClick={()=>setFullNeck(v=>!v)} title="Show the scale below Position 1, across the whole neck" style={{fontFamily:M,fontWeight:700,fontSize:9,letterSpacing:1,background:fullNeck?`${ac}22`:"var(--btn)",color:fullNeck?ac:"var(--muted2)",border:`1px solid ${fullNeck?ac+"55":"var(--border)"}`,borderRadius:5,padding:"4px 9px",cursor:"pointer"}}>FULL NECK</button>
               <button onClick={()=>setNeckFull(v=>!v)} style={{fontFamily:M,fontSize:11,color:"var(--muted)",background:"var(--btn2)",border:"1px solid var(--btn-border)",borderRadius:5,padding:"2px 8px",cursor:"pointer"}}>
                 {neckFull?<Ic n="x" s={12}/>:<Ic n="expand" s={12}/>}
               </button>
@@ -2552,7 +2583,7 @@ function App() {
                     shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot}
                     focusedNotes={neckFocusedNotes}
                     focusedColor={focusedChord ? focusedChord.color : null}
-                    posColors={posColors}
+                    posColors={posColors} fullNeck={fullNeck}
                     qualOver={qualOver}/>
                 );
               })()}
@@ -2628,6 +2659,7 @@ function App() {
               </div>
               <span onClick={()=>setNcht(new Set([0,1,2,3,4,5,6]))} style={{fontFamily:M,fontSize:9,color:"var(--link3)",cursor:"pointer",flexShrink:0}}>all</span>
               <span onClick={()=>setNcht(new Set())} style={{fontFamily:M,fontSize:9,color:"var(--faint)",cursor:"pointer",flexShrink:0}}>none</span>
+              <button onClick={()=>setFullNeck(v=>!v)} title="Show the scale below Position 1, across the whole neck" style={{fontFamily:M,fontWeight:700,fontSize:9,letterSpacing:1,background:fullNeck?`${ac}22`:"var(--btn)",color:fullNeck?ac:"var(--muted2)",border:`1px solid ${fullNeck?ac+"55":"var(--border)"}`,borderRadius:5,padding:"4px 9px",cursor:"pointer",flexShrink:0}}>FULL NECK</button>
               <button onClick={()=>setNeckFull(false)} style={{fontFamily:M,fontSize:11,color:"var(--text)",background:"var(--btn3)",border:"1px solid var(--btn-border)",borderRadius:5,padding:"3px 10px",cursor:"pointer",flexShrink:0}}><Ic n="x" s={10} style={{marginRight:4}}/>close</button>
             </div>
             {/* fretboard — fills remaining height, scrolls in both axes when zoomed past the viewport */}
@@ -2662,7 +2694,7 @@ function App() {
                     shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot}
                     focusedNotes={neckFocusedNotes2}
                     focusedColor={focusedChord ? focusedChord.color : null}
-                    posColors={posColors}
+                    posColors={posColors} fullNeck={fullNeck}
                     qualOver={qualOver}/>
                 );
               })()}

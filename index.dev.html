@@ -1156,7 +1156,7 @@ function Fretboard({pos, root, base, checked, triads, pd, accent, sc, zoom, blue
 }
 
 // Neck view (multiple positions) — uses buildDots per position then merges
-function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, blues, exts, shapeOn, shapeGroups, onDotClick, focusedNotes, focusedColor, qualOver, posColors, intervals, map, fullNeck}) {
+function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, blues, exts, shapeOn, shapeGroups, onDotClick, focusedNotes, focusedColor, qualOver, posColors, intervals, map, fullNeck, neckTop}) {
   const none = checked.size === 0 && !focusedNotes;
   const blNote = NOTES[(NOTES.indexOf(root)+6)%12];
 
@@ -1194,8 +1194,8 @@ function Neck({positions, root, bases, checked, triads, pd, accent, sc, zoom, bl
   // a selected position keep that position's color; the extra lower-octave tones show
   // as neutral scale dots.
   let allD;
-  if (fullNeck && dm.size > 0) {
-    const ceiling = Math.max(...[...dm.values()].map(d=>d.af));
+  if (fullNeck) {
+    const ceiling = dm.size > 0 ? Math.max(...[...dm.values()].map(d=>d.af)) : (neckTop || 15);
     const ri = NOTES.indexOf(root);
     const fullPos = {num:0, dots:[]};
     for (let s=0; s<6; s++) for (let f=0; f<=ceiling; f++) {
@@ -2384,6 +2384,8 @@ function App() {
 
   const openList=POSN.filter(p=>openPos.has(p.num));
   const openBases=openList.map(p=>p.base);
+  // Highest fret any position reaches — used as the full-neck ceiling when no position is selected.
+  const neckTop=Math.max(...POSN.map(p=>p.base+Math.max(...p.dots.map(d=>d.f))));
 
   return (
     <div style={{minHeight:"100vh",background:"var(--bg)",backgroundImage:"radial-gradient(ellipse at 15% 15%,var(--bg-glow1) 0%,transparent 55%),radial-gradient(ellipse at 85% 85%,var(--bg-glow2) 0%,transparent 55%)",color:"var(--text)",padding:"12px 8px 48px"}}>
@@ -2583,7 +2585,7 @@ function App() {
                     shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot}
                     focusedNotes={neckFocusedNotes}
                     focusedColor={focusedChord ? focusedChord.color : null}
-                    posColors={posColors} fullNeck={fullNeck}
+                    posColors={posColors} fullNeck={fullNeck} neckTop={neckTop}
                     qualOver={qualOver}/>
                 );
               })()}
@@ -2694,7 +2696,7 @@ function App() {
                     shapeOn={shapeOn} shapeGroups={shapeGroups} onDotClick={onDot}
                     focusedNotes={neckFocusedNotes2}
                     focusedColor={focusedChord ? focusedChord.color : null}
-                    posColors={posColors} fullNeck={fullNeck}
+                    posColors={posColors} fullNeck={fullNeck} neckTop={neckTop}
                     qualOver={qualOver}/>
                 );
               })()}

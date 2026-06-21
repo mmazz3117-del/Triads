@@ -2025,7 +2025,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
           </div>}
           {drumOn&&<div style={{display:"flex",gap:3,alignItems:"center",flexWrap:"wrap"}}>
             <span style={{fontFamily:M,fontSize:10,fontWeight:600,letterSpacing:0.5,color:"var(--muted)"}}>pattern:</span>
-            {["Shuffle","Blues","SlowBlues","BluesRock","Boogie","Jazz","SwingJazz","Bossa","Rock","Funk"].map(p=><span key={p} onClick={()=>{setDrumPattern(p);if(on&&startDrums)startDrums(sr.current.bpm,p);}} style={{fontFamily:M,fontSize:9,padding:"2px 6px",borderRadius:4,cursor:"pointer",color:drumPattern===p?"#fff":"var(--label)",background:drumPattern===p?"var(--sel-bg)":"transparent",border:"1px solid "+(drumPattern===p?"var(--sel-border)":"var(--border)")}}>{p}</span>)}
+            {["Chicago","Texas","Shuffle","SlowBlues","Blues","BluesRock","Boogie","Jazz","SwingJazz","Bossa","Rock","Funk"].map(p=><span key={p} onClick={()=>{setDrumPattern(p);if(on&&startDrums)startDrums(sr.current.bpm,p);}} style={{fontFamily:M,fontSize:9,padding:"2px 6px",borderRadius:4,cursor:"pointer",color:drumPattern===p?"#fff":"var(--label)",background:drumPattern===p?"var(--sel-bg)":"transparent",border:"1px solid "+(drumPattern===p?"var(--sel-border)":"var(--border)")}}>{p}</span>)}
           </div>}
         </div>
         </React.Fragment>
@@ -2034,10 +2034,16 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
   );
 }
 
+// Pattern grids: 16 entries = straight 16th-note feel; 12 entries = triplet/shuffle (12/8) feel.
+// Values are velocities 0..1 (not just on/off), so ghost notes & accents are possible — key for blues.
 const DRUM_PATTERNS = {
-  Shuffle:    {kick:[1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
-  Blues:      {kick:[1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]},
-  SlowBlues:  {kick:[1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],hihat:[1,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0]},
+  // --- Blues / shuffle grooves on a 12-step triplet grid (each beat = 3 swung steps) ---
+  Chicago:    {kick:[1,0,0, 0,0,1, 1,0,0, 0,0,1],snare:[0,0,0, 1,0,0, 0,0,0, 1,0,0],hihat:[1,0,0.8, 1,0,0.8, 1,0,0.8, 1,0,0.8]},
+  Texas:      {kick:[1,0,0, 0,0,0, 1,0,0, 0,0,0],snare:[0.32,0,0.32, 1,0,0.32, 0.32,0,0.32, 1,0,0.32],hihat:[1,0,0.8, 1,0,0.8, 1,0,0.8, 1,0,0.8]},
+  Shuffle:    {kick:[1,0,0, 0,0,0, 1,0,0, 0,0,0],snare:[0,0,0, 1,0,0, 0,0,0, 1,0,0],hihat:[1,0,0.8, 1,0,0.8, 1,0,0.8, 1,0,0.8]},
+  SlowBlues:  {kick:[1,0,0, 0,0,0, 1,0,0, 0,0,0],snare:[0,0,0, 1,0,0, 0,0,0, 1,0,0],hihat:[1,0.5,0.5, 1,0.5,0.5, 1,0.5,0.5, 1,0.5,0.5]},
+  Blues:      {kick:[1,0,0, 1,0,0, 1,0,0, 1,0,0],snare:[0,0,0, 1,0,0, 0,0,0, 1,0,0],hihat:[1,0,0.8, 1,0,0.8, 1,0,0.8, 1,0,0.8]},
+  // --- Straight-feel grooves on a 16-step grid (unchanged) ---
   BluesRock:  {kick:[1,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1],hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0]},
   Boogie:     {kick:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],hihat:[1,1,0,1,1,0,1,1,0,1,1,0,1,1,0,1]},
   Jazz:       {kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],snare:[0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0],hihat:[1,0,1,1,0,1,1,0,1,0,1,1,0,1,1,0]},
@@ -2319,16 +2325,18 @@ function App() {
     if(drumRef.current) clearInterval(drumRef.current);
     const ctx=getCtx();
     const pat=DRUM_PATTERNS[pattern]||DRUM_PATTERNS["Shuffle"];
-    const stepDur=(60/bpm)/4;
+    const N=(pat.hihat&&pat.hihat.length)||16;   // 12 = triplet/shuffle grid, 16 = straight grid
+    const stepDur=(60/bpm)*4/N;                   // one bar (4 beats) split into N steps
     let step=0, nextTime=ctx.currentTime+0.05;
     const LOOKAHEAD=0.12;
     const tick=()=>{
       while(nextTime<ctx.currentTime+LOOKAHEAD){
         const v=drumVolRef.current;
-        if(pat.kick[step]) playKick(nextTime, v);
-        if(pat.snare[step]) playSnare(nextTime, v*0.8);
-        if(pat.hihat[step]) playHihat(nextTime, step%4===2, v*0.5);
-        step=(step+1)%16;
+        const kv=pat.kick[step]||0, sv=pat.snare[step]||0, hv=pat.hihat[step]||0;
+        if(kv) playKick(nextTime, v*kv);
+        if(sv) playSnare(nextTime, v*0.8*sv);
+        if(hv) playHihat(nextTime, (N===16 && step%4===2), v*0.5*hv);
+        step=(step+1)%N;
         nextTime+=stepDur;
       }
     };

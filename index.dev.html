@@ -1509,7 +1509,7 @@ const PROG_PRESETS = {
   },
 };
 
-function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,quality,playClick,onProgRef,prog,setProg,savedProgs,setSavedProgs,startDrums,stopDrums,drumOn,setDrumOn,drumPattern,setDrumPattern,drumVol,setDrumVol,shapeMap,setShapeMap,map}){
+function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,quality,playClick,onProgRef,prog,setProg,savedProgs,setSavedProgs,startDrums,stopDrums,stopOrgan,drumOn,setDrumOn,drumPattern,setDrumPattern,drumVol,setDrumVol,shapeMap,setShapeMap,map}){
   accent=ax(accent); // HTML-only component — darken accents for light theme
   const [bpm,setBpm]=useState(80),[bpc,setBpc]=useState(4);
   const [on,setOn]=useState(false),[cur,setCur]=useState(0),[beat,setBeat]=useState(0);
@@ -1544,6 +1544,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
     setOn(false);setCur(0);setBeat(0);setCounting(0);setLoopsDone(0);setFocusedIdx(null);
     if(onChordFocus)onChordFocus(null);
     if(stopDrums) stopDrums();
+    if(stopOrgan) stopOrgan();
   };
 
   const startInterval=(resumeAt)=>{
@@ -1551,7 +1552,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
     setCur(ci);setBeat(0);
     if(resumeAt==null){
       setLoopsDone(0);setFocusedIdx(0);
-      playChord(sr.current.prog[0].notes);
+      playChord(sr.current.prog[0].notes, (sr.current.prog[0].beats||sr.current.bpc)*(60/sr.current.bpm));
       if(onChordFocus)onChordFocus({...sr.current.prog[0],_progIdx:0});
     }
     // (Re)sync drums to the current tempo in both cases
@@ -1574,7 +1575,7 @@ function ProgBuilder({triads,root,sc,accent,playChord,onChordFocus,family,qualit
         }
         setCur(ci);
         setFocusedIdx(ci);
-        playChord(prog[ci].notes);
+        playChord(prog[ci].notes, (prog[ci].beats||bpc)*(60/bpm));
         if(onChordFocus)onChordFocus({...prog[ci],_progIdx:ci});
       }
       nextAt+=(60/bpm)*1000;
@@ -2128,6 +2129,9 @@ function App() {
   const [samplesReady, setSamplesReady] = useState(false);
   const [samplesLoading, setSamplesLoading] = useState(false);
   const [useSamples, setUseSamples] = useState(true); // toggle real guitar ⇄ synth tone
+  // Organ/keyboard pad that sustains each chord for its full length during a progression. Persisted.
+  const [organOn,setOrganOn]=useState(()=>{try{return localStorage.getItem("pent-organ")==="1";}catch(e){return false;}});
+  useEffect(()=>{try{localStorage.setItem("pent-organ",organOn?"1":"0");}catch(e){}},[organOn]);
 
   const getCtx = () => { if(!ctxRef.current) ctxRef.current=new(window.AudioContext||window.webkitAudioContext)(); if(ctxRef.current.state==="suspended") ctxRef.current.resume(); return ctxRef.current; };
 
@@ -2207,14 +2211,66 @@ function App() {
     else pluckFallback((NOTE_FREQ[note]||440)*Math.pow(2,(o-4)),ctx.currentTime,d,0.55);
   }, [samplesReady, useSamples, playSample, pluckFallback]);
 
-  const playChord = useCallback((notes) => {
+  // ---- Organ / keyboard pad: additive drawbar voice that SUSTAINS a chord ----
+  const organVoiceRef = useRef(null);
+  // Release the currently-held organ chord (fast fade so it doesn't drone after a stop/next chord).
+  const cutOrgan = useCallback((t0) => {
+    const v=organVoiceRef.current; if(!v) return; organVoiceRef.current=null;
+    try {
+      const ctx=getCtx(), t=t0||ctx.currentTime;
+      v.master.gain.linearRampToValueAtTime(0.0008, t+0.07);
+      v.oscs.forEach(o=>{ try{o.stop(t+0.1);}catch(e){} });
+    } catch(e){}
+  }, []);
+  // Hold `notes` as an organ chord for `dur` seconds (attack → sustain → release), with gentle tremolo.
+  const playOrgan = useCallback((notes, dur, vol) => {
+    try {
+      const ctx=getCtx(), now=ctx.currentTime, d=Math.max(0.35, dur||1.6);
+      cutOrgan(now); // release any previously-held chord first
+      const baseVol = vol!=null?vol:0.12;
+      const master=ctx.createGain();
+      master.gain.setValueAtTime(0.0008, now);
+      master.gain.linearRampToValueAtTime(baseVol, now+0.045);          // soft attack
+      master.gain.setValueAtTime(baseVol, now+Math.max(0.06,d-0.15));   // sustain to near the end
+      master.gain.exponentialRampToValueAtTime(0.0008, now+d);          // release
+      const lp=ctx.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=3800;
+      // tremolo on a separate node so it doesn't fight the envelope automation
+      const trem=ctx.createGain(); trem.gain.value=1;
+      const lfo=ctx.createOscillator(), lfoG=ctx.createGain();
+      lfo.type="sine"; lfo.frequency.value=5.0; lfoG.gain.value=0.06;
+      lfo.connect(lfoG); lfoG.connect(trem.gain); lfo.start(now); lfo.stop(now+d+0.3);
+      master.connect(lp); lp.connect(trem); trem.connect(ctx.destination);
+      const partials=[[0.5,0.25],[1,0.9],[2,0.4],[3,0.22]]; // sub-octave, fundamental, octave, quint
+      const perNote=0.9/Math.max(3,notes.length);
+      const oscs=[lfo];
+      notes.forEach((note) => {
+        const base=(NOTE_FREQ[note]||440)*Math.pow(2,(3-4)); // octave 3 register
+        const ng=ctx.createGain(); ng.gain.value=perNote; ng.connect(master);
+        partials.forEach(([ratio,g]) => {
+          const osc=ctx.createOscillator(); osc.type="sine"; osc.frequency.value=base*ratio;
+          const pg=ctx.createGain(); pg.gain.value=g; osc.connect(pg); pg.connect(ng);
+          osc.start(now); osc.stop(now+d+0.3); oscs.push(osc);
+        });
+      });
+      organVoiceRef.current={master,oscs};
+    } catch(e){}
+  }, [cutOrgan]);
+  const stopOrgan = useCallback(() => cutOrgan(), [cutOrgan]);
+
+  const playChord = useCallback((notes, dur) => {
     const ctx=getCtx(), now=ctx.currentTime;
-    notes.forEach((note,i) => {
-      const oct=i<Math.ceil(notes.length/2)?3:4, strum=i*0.038;
-      if(samplesReady&&useSamples) playSample(note,oct,now+strum,2.8,0.72);
-      else pluckFallback((NOTE_FREQ[note]||440)*Math.pow(2,(oct-4)),now+strum,2.5,0.6);
+    // Guitar: chord body across two octaves + a doubled high root for fullness, strummed low→high with a little human jitter.
+    const voiced=notes.map((n,i)=>({note:n,oct:i<Math.ceil(notes.length/2)?3:4}));
+    voiced.push({note:notes[0],oct:4});
+    voiced.forEach((v,i) => {
+      const strum=i*0.030 + Math.random()*0.010;
+      const vol=Math.max(0.4, 0.7 - i*0.02);
+      if(samplesReady&&useSamples) playSample(v.note,v.oct,now+strum,2.8,vol);
+      else pluckFallback((NOTE_FREQ[v.note]||440)*Math.pow(2,(v.oct-4)),now+strum,2.5,vol*0.85);
     });
-  }, [samplesReady, useSamples, playSample, pluckFallback]);
+    // Organ pad: holds the chord for its full beat-length under the guitar.
+    if(organOn) playOrgan(notes, dur, 0.12);
+  }, [samplesReady, useSamples, playSample, pluckFallback, organOn, playOrgan]);
 
   const playClick = useCallback((accent) => { try { const c=getCtx(),o=c.createOscillator(),g=c.createGain(); o.connect(g);g.connect(c.destination);o.type="square";o.frequency.value=accent?1200:800;g.gain.setValueAtTime(accent?0.3:0.15,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.04);o.start(c.currentTime);o.stop(c.currentTime+0.04); } catch(e){} }, []);
 
@@ -2285,7 +2341,7 @@ function App() {
   // interval lives at App level (drumRef), but play/stop lives in ProgBuilder; its
   // unmount cleanup only clears the chord scheduler, so without this the drums would
   // keep looping with no visible control after the panel is toggled off.
-  useEffect(()=>{ if(!showProg) stopDrums(); },[showProg,stopDrums]);
+  useEffect(()=>{ if(!showProg){ stopDrums(); stopOrgan(); } },[showProg,stopDrums,stopOrgan]);
 
   // #5 — The full-screen neck auto-zoom reads window size at render time, so a
   // re-render is needed when the viewport changes (rotate / resize / mobile browser
@@ -2356,7 +2412,7 @@ function App() {
   const swQuality=q=>swMode(family,q);
   const swRel=()=>{ swQuality(quality==="major"?"minor":"major"); setRoot(rk); };
   const hear=n=>{setPlayed(n);playNote(n,0.6,4);};
-  const hearCh=notes=>{setPlayed(notes.join(" "));playChord(notes);};
+  const hearCh=(notes,dur)=>{setPlayed(notes.join(" "));playChord(notes,dur);};
   // Tap a dot: Shape mode marks fingerings, otherwise hear the note at its true pitch
   const STRING_MIDI=[40,45,50,55,59,64]; // E2 A2 D3 G3 B3 E4
   const onDot=(s,af,note)=>{
@@ -2486,6 +2542,7 @@ function App() {
       <div style={{maxWidth:660,margin:"0 auto 10px",display:"flex",gap:5,flexWrap:"wrap",justifyContent:"center"}}>
         {[{l:"Metro",ic:"metro",a:metro,fn:()=>setMetro(v=>!v)},{l:"♭5 Blues",ic:null,a:blues,fn:()=>setBlues(v=>!v)},{l:"7 Notes",ic:null,a:fullScale,fn:()=>setFullScale(v=>!v)},{l:"Intervals",ic:null,a:intervals,fn:()=>setIntervals(v=>!v)},{l:"Prog",ic:"queue",a:showProg,fn:()=>setShowProg(v=>!v)},{l:"Shape",ic:"hex",a:shapeOn,fn:()=>{setShapeOn(v=>!v);setShapeMap({"_global":[{color:SHAPE_COLORS[0],dots:[],quality:null}]});}},{l:"Neck",ic:"neckIc",a:neck,fn:()=>setNeck(v=>!v)}].map(b=><button key={b.l} onClick={b.fn} style={{fontFamily:M,fontWeight:700,fontSize:10,background:b.a?`${ac}22`:"var(--btn)",color:b.a?ac:"var(--muted2)",border:`1px solid ${b.a?ac+"55":"var(--border)"}`,borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}>{b.ic&&<Ic n={b.ic} s={11} style={{marginRight:5}}/>}{b.l}</button>)}
         <button onClick={()=>{getCtx();if(samplesReady){setUseSamples(v=>!v);}else{loadSamples();}}} style={{fontFamily:M,fontWeight:700,fontSize:10,background:samplesReady&&useSamples?"rgba(64,168,96,0.2)":samplesLoading?"rgba(255,200,0,0.1)":"var(--btn)",color:samplesReady&&useSamples?ax("#40a860"):samplesLoading?ax("#ffc800"):"var(--muted2)",border:"1px solid "+(samplesReady&&useSamples?"#40a86055":samplesLoading?"#ffc80055":"var(--border)"),borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}><Ic n="speaker" s={11} style={{marginRight:5}}/>{samplesReady?(useSamples?"Guitar On":"Guitar Off"):samplesLoading?"Loading...":"Guitar"}</button>
+        <button onClick={()=>{getCtx();setOrganOn(v=>!v);}} title="Organ pad that holds each chord through the progression" style={{fontFamily:M,fontWeight:700,fontSize:10,background:organOn?"rgba(139,124,216,0.22)":"var(--btn)",color:organOn?ax("#8b7cd8"):"var(--muted2)",border:"1px solid "+(organOn?"#8b7cd855":"var(--border)"),borderRadius:7,padding:"7px 12px",letterSpacing:1,textTransform:"uppercase",cursor:"pointer",minHeight:36}}><Ic n="note" s={11} style={{marginRight:5}}/>{organOn?"Organ On":"Organ"}</button>
       </div>
 
       {shapeOn&&(
@@ -2532,7 +2589,7 @@ function App() {
       )}
 
       {metro && <div style={{maxWidth:660,margin:"0 auto 16px"}}><Metro pc={playClick}/></div>}
-      {showProg && <div style={{maxWidth:660,margin:"0 auto 16px"}}><ProgBuilder triads={TR} root={root} sc={SC} accent={ac} playChord={hearCh} onChordFocus={ch=>{setFocusedProgIdx(ch!=null?(ch._progIdx??null):null);}} family={family} quality={quality} playClick={playClick} onProgRef={setProgCtl} prog={prog} setProg={setProg} savedProgs={savedProgs} setSavedProgs={setSavedProgs} startDrums={startDrums} stopDrums={stopDrums} drumOn={drumOn} setDrumOn={setDrumOn} drumPattern={drumPattern} setDrumPattern={setDrumPattern} drumVol={drumVol} setDrumVol={setDrumVol} shapeMap={shapeMap} setShapeMap={setShapeMap} map={spellMap}/></div>}
+      {showProg && <div style={{maxWidth:660,margin:"0 auto 16px"}}><ProgBuilder triads={TR} root={root} sc={SC} accent={ac} playChord={hearCh} onChordFocus={ch=>{setFocusedProgIdx(ch!=null?(ch._progIdx??null):null);}} family={family} quality={quality} playClick={playClick} onProgRef={setProgCtl} prog={prog} setProg={setProg} savedProgs={savedProgs} setSavedProgs={setSavedProgs} startDrums={startDrums} stopDrums={stopDrums} stopOrgan={stopOrgan} drumOn={drumOn} setDrumOn={setDrumOn} drumPattern={drumPattern} setDrumPattern={setDrumPattern} drumVol={drumVol} setDrumVol={setDrumVol} shapeMap={shapeMap} setShapeMap={setShapeMap} map={spellMap}/></div>}
 
       {neck && (()=>{
         const neckContent = (
